@@ -41,8 +41,9 @@ public class DBTools {
             PreparedStatement ps = conn.prepareStatement("select * from suits where id=?");
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
-            rs.next();
-            return new Suits(rs.getInt("id"), rs.getString("name"));
+            while(rs.next()){
+                return new Suits(rs.getInt("id"), rs.getString("name"));
+            }
         }catch(SQLException e){
             log.log(Level.INFO, "SQL {0}", e.getMessage());
         }
@@ -55,8 +56,9 @@ public class DBTools {
             PreparedStatement ps = conn.prepareStatement("select * from dignitys where id=?");
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
-            rs.next();
-            return new Dignity(rs.getInt("id"), rs.getInt("power"), rs.getString("name"), rs.getString("short_name"));
+            while(rs.next()){
+                return new Dignity(rs.getInt("id"), rs.getInt("power"), rs.getString("name"), rs.getString("short_name"));
+            }
         }catch(SQLException e){
             log.log(Level.INFO, "SQL {0}", e.getMessage());
         }
