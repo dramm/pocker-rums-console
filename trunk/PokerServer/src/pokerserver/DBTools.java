@@ -81,7 +81,7 @@ public class DBTools {
         //log.info("return null");
         return null;
     }
-    public static void generateDeck(){
+    /*public static void generateDeck(){
         try{
             Connection c = getConnection();
             for(int i=2; i<15; i++){
@@ -96,5 +96,5 @@ public class DBTools {
             log.info(e.getMessage());
         }
         log.info("complite");
-    }
+    }*/
 }
