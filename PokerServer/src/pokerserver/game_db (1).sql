@@ -1,4 +1,4 @@
--- Adminer 3.7.1 MySQL dump
+-- Adminer 3.7.1 MySQL dump1
 
 SET NAMES utf8;
 SET foreign_key_checks = 0;
