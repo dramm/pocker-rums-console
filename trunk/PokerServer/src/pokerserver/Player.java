@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package pokerserver;
+package test;
 
 import DataBaseClasses.Cards;
 
@@ -36,6 +36,12 @@ public class Player {
 
     public void setFold(boolean fold) {
         this.fold = fold;
+    }
+    public Cards getFirstCard(){
+        return pocketCards[0];
+    }
+    public Cards getSecondCard(){
+        return pocketCards[1];
     }
     
 }

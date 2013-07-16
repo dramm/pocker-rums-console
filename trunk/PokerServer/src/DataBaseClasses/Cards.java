@@ -8,7 +8,7 @@ package DataBaseClasses;
  *
  * @author Андрей
  */
-public class Cards {
+public class Cards implements Comparable{
     private int id;
     private int suitsId;
     private int dignitysId;
@@ -39,5 +39,16 @@ public class Cards {
     }
     public int getDignitysId(){
         return this.dignitysId;
+    }
+    @Override
+    public int compareTo(Object obj){
+        Cards tmp = (Cards)obj;
+        if(this.dignitysId < tmp.dignitysId){
+            return -1;
+        }
+        else if(this.dignitysId > tmp.dignitysId){
+            return 1;
+        }
+        return 0;
     }
 }

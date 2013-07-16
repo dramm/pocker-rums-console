@@ -22,6 +22,7 @@ public class PokerServer {
         tmp.Flop();
         tmp.Turn();
         tmp.River();
+        tmp.WhoWin();
         System.out.println("helo");
     }
 }
