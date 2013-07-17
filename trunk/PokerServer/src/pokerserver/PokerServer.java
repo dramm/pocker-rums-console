@@ -17,7 +17,7 @@ public class PokerServer {
     public static void main(String[] args) {
         // TODO code application logic here
         //comment
-        Table tmp = new Table(9);
+        Table tmp = new Table(3);
         tmp.PreFlop();
         tmp.Flop();
         tmp.Turn();
