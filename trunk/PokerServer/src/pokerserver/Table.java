@@ -28,24 +28,42 @@ public class Table {
     }
     public void PreFlop(){
         
-        for(int i=0; i<players.length; i++){
+        for(int i = 0;  i < players.length; i++){
             Cards[] tmp = new Cards[2];
-            for(int j=0; j<2;j++){
+            for(int j = 0; j < 2; j++){
                 tmp[j] = deck.IssueCard();
             }
             players[i].setPocketCards(tmp);
         }
+        /*Cards[] t = new Cards[2];
+        t[0] = new Cards(0, 3, 7);
+        t[1] = new Cards(0, 3, 3);
+        players[0].setPocketCards(t);
+        t = new Cards[2];
+        t[0] = new Cards(0, 4, 2);
+        t[1] = new Cards(0, 4, 5);
+        players[1].setPocketCards(t);
+        t = new Cards[2];
+        t[0] = new Cards(0, 3, 2);
+        t[1] = new Cards(0, 3, 9);
+        players[2].setPocketCards(t);*/
     }
     public void Flop(){
         for(int i=0; i<3; i++){
             bord[i] = deck.IssueCard();
+            //bord[i] = new Cards(0, 4, i);
         }
+       /* bord[0] = new Cards(0, 3, 11);
+        bord[1] = new Cards(0, 3, 13);
+        bord[2] = new Cards(0, 3, 8);*/
     }
     public void Turn(){
         bord[3] = deck.IssueCard();
+        //bord[3] = new Cards(0, 1, 2);
     }
     public void River(){
         bord[4] = deck.IssueCard();
+        //bord[4] = new Cards(0, 3, 9);
     }
     public void WhoWin(){
         for(int i=0; i<players.length; i++){
@@ -62,7 +80,16 @@ public class Table {
                 System.out.println("Player "+i+" have one pair");
             }
             if(Sequence.CheckSequence(players[i].getPocketCards(), bord)== 11){
+                System.out.println("Player "+i+" have two pair");
+            }
+            if(Sequence.CheckSequence(players[i].getPocketCards(), bord)== 12){
                 System.out.println("Player "+i+" have set");
+            }
+            if(Sequence.CheckSequence(players[i].getPocketCards(), bord)== 13){
+                System.out.println("Player "+i+" have streight");
+            }
+            if(Sequence.CheckSequence(players[i].getPocketCards(), bord)== 14){
+                System.out.println("Player "+i+" have flush");
             }
         }
         
