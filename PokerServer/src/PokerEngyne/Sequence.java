@@ -14,7 +14,7 @@ import java.util.Arrays;
 public class Sequence {
     public static int CheckSequence(Cards[] pocketCard, Cards[] board){
         Cards [] allCard;
-        if((board==null)||(board.length==0)){
+        if((board == null) || (board.length == 0)){
             allCard = new Cards[pocketCard.length];
             System.arraycopy(pocketCard, 0, allCard, 0, pocketCard.length);
         }
@@ -24,48 +24,89 @@ public class Sequence {
             System.arraycopy(board, 0, allCard, pocketCard.length, board.length);
         }
         Arrays.sort(allCard);
-        if(isOnePair(allCard)){
-            return 10;
+        int result = -1;
+        
+        if(isFlush(allCard)){
+            result = 14;
+            return result;
         }
+        
+        if(isStraight(allCard)){
+            result = 13;
+            return result;
+        }
+        
         if(isSet(allCard)){
-            return 11;
+            result = 12;
+            return result;
         }
-        return -1;
+        if(isTwoPair(allCard)){
+            result = 11;
+            return result;
+        }
+        if(isOnePair(allCard)){
+            result = 10;
+            return result;
+        }
+        
+        return result;
     } 
     private static boolean isHighCard(Cards[] allCard){
         return false;
     }
     private static boolean isOnePair(Cards[] allCard){
-        int pair = 0;
-        for(int i=0; i<allCard.length-1; i++){
-            if(allCard[i].getDignitysId()==allCard[i+1].getDignitysId()){
-                pair++;
+        for(int i=0; i < allCard.length - 1; i++){
+            if(allCard[i].getDignitysId() == allCard[i+1].getDignitysId()){
+                return true; 
             }
-        }
-        if(pair==1){
-            return true;
         }
         return false;
     }
     private static boolean isTwoPair(Cards[] allCard){
+        for(int i = 0; i < allCard.length - 1; i++ ){
+           if(allCard[i].getDignitysId() == allCard[i+1].getDignitysId()){
+                for(int j = i+1; j < allCard.length - 1; j++){
+                    if(allCard[j].getDignitysId() == allCard[j+1].getDignitysId()){
+                        return true; 
+                    }
+                }
+            } 
+        }
         return false;
     }
     private static boolean isSet(Cards[] allCard){
-        int pair = 0;
-        for(int i=0; i<allCard.length-1; i++){
-            if(allCard[i].getDignitysId()==allCard[i+1].getDignitysId()){
-                pair++;
+        for(int i = 0; i < allCard.length - 2; i++){
+            if(allCard[i].getDignitysId() == allCard[i+1].getDignitysId() && 
+                   allCard[i].getDignitysId() == allCard[i+2].getDignitysId() ){
+                return true; 
             }
-        }
-        if(pair==2){
-            return true;
         }
         return false;
     }
     private static boolean isStraight(Cards[] allCard){
+        int count = 0;
+        for(int i = 0; i < allCard.length - 1; i++){
+            if((allCard[i].getDignitysId() - allCard[i+1].getDignitysId()) == -1){
+                count++;
+            }
+        }
+        if(count >= 5){
+            return true;
+        }
         return false;
     }
     private static boolean isFlush(Cards[] allCard){
+        for(int i = 1; i <= 4; i++){
+            int count = 0;
+            for(int j = 0; j < allCard.length; j++){
+                if(allCard[j].getSuitsId() == i){
+                    count++;
+                }
+            }
+            if(count >= 5){
+                return true;
+            }
+        }
         return false;
     }
     private static boolean isFullHouse(Cards[] allCard){
