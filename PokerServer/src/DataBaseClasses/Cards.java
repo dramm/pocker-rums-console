@@ -51,4 +51,13 @@ public class Cards implements Comparable{
         }
         return 0;
     }
+    public boolean isMore(Cards card){
+        if(this.dignitysId > card.getDignitysId()){
+            return true;
+        }
+        return false;
+    }
+    public boolean isLess(Cards card){
+        return !isMore(card);
+    }
 }
