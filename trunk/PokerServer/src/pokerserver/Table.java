@@ -30,14 +30,17 @@ public class Table {
         
         for(int i = 0;  i < players.length; i++){
             Cards[] tmp = new Cards[2];
-            for(int j = 0; j < 2; j++){
-                tmp[j] = deck.IssueCard();
+            tmp[0] = deck.IssueCard();
+            tmp[1] = deck.IssueCard();
+            if(tmp[0].getId() == tmp[1].getId()){
+                log.info("duplicate");
             }
             players[i].setPocketCards(tmp);
+             
         }
         /*Cards[] t = new Cards[2];
-        t[0] = new Cards(0, 3, 7);
-        t[1] = new Cards(0, 3, 3);
+        t[0] = new Cards(0, 2, 7);
+        t[1] = new Cards(0, 3, 8);
         players[0].setPocketCards(t);
         t = new Cards[2];
         t[0] = new Cards(0, 4, 2);
@@ -53,29 +56,29 @@ public class Table {
             bord[i] = deck.IssueCard();
             //bord[i] = new Cards(0, 4, i);
         }
-       /* bord[0] = new Cards(0, 3, 11);
-        bord[1] = new Cards(0, 3, 13);
-        bord[2] = new Cards(0, 3, 8);*/
+        /*bord[0] = new Cards(0, 3, 9);
+        bord[1] = new Cards(0, 3, 11);
+        bord[2] = new Cards(0, 3, 10);**/
     }
     public void Turn(){
         bord[3] = deck.IssueCard();
         //bord[3] = new Cards(0, 1, 2);
     }
     public void River(){
-        bord[4] = deck.IssueCard();
-        //bord[4] = new Cards(0, 3, 9);
+       bord[4] = deck.IssueCard();
+       // bord[4] = new Cards(0, 4, 5);
     }
-    public void WhoWin(){
+    public void CheckCombination(){
         for(int i=0; i<players.length; i++){
             System.out.println("Player "+i+" have: "+players[i].getFirstCard().getDignitysId()+" ("+
                     players[i].getFirstCard().getSuitsId()+") "+
                     players[i].getSecondCard().getDignitysId()+
-                    " ("+players[i].getFirstCard().getSuitsId()+")");
+                    " ("+players[i].getSecondCard().getSuitsId()+")");
         }
-        for(int i=0; i<bord.length;i++){
+        for(int i = 0; i < bord.length; i++){
             System.out.println("Bord "+bord[i].getDignitysId()+" ("+bord[i].getSuitsId()+")");
         }
-        for(int i=0; i<players.length;i++){
+        for(int i = 0; i < players.length; i++){
             if(Sequence.CheckSequence(players[i].getPocketCards(), bord)== 10){
                 System.out.println("Player "+i+" have one pair");
             }
@@ -90,6 +93,15 @@ public class Table {
             }
             if(Sequence.CheckSequence(players[i].getPocketCards(), bord)== 14){
                 System.out.println("Player "+i+" have flush");
+            }
+            if(Sequence.CheckSequence(players[i].getPocketCards(), bord)== 15){
+                System.out.println("Player "+i+" have full house");
+            }
+            if(Sequence.CheckSequence(players[i].getPocketCards(), bord)== 16){
+                System.out.println("Player "+i+" have kare");
+            }
+            if(Sequence.CheckSequence(players[i].getPocketCards(), bord)== 17){
+                System.out.println("Player "+i+" have streight flush");
             }
         }
         
