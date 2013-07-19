@@ -69,14 +69,14 @@ public class Table {
        // bord[4] = new Cards(0, 4, 5);
     }
     public void CheckCombination(){
+        byte[] b = {(byte)0xe1, (byte)0xe3};
+        String s = new String(b);
         for(int i=0; i<players.length; i++){
-            System.out.println("Player "+i+" have: "+players[i].getFirstCard().getDignitysId()+" ("+
-                    players[i].getFirstCard().getSuitsId()+") "+
-                    players[i].getSecondCard().getDignitysId()+
-                    " ("+players[i].getSecondCard().getSuitsId()+")");
+            System.out.println("Player "+i+" have: " + Sequence.PrintCard(players[i].getFirstCard()) + " "
+                    + Sequence.PrintCard(players[i].getSecondCard()));
         }
         for(int i = 0; i < bord.length; i++){
-            System.out.println("Bord "+bord[i].getDignitysId()+" ("+bord[i].getSuitsId()+")");
+            System.out.println("Bord " + Sequence.PrintCard(bord[i]));
         }
         for(int i = 0; i < players.length; i++){
             if(Sequence.CheckSequence(players[i].getPocketCards(), bord)== 10){
