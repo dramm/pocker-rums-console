@@ -22,6 +22,7 @@ public class PokerServer {
         tmp.Flop();
         tmp.Turn();
         tmp.River();
-        System.out.println("helo");
+        tmp.CheckCombination();
+        System.out.println("helo");      
     }
 }
