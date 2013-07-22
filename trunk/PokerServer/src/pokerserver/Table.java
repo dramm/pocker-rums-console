@@ -6,19 +6,21 @@ package pokerserver;
 
 import DataBaseClasses.Cards;
 import PokerEngyne.Sequence;
-import java.util.logging.Logger;
 
 /**
  *
  * @author Андрей
  */
 public class Table {
-    private static Logger log = Logger.getLogger(Table.class.getName());
+    private String name;
     private Deck deck;
     private Player[] players;
     private Cards[] bord;
+    private int stage;
     
-    public Table(int players){
+    public Table(int players, String tableName){
+        stage = 0;
+        name = tableName;
         this.players = new Player[players];
         this.bord = new Cards[5];
         this.deck = new Deck();
@@ -26,58 +28,117 @@ public class Table {
             this.players[i] = new Player();
         }
     }
+    
+    private void Reset(){
+        stage = 0;
+        this.bord = new Cards[5];
+        this.deck = new Deck();
+        for(int i=0; i<players.length; i++){
+            this.players[i] = new Player();
+        }
+    }
+    
     public void PreFlop(){
         
         for(int i = 0;  i < players.length; i++){
             Cards[] tmp = new Cards[2];
             tmp[0] = deck.IssueCard();
             tmp[1] = deck.IssueCard();
-            if(tmp[0].getId() == tmp[1].getId()){
-                log.info("duplicate");
-            }
             players[i].setPocketCards(tmp);
-             
         }
-        /*Cards[] t = new Cards[2];
-        t[0] = new Cards(0, 2, 7);
-        t[1] = new Cards(0, 3, 8);
-        players[0].setPocketCards(t);
-        t = new Cards[2];
-        t[0] = new Cards(0, 4, 2);
-        t[1] = new Cards(0, 4, 5);
-        players[1].setPocketCards(t);
-        t = new Cards[2];
-        t[0] = new Cards(0, 3, 2);
-        t[1] = new Cards(0, 3, 9);
-        players[2].setPocketCards(t);*/
+        stage = 1;
     }
-    public void Flop(){
+    private void Flop(){
         for(int i=0; i<3; i++){
             bord[i] = deck.IssueCard();
-            //bord[i] = new Cards(0, 4, i);
         }
-        /*bord[0] = new Cards(0, 3, 9);
-        bord[1] = new Cards(0, 3, 11);
-        bord[2] = new Cards(0, 3, 10);**/
+        stage = 2;
     }
-    public void Turn(){
+    private void Turn(){
         bord[3] = deck.IssueCard();
-        //bord[3] = new Cards(0, 1, 2);
+        stage = 3;
     }
-    public void River(){
+    private void River(){
        bord[4] = deck.IssueCard();
-       // bord[4] = new Cards(0, 4, 5);
+       stage = 4;
     }
+    
+    private void Showdown() {
+        stage = 5;
+    }
+    
+    public void nextStage(){
+        switch(stage){
+            case 0:{
+                PreFlop();
+                break;
+            }
+            case 1:{
+                Flop();
+                break;
+            }
+            case 2:{
+                Turn();
+                break;
+            }
+            case 3:{
+                River();
+                break;
+            }
+            case 4:
+                Showdown();
+                break;
+            case 5:{
+                Reset();
+                break;
+            }
+        }
+    }
+    
+    public void getInfo(){
+        System.out.println("Table : " + name);
+        System.out.println("Game stage : " + getStage());
+        if(stage > 0){
+            for (int i = 0; i < players.length; i++) {
+                System.out.println("Player " + (i + 1) + " hand cards: ");
+                Sequence.PrintCard(players[i].getFirstCard());
+                Sequence.PrintCard(players[i].getSecondCard());
+                
+            }
+            for (int i = 0; i < bord.length; i++) {
+                System.out.println("Bord card " + (i + 1));
+                if(bord[i] != null){
+                    Sequence.PrintCard(bord[i]);
+                }
+                else{
+                    System.out.println("In the deck");
+                }
+            }
+        }
+    }
+    
+    private String getStage(){
+        switch(stage){
+            case 1:{
+                return "Preflop";
+            }
+            case 2:{
+                return "Flop";
+            }
+            case 3:{
+                return "Turn";
+            }
+            case 4:{
+                return "River";
+            }
+            case 5:{
+                return "Showdown";
+            }                
+        }
+        return "Start game";
+    }
+    
     public void CheckCombination(){
-        byte[] b = {(byte)0xe1, (byte)0xe3};
-        String s = new String(b);
-        for(int i=0; i<players.length; i++){
-            System.out.println("Player "+i+" have: " + Sequence.PrintCard(players[i].getFirstCard()) + " "
-                    + Sequence.PrintCard(players[i].getSecondCard()));
-        }
-        for(int i = 0; i < bord.length; i++){
-            System.out.println("Bord " + Sequence.PrintCard(bord[i]));
-        }
         for(int i = 0; i < players.length; i++){
             if(Sequence.CheckSequence(players[i].getPocketCards(), bord)== 10){
                 System.out.println("Player "+i+" have one pair");
@@ -105,6 +166,5 @@ public class Table {
             }
         }
         
-    }
-    
+    }   
 }
