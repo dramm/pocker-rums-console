@@ -10,7 +10,6 @@ import DataBaseClasses.Suits;
 import java.util.ArrayList;
 import java.util.Arrays;
 import pokerserver.DBTools;
-import pokerserver.Player;
 
 /**
  *
@@ -46,7 +45,7 @@ public class Sequence {
             return result;
         }
         
-        if(isFlush(allCard)!= null){
+        if(isFlush(allCard)){
             result = 14;
             return result;
         }
@@ -117,7 +116,7 @@ public class Sequence {
         }
         return false;
     }                                             
-    private static Cards[] isFlush(Cards[] allCard){
+    private static boolean isFlush(Cards[] allCard){
         for(int i = 1; i <= 4; i++){
             ArrayList<Cards> tmp = new ArrayList<>();
             for(int j = 0; j < allCard.length; j++){
@@ -126,10 +125,10 @@ public class Sequence {
                 }
             }
             if(tmp.size() >= 5){
-                return tmp.toArray(new Cards[0]);
+                return true;
             }
         }
-        return null;
+        return false;
     }
     private static boolean isFullHouse(Cards[] allCard){
         int id = 0;
@@ -159,25 +158,22 @@ public class Sequence {
         }
         if(count == 3){
             return true;
+            
         }
         return false;
     }
     private static boolean isStraightFlush(Cards[] allCard){
-        /*int index = 0;
-        for(int i = 0; i < allCard.length - 1; i++){
-            if((allCard[i].getDignitysId() - allCard[i+1].getDignitysId() == -1) &&
-                    (allCard[i].getSuitsId() == allCard[i+1].getSuitsId())){
-                index++;
+        for(int i = 1; i <= 4; i++){
+            ArrayList<Cards> tmp = new ArrayList<>();
+            for(int j = 0; j < allCard.length; j++){
+                if(allCard[j].getSuitsId() == i){
+                    tmp.add(allCard[j]);
+                }
             }
-        }
-        if(index == 4){
-            return true;
-        }*/
-           
-        Cards[] tmp = isFlush(allCard);
-        if(tmp != null){
-            if(isStraight(tmp)){
-                return true;
+            if(tmp.size() >= 5){
+                if(isStraight(tmp.toArray(new Cards [0]))){
+                    return true;
+                }
             }
         }
         
@@ -188,11 +184,7 @@ public class Sequence {
         return false;
     }
     
-    public static Player WhoWin(Player[] players){
-        return players[0];
-    }
-    
-    public static String PrintCard(Cards card){
+    public static void PrintCard(Cards card){
         Dignity dig = DBTools.getDignity(card.getDignitysId());
         Suits su = DBTools.getSuits(card.getSuitsId());
         String out = dig.getName();
@@ -208,6 +200,6 @@ public class Sequence {
         else if(su.getId() == 4){
             out += "(♥)";
         }
-        return out;
+        System.out.println(out);
     }
 }

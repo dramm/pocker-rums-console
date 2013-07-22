@@ -23,10 +23,13 @@ import java.util.logging.Logger;
 public class DBTools {
     
     private static Logger log = Logger.getLogger(DBTools.class.getName());
+    private static int i = 0;
     
     private static Connection getConnection(){
         try{
             //log.info("connect to data base");
+            //i++;
+           // log.log(Level.INFO, "{0} ", i);
             return DriverManager.getConnection(ServerConf.getDBUrl(),
                     ServerConf.getDBUser(), ServerConf.getDBPasswd());
             
@@ -38,45 +41,71 @@ public class DBTools {
     }
     
     public static Suits getSuits(int id){
+        Connection conn = getConnection();
         try{
-            Connection conn = getConnection();
+            //Connection conn = getConnection();
             PreparedStatement ps = conn.prepareStatement("select * from suits where id=?");
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             rs.next();
+            //conn.close();
             return new Suits(rs.getInt("id"), rs.getString("name"));
         }catch(SQLException e){
             log.log(Level.INFO, "SQL {0}", e.getMessage());
+        }finally{
+            try {
+                conn.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         //log.info("return null");
         return null;
     }
     public static Dignity getDignity(int id){
+        Connection conn = getConnection();
         try{
-            Connection conn = getConnection();
+            
             PreparedStatement ps = conn.prepareStatement("select * from dignitys where id=?");
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             rs.next();
+            //conn.close();
             return new Dignity(rs.getInt("id"), rs.getInt("power"), rs.getString("name"), rs.getString("short_name"));
         }catch(SQLException e){
             log.log(Level.INFO, "SQL {0}", e.getMessage());
+        }
+        finally{
+            try {
+                conn.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         //log.info("return null");
         return null;
     }
     public static ArrayList<Cards> getCards(){
         ArrayList<Cards> deck = new ArrayList<>();
+        Connection conn = getConnection();
         try{
-            Connection conn = getConnection();
+            
             PreparedStatement ps = conn.prepareStatement("select * from cards");
             ResultSet rs = ps.executeQuery();
             while(rs.next()){
                 deck.add(new Cards(rs.getInt("id"), rs.getInt("suits_id"), rs.getInt("dignitys_id")));
             }
+            //conn.close();
             return deck;
         }catch(SQLException e){
             log.log(Level.INFO, "SQL {0}", e.getMessage());
+        }
+        finally{
+            try {
+                conn.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         //log.info("return null");
         return null;
