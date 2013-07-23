@@ -6,6 +6,7 @@ package pokerserver;
 
 import DataBaseClasses.Cards;
 import PokerEngyne.Sequence;
+import java.util.UUID;
 
 /**
  *
@@ -17,8 +18,10 @@ public class Table {
     private Player[] players;
     private Cards[] bord;
     private int stage;
+    private UUID uuid;
     
     public Table(int players, String tableName){
+        uuid = UUID.randomUUID();
         stage = 0;
         name = tableName;
         this.players = new Player[players];
@@ -27,40 +30,53 @@ public class Table {
         for(int i=0; i<players; i++){
             this.players[i] = new Player();
         }
+        DBTools.setGame(uuid.toString());
     }
     
     private void Reset(){
+        uuid = UUID.randomUUID();
         stage = 0;
         this.bord = new Cards[5];
         this.deck = new Deck();
         for(int i=0; i<players.length; i++){
             this.players[i] = new Player();
         }
+        DBTools.setGame(uuid.toString());
     }
     
     public void PreFlop(){
-        
+        stage = 1;
         for(int i = 0;  i < players.length; i++){
             Cards[] tmp = new Cards[2];
             tmp[0] = deck.IssueCard();
             tmp[1] = deck.IssueCard();
             players[i].setPocketCards(tmp);
+            DBTools.setHand(tmp);
         }
-        stage = 1;
+        DBTools.setGameStage(stage, uuid.toString());
     }
     private void Flop(){
+        stage = 2;
+        DBTools.setGameStage(stage, uuid.toString());
         for(int i=0; i<3; i++){
             bord[i] = deck.IssueCard();
+            DBTools.setDistribution(bord[i], uuid.toString(), stage);
         }
-        stage = 2;
+        
     }
     private void Turn(){
-        bord[3] = deck.IssueCard();
         stage = 3;
+        DBTools.setGameStage(stage, uuid.toString());
+        bord[3] = deck.IssueCard();
+        DBTools.setDistribution(bord[3], uuid.toString(), stage);
+        
     }
     private void River(){
-       bord[4] = deck.IssueCard();
-       stage = 4;
+        stage = 4;
+        DBTools.setGameStage(stage, uuid.toString());
+        bord[4] = deck.IssueCard();
+        DBTools.setDistribution(bord[4], uuid.toString(), stage);
+       
     }
     
     private void Showdown() {
