@@ -11,14 +11,14 @@ import java.util.logging.Logger;
  *
  * @author Андрей
  */
-public class Game {
-    public boolean  run;
-    Table[] mainTables = new Table[3];
+public class Game extends Thread{
+    private boolean  run;
+    Table[] mainTables = new Table[1];
     public Game(){
         mainTables[0] = new Table(4, "First table");
-        mainTables[1] = new Table(6, "Second table");
-        mainTables[2] = new Table(9, "Third table");
-        run = true;
+        /*mainTables[1] = new Table(6, "Second table");
+        mainTables[2] = new Table(9, "Third table");*/
+        run = false;
     }
     public void gameStart(){
         while(run){
@@ -27,11 +27,27 @@ public class Game {
                     mainTables[i].nextStage();
                     mainTables[i].getInfo();
                 }
-                Thread.sleep(15*1000);
+                for (int i = 15; i > 0; i--) {
+                    Thread.sleep(1000);
+                    System.out.println("Next stage after "+ i + " seconds...");
+                }
             } catch (InterruptedException ex) {
                 Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
             }
    
         }
+    }
+    @Override
+    public void run (){
+        this.run = true;
+        gameStart();
+    }
+
+    public boolean isRun() {
+        return run;
+    }
+
+    public void setRun(boolean run) {
+        this.run = run;
     }
 }
