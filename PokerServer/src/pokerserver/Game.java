@@ -14,11 +14,11 @@ import java.util.logging.Logger;
  */
 public class Game extends Thread{
     private boolean  run;
-    Table[] mainTables = new Table[1];
+    Table[] mainTables = new Table[3];
     public Game(){
         mainTables[0] = new Table(4, "First table");
-        /*mainTables[1] = new Table(6, "Second table");
-        mainTables[2] = new Table(9, "Third table");*/
+        mainTables[1] = new Table(6, "Second table");
+        mainTables[2] = new Table(9, "Third table");
         run = false;
     }
     public void gameStart(){
