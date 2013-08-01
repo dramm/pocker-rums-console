@@ -5,8 +5,9 @@
 package pokerserver;
 
 import DataBaseClasses.Cards;
+import Enums.GameStages;
 import PokerEngyne.Sequence;
-import java.util.UUID;
+import threads.Bridge;
 
 /**
  *
@@ -17,12 +18,12 @@ public class Table {
     private Deck deck;
     private Player[] players;
     private Cards[] bord;
-    private int stage;
-    private UUID uuid;
+    //private int stage;
+    private GameStages.Stage stage = GameStages.Stage.STARTING;
+    private int gameId;
+    
     
     public Table(int players, String tableName){
-        uuid = UUID.randomUUID();
-        stage = 0;
         name = tableName;
         this.players = new Player[players];
         this.bord = new Cards[5];
@@ -30,22 +31,23 @@ public class Table {
         for(int i=0; i<players; i++){
             this.players[i] = new Player();
         }
-        DBTools.setGame(uuid.toString());
+        DBTools.setGame();
+        gameId = DBTools.getLastGameId();
     }
     
     private void Reset(){
-        uuid = UUID.randomUUID();
-        stage = 0;
+        stage = GameStages.Stage.STARTING;
         this.bord = new Cards[5];
         this.deck = new Deck();
         for(int i=0; i<players.length; i++){
             this.players[i] = new Player();
         }
-        DBTools.setGame(uuid.toString());
+        DBTools.setGame();
+        gameId = DBTools.getLastGameId();
     }
     
-    public void PreFlop(){
-        stage = 1;
+    private void PreFlop(){
+        stage = GameStages.Stage.PREFLOP;
         for(int i = 0;  i < players.length; i++){
             Cards[] tmp = new Cards[2];
             tmp[0] = deck.IssueCard();
@@ -53,58 +55,87 @@ public class Table {
             players[i].setPocketCards(tmp);
             DBTools.setHand(tmp);
         }
-        DBTools.setGameStage(stage, uuid.toString());
+        DBTools.setGameStage(stage.getStage(), gameId);
+        int [][] handsCardsId = new int[players.length][];
+        for (int i = 0; i < handsCardsId.length; i++) {
+            handsCardsId[i] = players[i].getHandsCardsId();
+        }
+        Bridge.data.setHandCards(handsCardsId);
+        Bridge.data.setStage(stage);
+        Bridge.data.setFlag(true);
     }
-    private void Flop(){
-        stage = 2;
-        DBTools.setGameStage(stage, uuid.toString());
+    
+    private void Flop(){  
+        stage = GameStages.Stage.FLOP;
+        DBTools.setGameStage(stage.getStage(), gameId);
         for(int i=0; i<3; i++){
             bord[i] = deck.IssueCard();
-            DBTools.setDistribution(bord[i], uuid.toString(), stage);
+            DBTools.setDistribution(bord[i], gameId, stage.getStage());
         }
-        
+        int[] flopCards = new int[3];
+        for (int i = 0; i < 3; i++) {
+            flopCards[i] = bord[i].getId();
+        }
+        Bridge.data.setBoard(flopCards);
+        Bridge.data.setStage(stage);
+        Bridge.data.setFlag(true);
     }
     private void Turn(){
-        stage = 3;
-        DBTools.setGameStage(stage, uuid.toString());
+        stage = GameStages.Stage.TURN;
+        DBTools.setGameStage(stage.getStage(), gameId);
         bord[3] = deck.IssueCard();
-        DBTools.setDistribution(bord[3], uuid.toString(), stage);
+        int[] flopCards = new int[4];
+        for (int i = 0; i < 4; i++) {
+            flopCards[i] = bord[i].getId();
+        }
+        DBTools.setDistribution(bord[3], gameId, stage.getStage());
+        Bridge.data.setBoard(flopCards);
+        Bridge.data.setStage(stage);
+        Bridge.data.setFlag(true);
         
     }
     private void River(){
-        stage = 4;
-        DBTools.setGameStage(stage, uuid.toString());
+        stage = GameStages.Stage.RIVER;
+        DBTools.setGameStage(stage.getStage(), gameId);
         bord[4] = deck.IssueCard();
-        DBTools.setDistribution(bord[4], uuid.toString(), stage);
+        int[] flopCards = new int[5];
+        for (int i = 0; i < 5; i++) {
+            flopCards[i] = bord[i].getId();
+        }
+        DBTools.setDistribution(bord[4], gameId, stage.getStage());
+        Bridge.data.setBoard(flopCards);
+        Bridge.data.setStage(stage);
+        Bridge.data.setFlag(true);
        
     }
     
     private void Showdown() {
-        stage = 5;
+        stage = GameStages.Stage.SHOWDOWN;
+        Bridge.data.setStage(stage);
     }
     
     public void nextStage(){
         switch(stage){
-            case 0:{
+            case STARTING:{
                 PreFlop();
                 break;
             }
-            case 1:{
+            case PREFLOP:{
                 Flop();
                 break;
             }
-            case 2:{
+            case FLOP:{
                 Turn();
                 break;
             }
-            case 3:{
+            case TURN:{
                 River();
                 break;
             }
-            case 4:
+            case RIVER:
                 Showdown();
                 break;
-            case 5:{
+            case SHOWDOWN:{
                 Reset();
                 break;
             }
@@ -113,13 +144,13 @@ public class Table {
     
     public void getInfo(){
         System.out.println("Table : " + name);
-        System.out.println("Game stage : " + getStage());
-        if(stage > 0){
+        System.out.println("Game stage : " + stage.toString());
+        if(stage.getStage()>0){
             for (int i = 0; i < players.length; i++) {
                 System.out.println("Player " + (i + 1) + " hand cards: ");
                 Sequence.PrintCard(players[i].getFirstCard());
                 Sequence.PrintCard(players[i].getSecondCard());
-                
+
             }
             for (int i = 0; i < bord.length; i++) {
                 System.out.println("Bord card " + (i + 1));
@@ -133,54 +164,12 @@ public class Table {
         }
     }
     
-    private String getStage(){
-        switch(stage){
-            case 1:{
-                return "Preflop";
-            }
-            case 2:{
-                return "Flop";
-            }
-            case 3:{
-                return "Turn";
-            }
-            case 4:{
-                return "River";
-            }
-            case 5:{
-                return "Showdown";
-            }                
-        }
-        return "Start game";
-    }
-    
     public void CheckCombination(){
         for(int i = 0; i < players.length; i++){
-            if(Sequence.CheckSequence(players[i].getPocketCards(), bord)== 10){
-                System.out.println("Player "+i+" have one pair");
-            }
-            if(Sequence.CheckSequence(players[i].getPocketCards(), bord)== 11){
-                System.out.println("Player "+i+" have two pair");
-            }
-            if(Sequence.CheckSequence(players[i].getPocketCards(), bord)== 12){
-                System.out.println("Player "+i+" have set");
-            }
-            if(Sequence.CheckSequence(players[i].getPocketCards(), bord)== 13){
-                System.out.println("Player "+i+" have streight");
-            }
-            if(Sequence.CheckSequence(players[i].getPocketCards(), bord)== 14){
-                System.out.println("Player "+i+" have flush");
-            }
-            if(Sequence.CheckSequence(players[i].getPocketCards(), bord)== 15){
-                System.out.println("Player "+i+" have full house");
-            }
-            if(Sequence.CheckSequence(players[i].getPocketCards(), bord)== 16){
-                System.out.println("Player "+i+" have kare");
-            }
-            if(Sequence.CheckSequence(players[i].getPocketCards(), bord)== 17){
-                System.out.println("Player "+i+" have streight flush");
-            }
-        }
-        
-    }   
+            players[i].setCombinationPover(Sequence.CheckSequence(players[i].getPocketCards(), bord));
+        }  
+    }  
+    public GameStages.Stage getStage() {
+        return stage;
+    }
 }

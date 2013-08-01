@@ -4,6 +4,8 @@
  */
 package threads;
 
+import Enums.GameStages.Stage;
+
 /**
  *
  * @author Андрей
@@ -11,7 +13,12 @@ package threads;
 public class GameData {
     private int[][] handCards;
     private int[] board;
-    private int stage;
+    private Stage stage;
+    private boolean flag;
+
+    public GameData() {
+        this.stage = Stage.STARTING;
+    }
 
     public int[][] getHandCards() {
         return handCards;
@@ -29,12 +36,20 @@ public class GameData {
         this.board = board;
     }
 
-    public int getStage() {
+    public Stage getStage() {
         return stage;
     }
 
-    public void setStage(int stage) {
+    public void setStage(Stage stage) {
         this.stage = stage;
+    }
+
+    public synchronized boolean isFlag() {
+        return flag;
+    }
+
+    public synchronized void setFlag(boolean flag) {
+        this.flag = flag;
     }
     
 }

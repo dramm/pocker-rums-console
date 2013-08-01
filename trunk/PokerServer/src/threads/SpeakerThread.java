@@ -4,12 +4,11 @@
  */
 package threads;
 
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -18,7 +17,6 @@ import org.json.JSONObject;
  * @author Андрей
  */
 public class SpeakerThread extends Thread{
-    private Socket sc = null;
     private OutputStream output = null;
     
     /**
@@ -26,29 +24,48 @@ public class SpeakerThread extends Thread{
      */
     @Override
     public void run(){
-        try {
-            output = sc.getOutputStream();
-        } catch (IOException ex) {
-            Logger.getLogger(SpeakerThread.class.getName()).log(Level.SEVERE, null, ex);
-        }
         while (true) {
-            if(Bridge.data.getStage() == 1){
-                int [][] cards = Bridge.data.getHandCards();
-                JSONObject js = new JSONObject();
-                for (int i = 0; i < cards.length; i++) {
-                    JSONArray jsArr = new JSONArray();
-                    jsArr.put(cards[i][0]);
-                    jsArr.put(cards[i][1]);
-                    try {
-                        js.append("player"+i, jsArr);
-                    } catch (JSONException ex) {
-                        Logger.getLogger(SpeakerThread.class.getName()).log(Level.SEVERE, null, ex);
+            if(Bridge.data.isFlag()){
+                switch (Bridge.data.getStage()) {
+                    case PREFLOP:{
+                        try {
+                            int [][] cards = Bridge.data.getHandCards();
+                            JSONObject js = new JSONObject();
+                            for (int i = 0; i < cards.length; i++) {
+                                js.append("Player"+i, cards[i][0]);
+                                js.append("Player"+i, cards[i][1]);
+                            }
+                            js.put("Stage", Bridge.data.getStage().toString());
+                            output.write(Functions.intToByteArray(1500));
+                            output.write(Functions.intToByteArray(js.toString().length()));
+                            output.write(js.toString().getBytes());
+                            output.flush();
+                            Bridge.data.setFlag(false);
+                        } catch (IOException | JSONException ex) {
+                            Logger.getLogger(SpeakerThread.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        break;
+                    }
+                    default:{
+                        try{
+                            int[] cards = Bridge.data.getBoard();
+                            JSONObject js = new JSONObject();
+                            for (int i = 0; i < cards.length; i++) {
+                                js.append("Board", cards[i]);
+                            }
+                            js.put("Stage", Bridge.data.getStage().toString());                                                                  
+                            output.write(Functions.intToByteArray(1510));
+                            output.write(Functions.intToByteArray(js.toString().length()));
+                            output.write(js.toString().getBytes());
+                            output.flush();
+                            Bridge.data.setFlag(false);
+                        }catch(IOException | JSONException ex){
+                            Logger.getLogger(SpeakerThread.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        break;
                     }
                 }
-                writeCommand(1500);
-                writeJson(js.toString());
-                Bridge.data.setStage(-1);
-
+                    
             }
         }
     }
@@ -58,30 +75,6 @@ public class SpeakerThread extends Thread{
     }
 
     public void setOutput(OutputStream output) {
-        this.output = output;
-    }
-    private void writeCommand(int command){
-        try {
-            output.write(Functions.intToByteArray(command), 0, 4);
-        } catch (IOException ex) {
-            Logger.getLogger(SpeakerThread.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    private void writeJson(String json){
-        try {
-            writeCommand(json.length());
-            output.write(json.getBytes(), 0, json.getBytes().length);
-            output.flush();
-        } catch (IOException ex) {
-            Logger.getLogger(SpeakerThread.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    public Socket getSc() {
-        return sc;
-    }
-
-    public void setSc(Socket sc) {
-        this.sc = sc;
+        this.output = new BufferedOutputStream(output);
     }
 }

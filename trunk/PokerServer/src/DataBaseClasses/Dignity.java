@@ -10,18 +10,18 @@ package DataBaseClasses;
  */
 public class Dignity {
     private int id;
-    private int pover;
+    private int power;
     private String name;
     private String shortName;
     public Dignity(){
         this.id = 0;
-        this.pover = 0;
+        this.power = 0;
         this.name = "";
         this.shortName = "";
     }
     public Dignity(int id, int pover, String name, String shortName){
         this.id = id;
-        this.pover = pover;
+        this.power = pover;
         this.name = name;
         this.shortName = shortName;
     }
@@ -43,15 +43,15 @@ public class Dignity {
     /**
      * @return the pover
      */
-    public int getPover() {
-        return pover;
+    public int getPower() {
+        return power;
     }
 
     /**
      * @param pover the pover to set
      */
-    public void setPover(int pover) {
-        this.pover = pover;
+    public void setPower(int pover) {
+        this.power = pover;
     }
 
     /**

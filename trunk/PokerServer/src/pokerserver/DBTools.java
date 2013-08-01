@@ -15,6 +15,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 /**
  *
  * @author Андрей
@@ -123,15 +124,14 @@ public class DBTools {
             }
         }
     }
-    public static void setGame(String uuid){
+    public static void setGame(){
         Connection con = getConnection();
         java.util.Date dt = new java.util.Date();
         java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String currentTime = sdf.format(dt);
         try {
-            PreparedStatement ps = con.prepareStatement("insert into game_n(start_date, table_id) values(?, ?)");
+            PreparedStatement ps = con.prepareStatement("insert into game(start_date) values(?)");
             ps.setString(1, currentTime);
-            ps.setString(2, uuid);
             ps.execute();
         } catch (Exception e) {
             Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, e);
@@ -166,12 +166,12 @@ public class DBTools {
         return -1;
     }
     
-    public static void setGameStage(int stage, String uuid){
+    public static void setGameStage(int stage, int gameId){
         Connection con = getConnection();
         try {
             PreparedStatement ps = con.prepareStatement("insert into game_stage(stage_id, game_id) values(?,?)");
             ps.setInt(1, stage);
-            ps.setInt(2, getGameId(uuid));
+            ps.setInt(2, gameId);
             ps.execute();
         } catch (Exception e) {
             Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, e);
@@ -184,12 +184,11 @@ public class DBTools {
         }
     }
     
-    public static int getGameStageId(String uuid, int stage){
+    public static int getGameStageId(int gameId, int stage){
         Connection con = getConnection();
         try {
-            PreparedStatement ps = con.prepareStatement("SELECT st.id FROM game_stage as st, game_n as ga "
-                    + "where ga.id = st.game_id and (st.game_id = ? and st.stage_id = ?)");
-            ps.setInt(1, getGameId(uuid));
+            PreparedStatement ps = con.prepareStatement("SELECT id from game_stage where game_id = ? and stage_id = ?");
+            ps.setInt(1, gameId);
             ps.setInt(2, stage);
             ResultSet res = ps.executeQuery();
             while(res.next()){
@@ -207,12 +206,12 @@ public class DBTools {
         return -1;
     }
     
-    public static void setDistribution(Cards card, String uuid, int stage){
+    public static void setDistribution(Cards card, int gameId, int stage){
         Connection con = getConnection();
         try {
             PreparedStatement ps = con.prepareStatement("insert into distribution(card_id, game_stage_id) values(?, ?)");
             ps.setInt(1, card.getId());
-            ps.setInt(2, getGameStageId(uuid, stage));
+            ps.setInt(2, getGameStageId(gameId, stage));
             ps.execute();
         } catch (Exception e) {
             Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, e);
@@ -223,6 +222,25 @@ public class DBTools {
                 Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+    }
+    public static int getLastGameId(){
+        Connection con = getConnection();
+        try{
+            PreparedStatement ps = con.prepareStatement("select max(id) as val from game");
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                return rs.getInt("val");
+            }
+        }catch (Exception e) {
+            Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, e);   
+        }finally{
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return -1;
     }
     /*public static void generateDeck(){
         try{

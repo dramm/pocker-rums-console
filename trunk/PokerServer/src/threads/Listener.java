@@ -24,10 +24,11 @@ public class Listener extends Thread{
     
     @Override
     public void run(){
-        SpeakerThread sp = new SpeakerThread();
-        sp.setSc(clientSocket);
-        sp.start();
+        
         try {
+            SpeakerThread sp = new SpeakerThread();
+            sp.setOutput(clientSocket.getOutputStream());
+            
             input = new BufferedInputStream(clientSocket.getInputStream());
             int flag = 1;
             while (flag > 0) {
@@ -39,6 +40,7 @@ public class Listener extends Thread{
                         System.out.println("Starting game");
                         if(!game.isRun()){
                             game.start();
+                            sp.start();
                         }
                         break;
                     }
@@ -53,14 +55,10 @@ public class Listener extends Thread{
                         
                 }
             }
+            clientSocket.close();
         } catch (IOException ex) {
             Logger.getLogger(Listener.class.getName()).log(Level.SEVERE, null, ex);
-        }finally{
-            try {
-                clientSocket.close();
-            } catch (IOException ex) {
-                Logger.getLogger(Listener.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            System.out.println("3");
         }
     }
 
