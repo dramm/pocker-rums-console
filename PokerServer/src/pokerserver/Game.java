@@ -4,6 +4,7 @@
  */
 package pokerserver;
 
+import Enums.GameStages.Stage;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,9 +28,13 @@ public class Game extends Thread{
                     mainTables[i].nextStage();
                     mainTables[i].getInfo();
                 }
-                for (int i = 15; i > 0; i--) {
-                    Thread.sleep(1000);
-                    System.out.println("Next stage after "+ i + " seconds...");
+                if(mainTables[0].getStage() == Stage.PREFLOP ||
+                        mainTables[0].getStage() == Stage.FLOP ||
+                        mainTables[0].getStage() == Stage.TURN){
+                    for (int i = 5; i > 0; i--) {
+                        Thread.sleep(1000);
+                        System.out.println("Next stage after "+ i + " seconds...");
+                    }
                 }
             } catch (InterruptedException ex) {
                 Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
