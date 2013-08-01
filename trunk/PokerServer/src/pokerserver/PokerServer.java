@@ -4,6 +4,10 @@
  */
 package pokerserver;
 
+import java.io.IOException;
+import java.net.ServerSocket;
+import threads.Listener;
+
 
 /**
  *
@@ -14,10 +18,15 @@ public class PokerServer {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
-        // TODO code application logic here
-        //comment
-        Game g = new Game();
-        g.gameStart();      
+    static private ServerSocket sc = null;
+    public static void main(String[] args) throws IOException, InterruptedException {
+        
+        sc = new ServerSocket(7777);
+        while (true) {
+            Listener l = new Listener();
+            l.setClientSocket(sc.accept());
+            l.start();
+            l.join();
+        }
     }
 }
