@@ -4,6 +4,7 @@
  */
 package pokerserver;
 
+import Enums.Xor;
 import java.io.IOException;
 import java.net.ServerSocket;
 import threads.Listener;
