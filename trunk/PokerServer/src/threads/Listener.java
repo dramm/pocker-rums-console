@@ -44,15 +44,13 @@ public class Listener extends Thread{
                         }
                         break;
                     }
-                        default:{
-                            System.out.println("Default");
-                            sp.stop();
-                            game.setRun(false);
-                            input.close();
-                            clientSocket.close();
-                            
-                        }
-                        
+                    default:{
+                        System.out.println("Default");
+                        sp.stop();
+                        game.setRun(false);
+                        input.close();
+                        clientSocket.close();     
+                    }        
                 }
             }
             clientSocket.close();
