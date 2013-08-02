@@ -4,6 +4,7 @@
  */
 package threads;
 
+import Enums.Xor;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -38,7 +39,7 @@ public class SpeakerThread extends Thread{
                             js.put("Stage", Bridge.data.getStage().toString());
                             output.write(Functions.intToByteArray(1500));
                             output.write(Functions.intToByteArray(js.toString().length()));
-                            output.write(js.toString().getBytes());
+                            output.write(Xor.encode(js.toString().getBytes()));
                             output.flush();
                             Bridge.data.setFlag(false);
                         } catch (IOException | JSONException ex) {
@@ -56,7 +57,7 @@ public class SpeakerThread extends Thread{
                             js.put("Stage", Bridge.data.getStage().toString());                                                                  
                             output.write(Functions.intToByteArray(1510));
                             output.write(Functions.intToByteArray(js.toString().length()));
-                            output.write(js.toString().getBytes());
+                            output.write(Xor.encode(js.toString().getBytes()));
                             output.flush();
                             Bridge.data.setFlag(false);
                         }catch(IOException | JSONException ex){
