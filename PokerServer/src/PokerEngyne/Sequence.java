@@ -81,10 +81,10 @@ public class Sequence {
         }
         return false;
     }
-    private static boolean isTwoPair(Cards[] allCard){
+    public static boolean isTwoPair(Cards[] allCard){
         for(int i = 0; i < allCard.length - 1; i++ ){
            if(allCard[i].getDignitysId() == allCard[i+1].getDignitysId()){
-                for(int j = i+1; j < allCard.length - 1; j++){
+                for(int j = i+2; j < allCard.length - 1; j++){
                     if(allCard[j].getDignitysId() == allCard[j+1].getDignitysId()){
                         return true; 
                     }
@@ -93,7 +93,7 @@ public class Sequence {
         }
         return false;
     }
-    private static boolean isSet(Cards[] allCard){
+    public static boolean isSet(Cards[] allCard){
         for(int i = 0; i < allCard.length - 2; i++){
             if(allCard[i].getDignitysId() == allCard[i+1].getDignitysId() && 
                    allCard[i].getDignitysId() == allCard[i+2].getDignitysId() ){
@@ -102,7 +102,7 @@ public class Sequence {
         }
         return false;
     }
-    private static boolean isStraight(Cards[] allCard){
+    public static boolean isStraight(Cards[] allCard){
         int count = 0;
         for(int i = 0; i < allCard.length - 1; i++){
             if((allCard[i].getDignitysId() - allCard[i+1].getDignitysId()) == -1){
@@ -116,7 +116,7 @@ public class Sequence {
         }
         return false;
     }                                             
-    private static boolean isFlush(Cards[] allCard){
+    public static boolean isFlush(Cards[] allCard){
         for(int i = 1; i <= 4; i++){
             ArrayList<Cards> tmp = new ArrayList<>();
             for(int j = 0; j < allCard.length; j++){
@@ -130,7 +130,7 @@ public class Sequence {
         }
         return false;
     }
-    private static boolean isFullHouse(Cards[] allCard){
+    public static boolean isFullHouse(Cards[] allCard){
         int id = 0;
         for(int i = 0; i < allCard.length - 1; i++){
             if(allCard[i].getDignitysId() == allCard[i+1].getDignitysId()){
@@ -147,7 +147,7 @@ public class Sequence {
         }
         return false;
     }
-    private static boolean isQuards(Cards[] allCard){
+    public static boolean isQuards(Cards[] allCard){
         int count = 0;
         for(int i = 0; i < allCard.length - 1; i++){
             if(allCard[i].getDignitysId() == allCard[i+1].getDignitysId()){
@@ -162,7 +162,7 @@ public class Sequence {
         }
         return false;
     }
-    private static boolean isStraightFlush(Cards[] allCard){
+    public static boolean isStraightFlush(Cards[] allCard){
         for(int i = 1; i <= 4; i++){
             ArrayList<Cards> tmp = new ArrayList<>();
             for(int j = 0; j < allCard.length; j++){
@@ -179,7 +179,7 @@ public class Sequence {
         
         return false;
     }
-    private static boolean isRoyalFlush(Cards[] allCard){
+    public static boolean isRoyalFlush(Cards[] allCard){
         
         return false;
     }

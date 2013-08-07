@@ -107,6 +107,30 @@ public class DBTools {
         //log.info("return null");
         return null;
     }
+    
+    public static Cards getCards(int id){
+        Connection conn = getConnection();
+        try{
+            PreparedStatement ps = conn.prepareStatement("select * from cards where id = ?");
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()){
+                return new Cards(rs.getInt("id"), rs.getInt("suits_id"), rs.getInt("dignitys_id"));
+            }
+        }catch(SQLException e){
+            log.log(Level.INFO, "SQL {0}", e.getMessage());
+        }
+        finally{
+            try {
+                conn.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        //log.info("return null");
+        return null;
+    }
+    
     public static void setHand( Cards[] cards){
         Connection con = getConnection();
         try{
