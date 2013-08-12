@@ -5,7 +5,7 @@
 package pokerserver;
 
 import DataBaseClasses.Cards;
-import Enums.GameStages;
+import Enums.GameStages.Stage;
 import PokerEngyne.Sequence;
 import threads.Bridge;
 
@@ -19,7 +19,7 @@ public class Table {
     private Player[] players;
     private Cards[] bord;
     //private int stage;
-    private GameStages.Stage stage = GameStages.Stage.STARTING;
+    private Stage stage = Stage.STARTING;
     private int gameId;
     
     
@@ -35,8 +35,8 @@ public class Table {
         gameId = DBTools.getLastGameId();
     }
     
-    private void Reset(){
-        stage = GameStages.Stage.STARTING;
+    private void Starting(){
+        stage = Stage.STARTING;
         this.bord = new Cards[5];
         this.deck = new Deck();
         for(int i=0; i<players.length; i++){
@@ -47,7 +47,7 @@ public class Table {
     }
     
     private void PreFlop(){
-        stage = GameStages.Stage.PREFLOP;
+        stage = Stage.PREFLOP;
         for(int i = 0;  i < players.length; i++){
             Cards[] tmp = new Cards[2];
             tmp[0] = deck.IssueCard();
@@ -66,7 +66,7 @@ public class Table {
     }
     
     private void Flop(){  
-        stage = GameStages.Stage.FLOP;
+        stage = Stage.FLOP;
         DBTools.setGameStage(stage.getStage(), gameId);
         for(int i=0; i<3; i++){
             bord[i] = deck.IssueCard();
@@ -81,7 +81,7 @@ public class Table {
         Bridge.data.setFlag(true);
     }
     private void Turn(){
-        stage = GameStages.Stage.TURN;
+        stage = Stage.TURN;
         DBTools.setGameStage(stage.getStage(), gameId);
         bord[3] = deck.IssueCard();
         int[] flopCards = new int[4];
@@ -95,7 +95,7 @@ public class Table {
         
     }
     private void River(){
-        stage = GameStages.Stage.RIVER;
+        stage = Stage.RIVER;
         DBTools.setGameStage(stage.getStage(), gameId);
         bord[4] = deck.IssueCard();
         int[] flopCards = new int[5];
@@ -110,7 +110,7 @@ public class Table {
     }
     
     private void Showdown() {
-        stage = GameStages.Stage.SHOWDOWN;
+        stage = Stage.SHOWDOWN;
         Bridge.data.setStage(stage);
     }
     
@@ -136,7 +136,7 @@ public class Table {
                 Showdown();
                 break;
             case SHOWDOWN:{
-                Reset();
+                Starting();
                 break;
             }
         }
@@ -169,7 +169,7 @@ public class Table {
             players[i].setCombinationPover(Sequence.CheckSequence(players[i].getPocketCards(), bord));
         }  
     }  
-    public GameStages.Stage getStage() {
+    public Stage getStage() {
         return stage;
     }
 }
