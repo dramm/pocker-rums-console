@@ -62,6 +62,7 @@ public class Table {
         }
         Bridge.data.setHandCards(handsCardsId);
         Bridge.data.setStage(stage);
+        Bridge.data.setTableName(name);
         Bridge.data.setFlag(true);
     }
     
@@ -78,6 +79,7 @@ public class Table {
         }
         Bridge.data.setBoard(flopCards);
         Bridge.data.setStage(stage);
+        Bridge.data.setTableName(name);
         Bridge.data.setFlag(true);
     }
     private void Turn(){
@@ -91,6 +93,7 @@ public class Table {
         DBTools.setDistribution(bord[3], gameId, stage.getStage());
         Bridge.data.setBoard(flopCards);
         Bridge.data.setStage(stage);
+        Bridge.data.setTableName(name);
         Bridge.data.setFlag(true);
         
     }
@@ -105,6 +108,7 @@ public class Table {
         DBTools.setDistribution(bord[4], gameId, stage.getStage());
         Bridge.data.setBoard(flopCards);
         Bridge.data.setStage(stage);
+        Bridge.data.setTableName(name);
         Bridge.data.setFlag(true);
        
     }
@@ -112,6 +116,8 @@ public class Table {
     private void Showdown() {
         stage = Stage.SHOWDOWN;
         Bridge.data.setStage(stage);
+        Bridge.data.setTableName(name);
+        Bridge.data.setFlag(true);
     }
     
     public void nextStage(){

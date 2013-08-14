@@ -9,6 +9,7 @@ import DataBaseClasses.Dignity;
 import DataBaseClasses.Suits;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import pokerserver.DBTools;
 
 /**
@@ -31,41 +32,36 @@ public class Sequence {
         int result = -1;
         
         if(isStraightFlush(allCard)){
-            result = 17;
-            return result;
+            
         }
         
         if(isQuards(allCard)){
-            result = 16;
-            return result;
+            
         }
         
         if(isFullHouse(allCard)){
-            result = 15;
-            return result;
+            
         }
         
         if(isFlush(allCard)){
-            result = 14;
-            return result;
+            
         }
         
         if(isStraight(allCard)){
-            result = 13;
-            return result;
+            
         }
         
         if(isSet(allCard)){
-            result = 12;
-            return result;
+            
         }
         if(isTwoPair(allCard)){
-            result = 11;
-            return result;
+            
         }
         if(isOnePair(allCard)){
-            result = 10;
-            return result;
+            
+        }
+        if(isHighCard(allCard)){
+            
         }
         
         return result;
@@ -103,16 +99,21 @@ public class Sequence {
         return false;
     }
     public static boolean isStraight(Cards[] allCard){
-        int count = 0;
-        for(int i = 0; i < allCard.length - 1; i++){
-            if((allCard[i].getDignitysId() - allCard[i+1].getDignitysId()) == -1){
-                count++;
-                continue;
+        Cards[] clearCards = removeDuplicates(allCard);
+        int stCount = 0;
+        if(clearCards.length >= 5){
+            for (int i = 0; i < clearCards.length - 1; i++) {
+                if((clearCards[i+1].getDignitysId() - clearCards[i].getDignitysId()) == 1){
+                    stCount++;
+                    if(stCount >= 4 || (clearCards[0].getDignitysId() == 2 && 
+                            clearCards[clearCards.length - 1].getDignitysId() == 14 && stCount == 3)){
+                        return true;
+                    }
+                    continue;
+                }
+                stCount = 0;
             }
-            count = 0;
-        }
-        if(count >= 4){
-            return true;
+            
         }
         return false;
     }                                             
@@ -201,5 +202,14 @@ public class Sequence {
             out += "(♥)";
         }
         System.out.println(out);
+    }
+    private static Cards[] removeDuplicates(Cards [] allCards){
+        ArrayList<Cards> cards = new ArrayList<>(Arrays.asList(allCards));
+        for (int i = 0; i < cards.size() - 1; i++) {
+            if(cards.get(i).getDignitysId() == cards.get(i+1).getDignitysId()){
+                cards.remove(i+1);
+            }
+        }
+        return cards.toArray(new Cards[0]);
     }
 }

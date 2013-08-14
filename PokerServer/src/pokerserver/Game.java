@@ -16,9 +16,9 @@ public class Game extends Thread{
     private boolean  run;
     Table[] mainTables = new Table[3];
     public Game(){
-        mainTables[0] = new Table(4, "First table");
-        mainTables[1] = new Table(6, "Second table");
-        mainTables[2] = new Table(9, "Third table");
+        mainTables[0] = new Table(4, "First");
+        mainTables[1] = new Table(6, "Second");
+        mainTables[2] = new Table(8, "Third");
         run = false;
     }
     public void gameStart(){
