@@ -37,6 +37,7 @@ public class SpeakerThread extends Thread{
                                 js.append("Player"+i, cards[i][1]);
                             }
                             js.put("Stage", Bridge.data.getStage().toString());
+                            js.put("Table", Bridge.data.getTableName());
                             output.write(Functions.intToByteArray(1500));
                             output.write(Functions.intToByteArray(js.toString().length()));
                             output.write(Xor.encode(js.toString().getBytes()));
@@ -54,7 +55,8 @@ public class SpeakerThread extends Thread{
                             for (int i = 0; i < cards.length; i++) {
                                 js.append("Board", cards[i]);
                             }
-                            js.put("Stage", Bridge.data.getStage().toString());                                                                  
+                            js.put("Stage", Bridge.data.getStage().toString()); 
+                            js.put("Table", Bridge.data.getTableName());
                             output.write(Functions.intToByteArray(1510));
                             output.write(Functions.intToByteArray(js.toString().length()));
                             output.write(Xor.encode(js.toString().getBytes()));
