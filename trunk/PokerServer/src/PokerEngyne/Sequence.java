@@ -9,7 +9,6 @@ import DataBaseClasses.Dignity;
 import DataBaseClasses.Suits;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import pokerserver.DBTools;
 
 /**
@@ -106,7 +105,9 @@ public class Sequence {
                 if((clearCards[i+1].getDignitysId() - clearCards[i].getDignitysId()) == 1){
                     stCount++;
                     if(stCount >= 4 || (clearCards[0].getDignitysId() == 2 && 
-                            clearCards[clearCards.length - 1].getDignitysId() == 14 && stCount == 3)){
+                            clearCards[clearCards.length - 1].getDignitysId() == 14 && 
+                            stCount == 3 && 
+                            clearCards[0].getSuitsId() == clearCards[clearCards.length - 1].getSuitsId())){
                         return true;
                     }
                     continue;
