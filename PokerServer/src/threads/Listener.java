@@ -45,17 +45,11 @@ public class Listener extends Thread{
                         break;
                     }
                     case 1010:{
+                        System.out.println("GoNext");
                         if(!Bridge.data.isGoNext()){
                             Bridge.data.setGoNext(true);
                         }
                     }
-                    /*default:{
-                        System.out.println("Default");
-                        sp.stop();
-                        game.setRun(false);
-                        input.close();
-                        clientSocket.close();     
-                    }   */     
                 }
             }
             clientSocket.close();
