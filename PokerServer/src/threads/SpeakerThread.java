@@ -4,6 +4,7 @@
  */
 package threads;
 
+import static Enums.GameStages.Stage.SHOWDOWN;
 import Enums.Xor;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -21,6 +22,7 @@ public class SpeakerThread extends Thread{
     private OutputStream output = null;
     
     /**
+     * 
      *
      */
     @Override
@@ -44,6 +46,38 @@ public class SpeakerThread extends Thread{
                             output.flush();
                             Bridge.data.setFlag(false);
                         } catch (IOException | JSONException ex) {
+                            Logger.getLogger(SpeakerThread.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        break;
+                    }
+                    case SHOWDOWN:{
+                        try{
+                            JSONObject js = new JSONObject();
+                            js.put("Stage", Bridge.data.getStage().toString()); 
+                            js.put("Table", Bridge.data.getTableName());
+                            js.put("Winner", "Player 1");
+                            js.put("Combination", "FlushRoyal");
+                            output.write(Functions.intToByteArray(1510));
+                            output.write(Functions.intToByteArray(js.toString().length()));
+                            output.write(Xor.encode(js.toString().getBytes()));
+                            output.flush();
+                            Bridge.data.setFlag(false);
+                        }catch(IOException | JSONException ex){
+                            Logger.getLogger(SpeakerThread.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        break;
+                    }
+                        case STARTING:{
+                        try{
+                            JSONObject js = new JSONObject();
+                            js.put("Stage", Bridge.data.getStage().toString()); 
+                            js.put("Round", "1");
+                            output.write(Functions.intToByteArray(1510));
+                            output.write(Functions.intToByteArray(js.toString().length()));
+                            output.write(Xor.encode(js.toString().getBytes()));
+                            output.flush();
+                            Bridge.data.setFlag(false);
+                        }catch(IOException | JSONException ex){
                             Logger.getLogger(SpeakerThread.class.getName()).log(Level.SEVERE, null, ex);
                         }
                         break;

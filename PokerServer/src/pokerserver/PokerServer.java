@@ -25,14 +25,17 @@ public class PokerServer {
     static private ServerSocket sc = null;
     public static void main(String[] args) throws IOException, InterruptedException {
         
-       /* sc = new ServerSocket(7777);
+        sc = new ServerSocket(7777);
+        System.out.println("Server start");
         while (true) {
             Listener l = new Listener();
+            System.out.println("Wait connectig client");
             l.setClientSocket(sc.accept());
+            System.out.println("Client connected");
             l.start();
             l.join();
-        }*/
-        Cards[] cards = new Cards[7];
+        }
+        /*Cards[] cards = new Cards[7];
         cards[0] = DBTools.getCards(1);
         cards[5] = DBTools.getCards(11);
         cards[1] = DBTools.getCards(25);
@@ -44,6 +47,6 @@ public class PokerServer {
         Arrays.sort(cards);
         if(Sequence.isStraight(cards)){
             System.out.println("TRUE");
-        }
+        }*/
     }
 }
