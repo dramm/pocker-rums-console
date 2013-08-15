@@ -4,9 +4,6 @@
  */
 package pokerserver;
 
-import Enums.GameStages.Stage;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import threads.Bridge;
 
 /**
@@ -27,7 +24,7 @@ public class Game extends Thread{
             if(Bridge.data.isGoNext()){
                 for (int i = 0; i < mainTables.length; i++) {
                     mainTables[i].nextStage();
-                    mainTables[i].getInfo();
+                   // mainTables[i].getInfo();
                 }
                 Bridge.data.setGoNext(false);
             }
