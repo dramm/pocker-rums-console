@@ -33,6 +33,19 @@ public class Player {
         this.pocketCards = pocketCards;
     }
     
+    public void setPocketCards(Cards first, Cards second) {
+        this.pocketCards[0] = first;
+        this.pocketCards[1] = second;
+    }
+    
+    public int getFirstPocketCardId(){
+        return pocketCards[0].getId();
+    }
+    
+    public int getSecondPocketCardId(){
+        return pocketCards[1].getId();
+    }
+    
     public Cards getFirstCard(){
         return pocketCards[0];
     }

@@ -14,7 +14,6 @@ import java.util.logging.Logger;
  * @author Андрей
  */
 public class Deck {
-    private static Logger log = Logger.getLogger(Deck.class.getName());
     private ArrayList<Cards> cardsArray;//основная колода
     public Deck(){
         cardsArray = new ArrayList<>(DBTools.getCards());

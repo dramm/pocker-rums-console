@@ -18,7 +18,6 @@ public class Table {
     private Deck deck;
     private Player[] players;
     private Cards[] bord;
-    //private int stage;
     private Stage stage;
     private int gameId;
     
