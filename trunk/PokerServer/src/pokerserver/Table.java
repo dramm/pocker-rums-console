@@ -19,11 +19,12 @@ public class Table {
     private Player[] players;
     private Cards[] bord;
     //private int stage;
-    private Stage stage = Stage.STARTING;
+    private Stage stage;
     private int gameId;
     
     
     public Table(int players, String tableName){
+        stage = Stage.STARTING;
         name = tableName;
         this.players = new Player[players];
         this.bord = new Cards[5];
@@ -33,6 +34,9 @@ public class Table {
         }
         DBTools.setGame();
         gameId = DBTools.getLastGameId();
+        Bridge.data.setStage(stage);
+        Bridge.data.setTableName(name);
+        Bridge.data.setFlag(true);
     }
     
     private void Starting(){
@@ -44,6 +48,9 @@ public class Table {
         }
         DBTools.setGame();
         gameId = DBTools.getLastGameId();
+        Bridge.data.setStage(stage);
+        Bridge.data.setTableName(name);
+        Bridge.data.setFlag(true);
     }
     
     private void PreFlop(){

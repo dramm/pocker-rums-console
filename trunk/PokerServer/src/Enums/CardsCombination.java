@@ -10,5 +10,5 @@ package Enums;
  */
 public class CardsCombination {
     public enum Combinations{ ROYALFLUSH, STRAIGHTFLUSH, FOUROFAKIND, FULLHOUSE,
-                                FLUSH, STARAIGHT, THREEOFAKIND, TWOPAIRS, PAIR, hIGHCARD}
+                                FLUSH, STARAIGHT, THREEOFAKIND, TWOPAIRS, PAIR, NIGHCARD}
 }

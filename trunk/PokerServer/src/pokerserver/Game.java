@@ -7,6 +7,7 @@ package pokerserver;
 import Enums.GameStages.Stage;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import threads.Bridge;
 
 /**
  *
@@ -23,23 +24,13 @@ public class Game extends Thread{
     }
     public void gameStart(){
         while(run){
-            try {
+            if(Bridge.data.isGoNext()){
                 for (int i = 0; i < mainTables.length; i++) {
                     mainTables[i].nextStage();
                     mainTables[i].getInfo();
                 }
-                if(mainTables[0].getStage() == Stage.PREFLOP ||
-                        mainTables[0].getStage() == Stage.FLOP ||
-                        mainTables[0].getStage() == Stage.TURN){
-                    for (int i = 5; i > 0; i--) {
-                        Thread.sleep(1000);
-                        System.out.println("Next stage after "+ i + " seconds...");
-                    }
-                }
-            } catch (InterruptedException ex) {
-                Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+                Bridge.data.setGoNext(false);
             }
-   
         }
     }
     @Override

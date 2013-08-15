@@ -15,6 +15,7 @@ public class GameData {
     private int[] board;
     private Stage stage;
     private boolean flag;
+    private boolean goNext;
     private String tableName;
 
     public GameData() {
@@ -59,6 +60,14 @@ public class GameData {
 
     public void setTableName(String tableName) {
         this.tableName = tableName;
+    }
+
+    public synchronized boolean isGoNext() {
+        return goNext;
+    }
+
+    public synchronized void setGoNext(boolean goNext) {
+        this.goNext = goNext;
     }
     
 }
