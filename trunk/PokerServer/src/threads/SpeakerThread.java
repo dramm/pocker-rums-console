@@ -32,6 +32,7 @@ public class SpeakerThread extends Thread{
                 switch (Bridge.data.getStage()) {
                     case PREFLOP:{
                         try {
+                            System.out.println("PREFLOP");
                             int [][] cards = Bridge.data.getHandCards();
                             JSONObject js = new JSONObject();
                             for (int i = 0; i < cards.length; i++) {
@@ -44,14 +45,18 @@ public class SpeakerThread extends Thread{
                             output.write(Functions.intToByteArray(js.toString().length()));
                             output.write(Xor.encode(js.toString().getBytes()));
                             output.flush();
+                            System.out.println(js.toString());
                             Bridge.data.setFlag(false);
                         } catch (IOException | JSONException ex) {
                             Logger.getLogger(SpeakerThread.class.getName()).log(Level.SEVERE, null, ex);
+                            System.out.println("Preflop");
+                            Bridge.data.setFlag(false);
                         }
                         break;
                     }
                     case SHOWDOWN:{
                         try{
+                            System.out.println("SHOWDOWN");
                             JSONObject js = new JSONObject();
                             js.put("Stage", Bridge.data.getStage().toString()); 
                             js.put("Table", Bridge.data.getTableName());
@@ -61,29 +66,36 @@ public class SpeakerThread extends Thread{
                             output.write(Functions.intToByteArray(js.toString().length()));
                             output.write(Xor.encode(js.toString().getBytes()));
                             output.flush();
+                            System.out.println(js.toString());
                             Bridge.data.setFlag(false);
                         }catch(IOException | JSONException ex){
                             Logger.getLogger(SpeakerThread.class.getName()).log(Level.SEVERE, null, ex);
+                            Bridge.data.setFlag(false);
+
                         }
                         break;
                     }
-                        case STARTING:{
+                    case STARTING:{
                         try{
+                            System.out.println("STARTING");
                             JSONObject js = new JSONObject();
                             js.put("Stage", Bridge.data.getStage().toString()); 
                             js.put("Round", "1");
-                            output.write(Functions.intToByteArray(1510));
+                            output.write(Functions.intToByteArray(1520));
                             output.write(Functions.intToByteArray(js.toString().length()));
                             output.write(Xor.encode(js.toString().getBytes()));
                             output.flush();
+                            System.out.println(js.toString());
                             Bridge.data.setFlag(false);
                         }catch(IOException | JSONException ex){
                             Logger.getLogger(SpeakerThread.class.getName()).log(Level.SEVERE, null, ex);
+                            Bridge.data.setFlag(false);
                         }
                         break;
                     }
                     default:{
                         try{
+                            System.out.println("DEFOLT");
                             int[] cards = Bridge.data.getBoard();
                             JSONObject js = new JSONObject();
                             for (int i = 0; i < cards.length; i++) {
@@ -95,9 +107,11 @@ public class SpeakerThread extends Thread{
                             output.write(Functions.intToByteArray(js.toString().length()));
                             output.write(Xor.encode(js.toString().getBytes()));
                             output.flush();
+                            System.out.println(js.toString());
                             Bridge.data.setFlag(false);
                         }catch(IOException | JSONException ex){
                             Logger.getLogger(SpeakerThread.class.getName()).log(Level.SEVERE, null, ex);
+                            System.out.println("Defolt");
                         }
                         break;
                     }
