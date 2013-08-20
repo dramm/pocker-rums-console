@@ -7,6 +7,7 @@ package PokerEngyne;
 import DataBaseClasses.Cards;
 import DataBaseClasses.Dignity;
 import DataBaseClasses.Suits;
+import Enums.CardsCombination.Combinations;
 import java.util.ArrayList;
 import java.util.Arrays;
 import pokerserver.DBTools;
@@ -31,36 +32,38 @@ public class Sequence {
         int result = -1;
         
         if(isStraightFlush(allCard)){
-            
+            return Combinations.STRAIGHTFLUSH.getPover();
         }
         
         if(isQuards(allCard)){
-            
+            return Combinations.FOUROFAKIND.getPover();
         }
         
         if(isFullHouse(allCard)){
-            
+            return Combinations.FULLHOUSE.getPover();
         }
         
         if(isFlush(allCard)){
-            
+            return Combinations.FLUSH.getPover();
         }
         
         if(isStraight(allCard)){
-            
+            return Combinations.STARAIGHT.getPover();
         }
         
         if(isSet(allCard)){
-            
+            return Combinations.THREEOFAKIND.getPover();
         }
         if(isTwoPair(allCard)){
-            
+            return Combinations.TWOPAIRS.getPover();
         }
+        
         if(isOnePair(allCard)){
-            
+            return Combinations.PAIR.getPover();
         }
+        
         if(isHighCard(allCard)){
-            
+            return Combinations.NIGHCARD.getPover();
         }
         
         return result;

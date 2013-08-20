@@ -46,11 +46,11 @@ public class GameData {
         this.stage = stage;
     }
 
-    public synchronized boolean isFlag() {
+    public boolean isFlag() {
         return flag;
     }
 
-    public synchronized void setFlag(boolean flag) {
+    public void setFlag(boolean flag) {
         this.flag = flag;
     }
 
@@ -62,11 +62,11 @@ public class GameData {
         this.tableName = tableName;
     }
 
-    public synchronized boolean isGoNext() {
+    public boolean isGoNext() {
         return goNext;
     }
 
-    public synchronized void setGoNext(boolean goNext) {
+    public void setGoNext(boolean goNext) {
         this.goNext = goNext;
     }
     
