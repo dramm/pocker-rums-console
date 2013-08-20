@@ -14,6 +14,6 @@ public class Xor {
         for (int i = 0; i < message.length; i++) {
             result[i] = (byte)(message[i] ^ XorKey.key[i % XorKey.key.length]);
         }
-        return message;
+        return result;
     }
 }

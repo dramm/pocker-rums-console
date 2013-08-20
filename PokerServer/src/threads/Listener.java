@@ -10,7 +10,7 @@ import java.io.InputStream;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import pokerserver.Game;
+import pokerserver.Game_new;
 
 /**
  *
@@ -19,16 +19,19 @@ import pokerserver.Game;
 public class Listener extends Thread{
     private Socket clientSocket = null;
     private InputStream input = null;
-    private Game game = new Game();
+    private Game_new game;
+
+    public Listener() {
+        this.game = new Game_new();
+    }
     
     
     @Override
     public void run(){
-        
+        SpeakerThread sp = new SpeakerThread();
         try {
-            SpeakerThread sp = new SpeakerThread();
+            Thread th = new Thread(game);
             sp.setOutput(clientSocket.getOutputStream());
-            
             input = new BufferedInputStream(clientSocket.getInputStream());
             int flag = 1;
             while (flag > 0) {
@@ -39,23 +42,26 @@ public class Listener extends Thread{
                     case 1000:{
                         System.out.println("Starting game");
                         if(!game.isRun()){
-                            game.start();
+                            th.start();
                             sp.start();
                         }
                         break;
                     }
                     case 1010:{
-                        System.out.println("GoNext");
-                        if(!Bridge.data.isGoNext()){
-                            Bridge.data.setGoNext(true);
+                        if(!Bridge.newData.isGoNext()){
+                            Bridge.newData.setGoNext(true);
                         }
+                        break;
                     }
                 }
             }
             clientSocket.close();
         } catch (IOException ex) {
             Logger.getLogger(Listener.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("3");
+        }finally{
+                game.setRun(false);
+                sp.setFlag(false);
+               
         }
     }
 

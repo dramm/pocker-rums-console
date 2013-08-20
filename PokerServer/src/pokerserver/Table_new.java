@@ -5,6 +5,7 @@
 package pokerserver;
 
 import DataBaseClasses.Cards;
+import PokerEngyne.Sequence;
 
 
 /**
@@ -50,6 +51,9 @@ public class Table_new {
         getBord()[4] = deck.IssueCard();
     }
     public void showdownStage(){
+        for (int i = 0; i < players.length; i++) {
+            players[i].setCombinationPover(Sequence.CheckSequence(players[i].getPocketCards(), bord));
+        }
     }
 
     public Player[] getPlayers() {

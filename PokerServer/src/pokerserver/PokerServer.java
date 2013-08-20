@@ -4,12 +4,8 @@
  */
 package pokerserver;
 
-import DataBaseClasses.Cards;
-import PokerEngyne.Sequence;
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.util.ArrayList;
-import java.util.Arrays;
 import threads.Listener;
  
 
@@ -34,6 +30,7 @@ public class PokerServer {
             System.out.println("Client connected");
             l.start();
             l.join();
+            Thread.sleep(10);
         }
         /*Cards[] cards = new Cards[7];
         cards[0] = DBTools.getCards(1);

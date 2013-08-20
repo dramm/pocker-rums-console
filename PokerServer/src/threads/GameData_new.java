@@ -21,23 +21,24 @@ public class GameData_new {
         return flag;
     }
 
-    public synchronized void setFlag(boolean flag) {
+    public void setFlag(boolean flag) {
         this.flag = flag;
     }
 
-    public synchronized boolean isGoNext() {
+    public synchronized boolean isGoNext(){
         return goNext;
     }
 
-    public synchronized void setGoNext(boolean goNext) {
+    public void setGoNext(boolean goNext) {
         this.goNext = goNext;
     }
 
-    public synchronized Stage getGameStage() {
+    public  Stage getGameStage() {
         return gameStage;
     }
 
-    public synchronized void setGameStage(Stage gameStage) {
+    public  void setGameStage(Stage gameStage) {
         this.gameStage = gameStage;
     }
+
 }

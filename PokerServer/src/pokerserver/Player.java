@@ -13,15 +13,16 @@ import DataBaseClasses.Cards;
 public class Player {
     private Cards[] pocketCards;
     private int combinationPover;
+    private double factor;
     private Cards kicker;
     public Player(){
         pocketCards = new Cards[2];
-        combinationPover = 0;
+        combinationPover = -1;
         kicker = new Cards();
     }
     public Player(Cards[] pocketCards){
         this.pocketCards = pocketCards;
-        combinationPover = 0;
+        combinationPover = -1;
         kicker = new Cards();
     }
 
@@ -74,6 +75,14 @@ public class Player {
         result[0] = getFirstCard().getId();
         result[1] = getSecondCard().getId();
         return result;
+    }
+
+    public double getFactor() {
+        return factor;
+    }
+
+    public void setFactor(double factor) {
+        this.factor = factor;
     }
     
 }
