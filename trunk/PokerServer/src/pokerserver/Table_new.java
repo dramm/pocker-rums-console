@@ -17,6 +17,7 @@ public class Table_new {
     private Player[] players;
     private Cards[] bord;
     private int playersCount;
+    private Player winner;
     public Table_new(int playerCount){
         this.playersCount = playerCount;
         deck = new Deck();
@@ -36,24 +37,34 @@ public class Table_new {
     }
     public void preflopStage(){
         for (int i = 0; i < getPlayers().length; i++) {
-            getPlayers()[i].setPocketCards(deck.IssueCard(), deck.IssueCard());
+            getPlayers()[i].setPocketCards(getDeck().IssueCard(), getDeck().IssueCard());
         }
     }
     public void flopStage(){
         for (int i = 0; i < 3; i++) {
-            getBord()[i] = deck.IssueCard();
+            bord[i] = getDeck().IssueCard();
         }
     }
     public void turnStage(){
-        getBord()[3] = deck.IssueCard();
+        bord[3] = getDeck().IssueCard();
     }
     public void riverStage(){
-        getBord()[4] = deck.IssueCard();
+        bord[4] = getDeck().IssueCard();
     }
     public void showdownStage(){
         for (int i = 0; i < players.length; i++) {
             players[i].setCombinationPover(Sequence.CheckSequence(players[i].getPocketCards(), bord));
         }
+        winner = Sequence.getWinner(players);
+    }
+    
+    public void generateGame(){
+        startingStage();
+        preflopStage();
+        flopStage();
+        turnStage();
+        riverStage();
+        showdownStage();
     }
 
     public Player[] getPlayers() {
@@ -62,5 +73,13 @@ public class Table_new {
 
     public Cards[] getBord() {
         return bord;
+    }
+
+    public Deck getDeck() {
+        return deck;
+    }
+
+    public Player getWinner() {
+        return winner;
     }
 }

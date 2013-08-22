@@ -11,6 +11,7 @@ import Enums.CardsCombination.Combinations;
 import java.util.ArrayList;
 import java.util.Arrays;
 import pokerserver.DBTools;
+import pokerserver.Player;
 
 /**
  *
@@ -69,7 +70,7 @@ public class Sequence {
         return result;
     } 
     private static boolean isHighCard(Cards[] allCard){
-        return false;
+        return true;
     }
     private static boolean isOnePair(Cards[] allCard){
         for(int i=0; i < allCard.length - 1; i++){
@@ -215,5 +216,14 @@ public class Sequence {
             }
         }
         return cards.toArray(new Cards[0]);
+    }
+    public static Player getWinner(Player[] players){
+        Player winner = players[0];
+        for (int i = 1; i < players.length; i++) {
+            if(players[i].getCombinationPover() > winner.getCombinationPover()){
+                winner = players[i];
+            }
+        }
+        return winner;
     }
 }
