@@ -13,8 +13,8 @@ import DataBaseClasses.Cards;
 public class Player {
     private Cards[] pocketCards;
     private int combinationPover;
-    private double factor;
     private Cards kicker;
+    private int winnCount;
     public Player(){
         pocketCards = new Cards[2];
         combinationPover = -1;
@@ -77,12 +77,11 @@ public class Player {
         return result;
     }
 
-    public double getFactor() {
-        return factor;
+    public int getWinnCount() {
+        return winnCount;
     }
 
-    public void setFactor(double factor) {
-        this.factor = factor;
+    public void setWinnCount(int winnCount) {
+        this.winnCount = winnCount;
     }
-    
 }

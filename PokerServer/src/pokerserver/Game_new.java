@@ -6,6 +6,10 @@ package pokerserver;
 import Enums.GameStages.Stage;
 import static Enums.GameStages.Stage.PREFLOP;
 import static Enums.GameStages.Stage.STARTING;
+import PokerEngyne.MonteCarlo;
+import PokerEngyne.Sequence;
+import com.sun.org.apache.bcel.internal.generic.FLOAD;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.JSONException;
@@ -21,6 +25,7 @@ public class Game_new implements Runnable{
     private Table_new[] tables;
     private Stage gameStage;
     private int gameId;
+    private Random rnd = new Random();
     public Game_new(){
         gameStage = STARTING;
         tables = new Table_new[3];
@@ -55,7 +60,7 @@ public class Game_new implements Runnable{
                 DBTools.setGame();
                 gameId = DBTools.getLastGameId();
                 for (int i = 0; i < tables.length; i++) {
-                    tables[i].startingStage();
+                    tables[i].generateGame();
                 }
                 Bridge.newData.js = generateStartingPackege();
                 debug();
@@ -65,9 +70,6 @@ public class Game_new implements Runnable{
                 break;
             }
             case PREFLOP:{
-                for (int i = 0; i < tables.length; i++) {
-                    tables[i].preflopStage();
-                }
                 Bridge.newData.js = generatePreflopPackege();
                 debug();
                 Bridge.newData.setGameStage(gameStage);
@@ -76,9 +78,6 @@ public class Game_new implements Runnable{
                 break;
             }
             case FLOP:{
-                for (int i = 0; i < tables.length; i++) {
-                    tables[i].flopStage();
-                }
                 Bridge.newData.js = generateBoardPackege();
                 debug();
                 Bridge.newData.setGameStage(gameStage);
@@ -87,9 +86,6 @@ public class Game_new implements Runnable{
                 break;
             }
             case TURN:{
-                for (int i = 0; i < tables.length; i++) {
-                    tables[i].turnStage();
-                }
                 Bridge.newData.js = generateBoardPackege();
                 debug();
                 Bridge.newData.setGameStage(gameStage);
@@ -98,9 +94,6 @@ public class Game_new implements Runnable{
                 break;
             }
             case RIVER:{
-                for (int i = 0; i < tables.length; i++) {
-                    tables[i].riverStage();
-                }
                 Bridge.newData.js = generateBoardPackege();
                 debug();
                 Bridge.newData.setGameStage(gameStage);
@@ -109,9 +102,6 @@ public class Game_new implements Runnable{
                 break;
             }
             case SHOWDOWN:{
-                for (int i = 0; i < tables.length; i++) {
-                    tables[i].showdownStage();
-                }
                 gameStage = Stage.STARTING;
                 break;
             }
@@ -135,11 +125,12 @@ public class Game_new implements Runnable{
     private JSONObject generatePreflopPackege() throws JSONException{
         JSONObject js = new JSONObject();
         for (int i = 0; i < tables.length; i++) {
+            float[] factor = MonteCarlo.getFactor(tables[i].getPlayers(), tables[i].getDeck());
             JSONObject player = new JSONObject();
             for (int j = 0; j < tables[i].getPlayers().length; j++) {
                 player.append("Player"+j, tables[i].getPlayers()[j].getFirstPocketCardId());
                 player.append("Player"+j, tables[i].getPlayers()[j].getSecondPocketCardId());
-                player.append("Player"+j, new JSONObject().put("Factor", tables[i].getPlayers()[j].getFactor()));
+                player.append("Player"+j, new JSONObject().put("Factor", String.format("%.2f",factor[j])));
             }
             js.put("Table"+i, player);
         }
@@ -149,6 +140,7 @@ public class Game_new implements Runnable{
     private JSONObject generateBoardPackege() throws JSONException{
         JSONObject js = new JSONObject();
         for (int i = 0; i < tables.length; i++) {
+            float[] factorFl = MonteCarlo.getFactor(tables[i].getPlayers(), tables[i].getDeck(), tables[i].getBord(), gameStage);
             JSONObject bord = new JSONObject();
             JSONObject factor = new JSONObject();
             switch (gameStage) {
@@ -172,7 +164,11 @@ public class Game_new implements Runnable{
                 }
             }
             for (int j = 0; j < tables[i].getPlayers().length; j++) {
-                factor.put("Player"+j, new JSONObject().put("Factor", tables[i].getPlayers()[j].getFactor()));
+                if(gameStage == Stage.FLOP || gameStage == Stage.TURN){
+                    factor.put("Player"+j, new JSONObject().put("Factor", String.format("%.2f",factorFl[j])));
+                }else{
+                    factor.put("Player"+j, new JSONObject().put("Factor", "N/A"));
+                }
             }
             js.append("Table"+i, bord);
             js.append("Table"+i, factor);

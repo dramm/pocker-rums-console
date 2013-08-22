@@ -7,7 +7,6 @@ package pokerserver;
 import DataBaseClasses.Cards;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.logging.Logger;
 
 /**
  *
@@ -19,6 +18,9 @@ public class Deck {
         cardsArray = new ArrayList<>(DBTools.getCards());
         //cardsArray = DBTools.getCards();
         Collections.shuffle(cardsArray);      
+    }
+    public Deck(Deck newDeck){
+        cardsArray = new ArrayList<>(newDeck.getCardsArray());
     }
     public Deck(ArrayList<Cards> CardsArray){
         cardsArray = CardsArray;
@@ -34,5 +36,8 @@ public class Deck {
 
     public void setCardsArray(ArrayList<Cards> cardsArray) {
         this.cardsArray = cardsArray;
+    }
+    public void shuffleDeck(){
+        Collections.shuffle(cardsArray);
     }
 }
