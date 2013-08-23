@@ -4,8 +4,11 @@
  */
 package pokerserver;
 
+import DataBaseClasses.Cards;
+import PokerEngyne.Sequence;
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.util.Arrays;
 import threads.Listener;
  
 
@@ -33,17 +36,14 @@ public class PokerServer {
             Thread.sleep(10);
         }
         /*Cards[] cards = new Cards[7];
-        cards[0] = DBTools.getCards(1);
-        cards[5] = DBTools.getCards(11);
-        cards[1] = DBTools.getCards(25);
-        cards[2] = DBTools.getCards(29);
-        cards[3] = DBTools.getCards(33);
-        cards[4] = DBTools.getCards(37);
-        
-        cards[6] = DBTools.getCards(51);
+        cards[0] = DBTools.getCards(48);
+        cards[5] = DBTools.getCards(44);
+        cards[1] = DBTools.getCards(40);
+        cards[2] = DBTools.getCards(36);
+        cards[3] = DBTools.getCards(52);
+        cards[4] = DBTools.getCards(5);
+        cards[6] = DBTools.getCards(5);
         Arrays.sort(cards);
-        if(Sequence.isStraight(cards)){
-            System.out.println("TRUE");
-        }*/
+        System.out.println(Sequence.isRoyalFlush(cards));*/
     }
 }

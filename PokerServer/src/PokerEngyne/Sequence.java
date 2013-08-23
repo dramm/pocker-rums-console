@@ -7,7 +7,6 @@ package PokerEngyne;
 import DataBaseClasses.Cards;
 import DataBaseClasses.Dignity;
 import DataBaseClasses.Suits;
-import Enums.CardsCombination.Combinations;
 import java.util.ArrayList;
 import java.util.Arrays;
 import pokerserver.DBTools;
@@ -30,78 +29,76 @@ public class Sequence {
             System.arraycopy(board, 0, allCard, pocketCard.length, board.length);
         }
         Arrays.sort(allCard);
-        int result = -1;
-        
-        if(isStraightFlush(allCard)){
-            return Combinations.STRAIGHTFLUSH.getPover();
+        if(isRoyalFlush(allCard) != -1){
+            return 126;
         }
-        
-        if(isQuards(allCard)){
-            return Combinations.FOUROFAKIND.getPover();
+        int result = isStraightFlush(allCard);
+        if(result != -1){
+            return 112 + result;
         }
-        
-        if(isFullHouse(allCard)){
-            return Combinations.FULLHOUSE.getPover();
+        result = isQuads(allCard);
+        if (result != -1) {
+            return 98 + result;
         }
-        
-        if(isFlush(allCard)){
-            return Combinations.FLUSH.getPover();
+        result = isFullHouse(allCard);
+        if (result != -1) {
+            return 84 + result;
         }
-        
-        if(isStraight(allCard)){
-            return Combinations.STARAIGHT.getPover();
+        result = isFlush(allCard);
+        if (result != -1) {
+            return 70 + result;
         }
-        
-        if(isSet(allCard)){
-            return Combinations.THREEOFAKIND.getPover();
+        result = isStraight(allCard);
+        if (result != -1) {
+            return 56 + result;
         }
-        if(isTwoPair(allCard)){
-            return Combinations.TWOPAIRS.getPover();
+        result = isSet(allCard);
+        if (result != -1) {
+            return 42 + result;
         }
-        
-        if(isOnePair(allCard)){
-            return Combinations.PAIR.getPover();
+        result = isTwoPair(allCard);
+        if (result != -1) {
+            return 28 + result;
         }
-        
-        if(isHighCard(allCard)){
-            return Combinations.NIGHCARD.getPover();
+        result = isOnePair(allCard);
+        if (result != -1) {
+            return 14 + result;
         }
-        
-        return result;
+        return isHighCard(allCard);
     } 
-    private static boolean isHighCard(Cards[] allCard){
-        return true;
+    private static int isHighCard(Cards[] allCard){
+        return allCard[allCard.length-1].getDignitysId();
     }
-    private static boolean isOnePair(Cards[] allCard){
+    public static int isOnePair(Cards[] allCard){
         for(int i=0; i < allCard.length - 1; i++){
             if(allCard[i].getDignitysId() == allCard[i+1].getDignitysId()){
-                return true; 
+                return allCard[i].getDignitysId(); 
             }
         }
-        return false;
+        return -1;
     }
-    public static boolean isTwoPair(Cards[] allCard){
+    public static int isTwoPair(Cards[] allCard){
         for(int i = 0; i < allCard.length - 1; i++ ){
            if(allCard[i].getDignitysId() == allCard[i+1].getDignitysId()){
                 for(int j = i+2; j < allCard.length - 1; j++){
                     if(allCard[j].getDignitysId() == allCard[j+1].getDignitysId()){
-                        return true; 
+                        return allCard[j].getDignitysId(); 
                     }
                 }
             } 
         }
-        return false;
+        return -1;
     }
-    public static boolean isSet(Cards[] allCard){
+    public static int isSet(Cards[] allCard){
         for(int i = 0; i < allCard.length - 2; i++){
             if(allCard[i].getDignitysId() == allCard[i+1].getDignitysId() && 
                    allCard[i].getDignitysId() == allCard[i+2].getDignitysId() ){
-                return true; 
+                return allCard[i].getDignitysId(); 
             }
         }
-        return false;
+        return -1;
     }
-    public static boolean isStraight(Cards[] allCard){
+    public static int isStraight(Cards[] allCard){
         Cards[] clearCards = removeDuplicates(allCard);
         int stCount = 0;
         if(clearCards.length >= 5){
@@ -112,7 +109,7 @@ public class Sequence {
                             clearCards[clearCards.length - 1].getDignitysId() == 14 && 
                             stCount == 3 && 
                             clearCards[0].getSuitsId() == clearCards[clearCards.length - 1].getSuitsId())){
-                        return true;
+                        return clearCards[i+1].getDignitysId();
                     }
                     continue;
                 }
@@ -120,9 +117,9 @@ public class Sequence {
             }
             
         }
-        return false;
+        return -1;
     }                                             
-    public static boolean isFlush(Cards[] allCard){
+    public static int isFlush(Cards[] allCard){
         for(int i = 1; i <= 4; i++){
             ArrayList<Cards> tmp = new ArrayList<>();
             for(int j = 0; j < allCard.length; j++){
@@ -131,44 +128,41 @@ public class Sequence {
                 }
             }
             if(tmp.size() >= 5){
-                return true;
+                return tmp.get(tmp.size()-1).getDignitysId();
             }
         }
-        return false;
+        return -1;
     }
-    public static boolean isFullHouse(Cards[] allCard){
-        int id = 0;
-        for(int i = 0; i < allCard.length - 1; i++){
-            if(allCard[i].getDignitysId() == allCard[i+1].getDignitysId()){
-                id = allCard[i+1].getDignitysId();
-            }
-        }
-        for(int i = 0; i < allCard.length - 2; i++){
-            if(allCard[i].getDignitysId() == allCard[i+1].getDignitysId() && 
-                   allCard[i].getDignitysId() == allCard[i+2].getDignitysId() ){
-                if(allCard[i+2].getDignitysId() != id){
-                    return true;
+    public static int isFullHouse(Cards[] allCard){
+        for (int i = 0; i < allCard.length-2; i++) {
+            if(allCard[i].getDignitysId() == allCard[i+1].getDignitysId() &&
+                    allCard[i].getDignitysId() == allCard[i+2].getDignitysId()){
+                for (int j = 0; j < allCard.length-1; j++) {
+                    if(allCard[j].getDignitysId() == allCard[j+1].getDignitysId() &&
+                            allCard[i].getDignitysId() != allCard[j].getDignitysId()){
+                        return allCard[i].getDignitysId();
+                    }
                 }
             }
         }
-        return false;
+        return -1;
     }
-    public static boolean isQuards(Cards[] allCard){
+    public static int isQuads(Cards[] allCard){
         int count = 0;
         for(int i = 0; i < allCard.length - 1; i++){
             if(allCard[i].getDignitysId() == allCard[i+1].getDignitysId()){
                 count++;
+                if(count == 3){
+                    return allCard[i].getDignitysId();
+
+                }
                 continue;
             }
             count = 0;
         }
-        if(count == 3){
-            return true;
-            
-        }
-        return false;
+        return -1;
     }
-    public static boolean isStraightFlush(Cards[] allCard){
+    public static int isStraightFlush(Cards[] allCard){
         for(int i = 1; i <= 4; i++){
             ArrayList<Cards> tmp = new ArrayList<>();
             for(int j = 0; j < allCard.length; j++){
@@ -177,17 +171,21 @@ public class Sequence {
                 }
             }
             if(tmp.size() >= 5){
-                if(isStraight(tmp.toArray(new Cards [0]))){
-                    return true;
+                if(isStraight(tmp.toArray(new Cards [0])) != -1){
+                    return tmp.get(tmp.size()-1).getDignitysId();
                 }
             }
         }
         
-        return false;
+        return -1;
     }
-    public static boolean isRoyalFlush(Cards[] allCard){
-        
-        return false;
+    public static int isRoyalFlush(Cards[] allCard){
+        for (int i = 1; i <= 4; i++) {
+            if(isFlush(allCard) == 14 && isStraight(allCard) == 14){
+                return 14;
+            }
+        }
+        return -1;
     }
     
     public static void PrintCard(Cards card){
