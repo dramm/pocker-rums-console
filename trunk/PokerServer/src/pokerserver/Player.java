@@ -14,7 +14,9 @@ public class Player {
     private Cards[] pocketCards;
     private int combinationPover;
     private Cards kicker;
-    private int winnCount;
+    public int wins;
+    public int loses;
+    public int tie;
     public Player(){
         pocketCards = new Cards[2];
         combinationPover = -1;
@@ -75,13 +77,5 @@ public class Player {
         result[0] = getFirstCard().getId();
         result[1] = getSecondCard().getId();
         return result;
-    }
-
-    public int getWinnCount() {
-        return winnCount;
-    }
-
-    public void setWinnCount(int winnCount) {
-        this.winnCount = winnCount;
     }
 }

@@ -15,35 +15,22 @@ import pokerserver.Player;
  */
 public class MonteCarlo {
     private static int iteration = 10000;
-    public static float[] getFactor(Player[] players, Deck deck){
-        float[] result = new float[players.length];
-        int[] winnerCount = new int[players.length];
-        for (int i = 0; i < winnerCount.length; i++) {
-            winnerCount[i] = 0;
-            result[i] = 0;
-        }
+    public static Counters getFactor(Player[] players, Deck deck){
+        Counters counter = new Counters(players);
         for (int i = 0; i < iteration; i++) {
+            Player[] tmpPlayers = players;
             Deck tmp = new Deck(deck);
-            tmp.shuffleDeck();
+            tmp.shuffleDeck(); 
             Cards[] board = new Cards[5];
             for (int j = 0; j < board.length; j++){
                 board[j] = tmp.IssueCard();
             }
             for (int j = 0; j < players.length; j++) {
-                players[j].setCombinationPover(Sequence.CheckSequence(players[j].getPocketCards(), board));
-            }
-            Player winner = Sequence.getWinner(players);
-            for (int j = 0; j < players.length; j++) {
-                if(players[j] == winner){
-                    winnerCount[j]++;
-                }
+                tmpPlayers[j].setCombinationPover(Sequence.CheckSequence(tmpPlayers[j].getPocketCards(), board));
             }
         }
-        for (int i = 0; i < result.length; i++) {
-            result[i] = 1f/((float)(winnerCount[i]+1)/iteration);
-            //result[i] = ((float)(winnerCount[i]+1)/iteration)*100;
-        }
-        return result;
+        return counter;
+        
     }
     public static float[] getFactor(Player[] players, Deck deck, Cards[] board, Stage stage){
         int cardInBoard = 0;
@@ -86,6 +73,9 @@ public class MonteCarlo {
         }
         for (int i = 0; i < result.length; i++) {
             result[i] = 1f/(((float)winnerCount[i]+1)/iteration);
+            if(result[i]>50){
+                result[i] = 50;
+            }
         }
         return result;
     }

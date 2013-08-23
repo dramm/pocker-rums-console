@@ -55,6 +55,11 @@ public class SpeakerThread extends Thread{
                             Bridge.newData.setFlag(false);
                             break;
                         }
+                        case SHOWDOWN:{
+                            writeStream(1550);
+                            Bridge.newData.setFlag(false);
+                            break;
+                        }
                     }
 
                 }
