@@ -17,7 +17,6 @@ public class Table_new {
     private Player[] players;
     private Cards[] bord;
     private int playersCount;
-    private Player winner;
     public Table_new(int playerCount){
         this.playersCount = playerCount;
         deck = new Deck();
@@ -55,7 +54,6 @@ public class Table_new {
         for (int i = 0; i < players.length; i++) {
             players[i].setCombinationPover(Sequence.CheckSequence(players[i].getPocketCards(), bord));
         }
-        winner = Sequence.getWinner(players);
     }
     
     public void generateGame(){
@@ -77,9 +75,5 @@ public class Table_new {
 
     public Deck getDeck() {
         return deck;
-    }
-
-    public Player getWinner() {
-        return winner;
     }
 }
