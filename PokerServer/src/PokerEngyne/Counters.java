@@ -14,6 +14,7 @@ public class Counters {
     private int[] wins;
     private int[] loses;
     private int[] tie;
+    public int iteration;
     public Counters(Player[] players){
         int size = players.length;
         wins = new int[size];

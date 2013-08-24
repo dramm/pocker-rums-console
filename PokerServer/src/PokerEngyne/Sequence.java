@@ -215,13 +215,19 @@ public class Sequence {
         }
         return cards.toArray(new Cards[0]);
     }
-    public static Player getWinner(Player[] players){
+    public static Player[] getWinner(Player[] players){
+        ArrayList<Player> winners = new ArrayList<>();
         Player winner = players[0];
         for (int i = 1; i < players.length; i++) {
-            if(players[i].getCombinationPover() > winner.getCombinationPover()){
+            if(players[i].getCombinationPover() >= winner.getCombinationPover()){
                 winner = players[i];
             }
         }
-        return winner;
+        for (int i = 0; i < players.length; i++) {
+            if(players[i].getCombinationPover() == winner.getCombinationPover()){
+                winners.add(players[i]);
+            }
+        }
+        return winners.toArray(new Player[0]);
     }
 }

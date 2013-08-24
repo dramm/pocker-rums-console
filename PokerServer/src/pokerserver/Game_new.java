@@ -8,8 +8,6 @@ import static Enums.GameStages.Stage.PREFLOP;
 import static Enums.GameStages.Stage.STARTING;
 import PokerEngyne.Counters;
 import PokerEngyne.MonteCarlo;
-import PokerEngyne.Sequence;
-import com.sun.org.apache.bcel.internal.generic.FLOAD;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -129,9 +127,15 @@ public class Game_new implements Runnable{
             Counters factor = MonteCarlo.getFactor(tables[i].getPlayers(), tables[i].getDeck());
             JSONObject player = new JSONObject();
             for (int j = 0; j < tables[i].getPlayers().length; j++) {
+                float winRate = (float)factor.getWins()[j] / factor.iteration;
+                float winFactor = 1 / winRate;
+                int indicator = (int)(((float)factor.getTie()[j] / factor.iteration) * 100);
+                JSONObject factors = new JSONObject();
                 player.append("Player"+j, tables[i].getPlayers()[j].getFirstPocketCardId());
                 player.append("Player"+j, tables[i].getPlayers()[j].getSecondPocketCardId());
-                //player.append("Player"+j, new JSONObject().put("Factor", String.format("%.2f",factor[j])));
+                factors.put("Factor", String.format("%.2f", winFactor));
+                factors.put("Indicator", indicator);
+                player.append("Player"+j, factors);
             }
             js.put("Table"+i, player);
         }
@@ -141,9 +145,9 @@ public class Game_new implements Runnable{
     private JSONObject generateBoardPackege() throws JSONException{
         JSONObject js = new JSONObject();
         for (int i = 0; i < tables.length; i++) {
-            float[] factorFl = MonteCarlo.getFactor(tables[i].getPlayers(), tables[i].getDeck(), tables[i].getBord(), gameStage);
+            Counters counters = MonteCarlo.getFactor(tables[i].getPlayers(), tables[i].getDeck(), tables[i].getBord());
             JSONObject bord = new JSONObject();
-            JSONObject factor = new JSONObject();
+            JSONObject player = new JSONObject();
             switch (gameStage) {
                 case FLOP:{
                     for (int j = 0; j < 3; j++) {
@@ -165,15 +169,16 @@ public class Game_new implements Runnable{
                 }
             }
             for (int j = 0; j < tables[i].getPlayers().length; j++) {
-                if(gameStage == Stage.FLOP || gameStage == Stage.TURN){
-                    factor.put("Player"+j, new JSONObject().put("Factor", String.format("%.2f",factorFl[j])));
-                }else{
-                    //factor.put("Player"+j, new JSONObject().put("Factor", "N/A"));
-                    factor.put("Player"+j, new JSONObject().put("Factor", String.format("%.2f",factorFl[j])));
-                }
+                float winRate = (float)counters.getWins()[j] / counters.iteration;
+                float winFactor = 1 / winRate;
+                int indicator = (int)(((float)counters.getTie()[j] / counters.iteration) * 100);
+                JSONObject factor = new JSONObject();
+                factor.put("Factor", String.format("%.2f", winFactor));
+                factor.put("Indicator", indicator);
+                player.put("Player"+j, factor);
             }
             js.append("Table"+i, bord);
-            js.append("Table"+i, factor);
+            js.append("Table"+i, player);
         }
         js.put("Stage", gameStage.toString());
         return js;
