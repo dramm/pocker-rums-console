@@ -5,6 +5,7 @@
 package pokerserver;
 
 import DataBaseClasses.Cards;
+import PokerEngyne.WinnerData;
 
 /**
  *
@@ -12,19 +13,19 @@ import DataBaseClasses.Cards;
  */
 public class Player {
     private Cards[] pocketCards;
-    private int combinationPover;
+    private WinnerData combinationPover;
     private Cards kicker;
     public int wins;
     public int loses;
     public int tie;
     public Player(){
         pocketCards = new Cards[2];
-        combinationPover = -1;
+        combinationPover = null;
         kicker = new Cards();
     }
     public Player(Cards[] pocketCards){
         this.pocketCards = pocketCards;
-        combinationPover = -1;
+        combinationPover = null;
         kicker = new Cards();
     }
 
@@ -56,11 +57,11 @@ public class Player {
         return pocketCards[1];
     }
 
-    public int getCombinationPover() {
+    public WinnerData getCombinationPover() {
         return combinationPover;
     }
 
-    public void setCombinationPover(int combinationPover) {
+    public void setCombinationPover(WinnerData combinationPover) {
         this.combinationPover = combinationPover;
     }
 

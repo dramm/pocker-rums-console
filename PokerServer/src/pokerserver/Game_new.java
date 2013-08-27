@@ -8,6 +8,7 @@ import static Enums.GameStages.Stage.PREFLOP;
 import static Enums.GameStages.Stage.STARTING;
 import PokerEngyne.Counters;
 import PokerEngyne.MonteCarlo;
+import PokerEngyne.Sequence;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -101,6 +102,10 @@ public class Game_new implements Runnable{
                 break;
             }
             case SHOWDOWN:{
+                Bridge.newData.js = generateShowDownPakege();
+                debug();
+                Bridge.newData.setGameStage(gameStage);
+                Bridge.newData.setFlag(true);
                 gameStage = Stage.STARTING;
                 break;
             }
@@ -127,9 +132,9 @@ public class Game_new implements Runnable{
             Counters factor = MonteCarlo.getFactor(tables[i].getPlayers(), tables[i].getDeck());
             JSONObject player = new JSONObject();
             for (int j = 0; j < tables[i].getPlayers().length; j++) {
-                float winRate = (float)factor.getWins()[j] / factor.iteration;
+                float winRate = (float)(factor.getWins()[j] + 1) / factor.iteration;
                 float winFactor = 1 / winRate;
-                int indicator = (int)(((float)factor.getTie()[j] / factor.iteration) * 100);
+                int indicator = (int)(((float)(factor.getTie()[j] + 1) / factor.iteration) * 100);
                 JSONObject factors = new JSONObject();
                 player.append("Player"+j, tables[i].getPlayers()[j].getFirstPocketCardId());
                 player.append("Player"+j, tables[i].getPlayers()[j].getSecondPocketCardId());
@@ -169,9 +174,9 @@ public class Game_new implements Runnable{
                 }
             }
             for (int j = 0; j < tables[i].getPlayers().length; j++) {
-                float winRate = (float)counters.getWins()[j] / counters.iteration;
+                float winRate = (float)(counters.getWins()[j] + 1) / counters.iteration;
                 float winFactor = 1 / winRate;
-                int indicator = (int)(((float)counters.getTie()[j] / counters.iteration) * 100);
+                int indicator = (int)(((float)(counters.getTie()[j] +1) / counters.iteration) * 100);
                 JSONObject factor = new JSONObject();
                 factor.put("Factor", String.format("%.2f", winFactor));
                 factor.put("Indicator", indicator);
@@ -183,6 +188,23 @@ public class Game_new implements Runnable{
         js.put("Stage", gameStage.toString());
         return js;
     }
+    
+    private JSONObject generateShowDownPakege() throws JSONException{
+        JSONObject pack = new JSONObject();
+        for (int i = 0; i < tables.length; i++) {
+            JSONObject jsCardId = new JSONObject();
+            Player[] winners = Sequence.getWinner(tables[i].getPlayers());
+            for (int j = 0; j < winners.length; j++) {
+                int[] cardsId = winners[j].getCombinationPover().winnCardsId;
+                for (int k = 0; k < cardsId.length ; k++) {
+                    jsCardId.append("Combination"+j, cardsId[k]);
+                }
+            }
+            pack.put("Table"+i, jsCardId);
+        }
+        return pack;
+    }
+    
     private void debug(){
         System.out.println(gameStage.toString());
         System.out.println(Bridge.newData.js.toString());
