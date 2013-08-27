@@ -7,8 +7,10 @@ package PokerEngyne;
 import DataBaseClasses.Cards;
 import DataBaseClasses.Dignity;
 import DataBaseClasses.Suits;
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import pokerserver.DBTools;
 import pokerserver.Player;
 
@@ -17,7 +19,7 @@ import pokerserver.Player;
  * @author Андрей
  */
 public class Sequence {
-    public static int CheckSequence(Cards[] pocketCard, Cards[] board){
+    public static WinnerData CheckSequence(Cards[] pocketCard, Cards[] board){
         Cards [] allCard;
         if((board == null) || (board.length == 0)){
             allCard = new Cards[pocketCard.length];
@@ -29,77 +31,110 @@ public class Sequence {
             System.arraycopy(board, 0, allCard, pocketCard.length, board.length);
         }
         Arrays.sort(allCard);
-        if(isRoyalFlush(allCard) != -1){
-            return 126;
+        if(isRoyalFlush(allCard) != null){
+            WinnerData data = isRoyalFlush(allCard);
+            data.combinationPower += 126;
+            return data;
         }
-        int result = isStraightFlush(allCard);
-        if(result != -1){
-            return 112 + result;
+        WinnerData result = isStraightFlush(allCard);
+        if(result != null){
+            result.combinationPower += 112;
+            return result;
         }
         result = isQuads(allCard);
-        if (result != -1) {
-            return 98 + result;
+        if (result != null) {
+            result.combinationPower += 98;
+            return result;
         }
         result = isFullHouse(allCard);
-        if (result != -1) {
-            return 84 + result;
+        if (result != null) {
+            result.combinationPower += 84;
+            return result;
         }
         result = isFlush(allCard);
-        if (result != -1) {
-            return 70 + result;
+        if (result != null) {
+            result.combinationPower += 70;
+            return result;
         }
         result = isStraight(allCard);
-        if (result != -1) {
-            return 56 + result;
+        if (result != null) {
+            result.combinationPower += 56;
+            return result;
         }
         result = isSet(allCard);
-        if (result != -1) {
-            return 42 + result;
+        if (result != null) {
+            result.combinationPower += 42;
+            return result;
         }
         result = isTwoPair(allCard);
-        if (result != -1) {
-            return 28 + result;
+        if (result != null) {
+            result.combinationPower += 28;
+            return result;
         }
         result = isOnePair(allCard);
-        if (result != -1) {
-            return 14 + result;
+        if (result != null) {
+            result.combinationPower += 14;
+            return result;
         }
         return isHighCard(allCard);
     } 
-    private static int isHighCard(Cards[] allCard){
-        return allCard[allCard.length-1].getDignitysId();
+    private static WinnerData isHighCard(Cards[] allCard){
+        WinnerData data = new WinnerData();
+        data.combinationPower = allCard[allCard.length-1].getDignitysId();
+        data.winnCardsId = new int[1];
+        data.winnCardsId[0] = allCard[allCard.length-1].getId();
+        return data;
     }
-    public static int isOnePair(Cards[] allCard){
+    public static WinnerData isOnePair(Cards[] allCard){
+        WinnerData data = new WinnerData();
         for(int i=0; i < allCard.length - 1; i++){
             if(allCard[i].getDignitysId() == allCard[i+1].getDignitysId()){
-                return allCard[i].getDignitysId(); 
+                data.combinationPower = allCard[i].getDignitysId();
+                data.winnCardsId = new int[2];
+                data.winnCardsId[0] = allCard[i].getId();
+                data.winnCardsId[1] = allCard[i+1].getId();
+                return data; 
             }
         }
-        return -1;
+        return null;
     }
-    public static int isTwoPair(Cards[] allCard){
+    public static WinnerData isTwoPair(Cards[] allCard){
+        WinnerData data = new WinnerData();
         for(int i = 0; i < allCard.length - 1; i++ ){
            if(allCard[i].getDignitysId() == allCard[i+1].getDignitysId()){
                 for(int j = i+2; j < allCard.length - 1; j++){
                     if(allCard[j].getDignitysId() == allCard[j+1].getDignitysId()){
-                        return allCard[j].getDignitysId(); 
+                        data.combinationPower = allCard[j].getDignitysId(); 
+                        data.winnCardsId = new int[4];
+                        data.winnCardsId[0] = allCard[i].getId();
+                        data.winnCardsId[1] = allCard[i+1].getId();
+                        data.winnCardsId[2] = allCard[j].getId();
+                        data.winnCardsId[3] = allCard[j+1].getId();
+                        return data;
                     }
                 }
             } 
         }
-        return -1;
+        return null;
     }
-    public static int isSet(Cards[] allCard){
+    public static WinnerData isSet(Cards[] allCard){
+        WinnerData data = new WinnerData();
         for(int i = 0; i < allCard.length - 2; i++){
             if(allCard[i].getDignitysId() == allCard[i+1].getDignitysId() && 
                    allCard[i].getDignitysId() == allCard[i+2].getDignitysId() ){
-                return allCard[i].getDignitysId(); 
+                data.combinationPower = allCard[i].getDignitysId();
+                data.winnCardsId = new int[3];
+                data.winnCardsId[0] = allCard[i].getId();
+                data.winnCardsId[1] = allCard[i+1].getId();
+                data.winnCardsId[2] = allCard[i+2].getId();
+                return data; 
             }
         }
-        return -1;
+        return null;
     }
-    public static int isStraight(Cards[] allCard){
+    public static WinnerData isStraight(Cards[] allCard){
         Cards[] clearCards = removeDuplicates(allCard);
+        WinnerData data = new WinnerData();
         int stCount = 0;
         if(clearCards.length >= 5){
             for (int i = 0; i < clearCards.length - 1; i++) {
@@ -109,7 +144,16 @@ public class Sequence {
                             clearCards[clearCards.length - 1].getDignitysId() == 14 && 
                             stCount == 3 && 
                             clearCards[0].getSuitsId() == clearCards[clearCards.length - 1].getSuitsId())){
-                        return clearCards[i+1].getDignitysId();
+                        ArrayList<Integer> id = new ArrayList<>();
+                        for (int j = i+1; j > (i - 3); j--) {
+                            id.add(clearCards[j].getId());
+                        }
+                        data.combinationPower = clearCards[i+1].getDignitysId();
+                        data.winnCardsId = new int[id.size()];
+                        for (int j = 0; j < id.size(); j++) {
+                            data.winnCardsId[j] = id.get(j).intValue();
+                        }
+                        return data;
                     }
                     continue;
                 }
@@ -117,9 +161,10 @@ public class Sequence {
             }
             
         }
-        return -1;
+        return null;
     }                                             
-    public static int isFlush(Cards[] allCard){
+    public static WinnerData isFlush(Cards[] allCard){
+        WinnerData data = new WinnerData();
         for(int i = 1; i <= 4; i++){
             ArrayList<Cards> tmp = new ArrayList<>();
             for(int j = 0; j < allCard.length; j++){
@@ -128,41 +173,61 @@ public class Sequence {
                 }
             }
             if(tmp.size() >= 5){
-                return tmp.get(tmp.size()-1).getDignitysId();
+                data.combinationPower = tmp.get(tmp.size()-1).getDignitysId();
+                data.winnCardsId = new int[tmp.size()];
+                for (int j = 0; j < tmp.size(); j++) {
+                    data.winnCardsId[j] = tmp.get(j).getId();
+                }
+                return data;
             }
         }
-        return -1;
+        return null;
     }
-    public static int isFullHouse(Cards[] allCard){
+    public static WinnerData isFullHouse(Cards[] allCard){
+        WinnerData data = new WinnerData();
         for (int i = 0; i < allCard.length-2; i++) {
             if(allCard[i].getDignitysId() == allCard[i+1].getDignitysId() &&
                     allCard[i].getDignitysId() == allCard[i+2].getDignitysId()){
                 for (int j = 0; j < allCard.length-1; j++) {
                     if(allCard[j].getDignitysId() == allCard[j+1].getDignitysId() &&
                             allCard[i].getDignitysId() != allCard[j].getDignitysId()){
-                        return allCard[i].getDignitysId();
+                        data.combinationPower = allCard[i].getDignitysId(); 
+                        data.winnCardsId = new int[5];
+                        data.winnCardsId[0] = allCard[i].getId();
+                        data.winnCardsId[1] = allCard[i + 1].getId();
+                        data.winnCardsId[2] = allCard[i + 2].getId();
+                        data.winnCardsId[3] = allCard[j].getId();
+                        data.winnCardsId[4] = allCard[j + 1].getId();
+                        return data;
                     }
                 }
             }
         }
-        return -1;
+        return null;
     }
-    public static int isQuads(Cards[] allCard){
+    public static WinnerData isQuads(Cards[] allCard){
         int count = 0;
+        WinnerData data = new WinnerData();
         for(int i = 0; i < allCard.length - 1; i++){
             if(allCard[i].getDignitysId() == allCard[i+1].getDignitysId()){
                 count++;
                 if(count == 3){
-                    return allCard[i].getDignitysId();
+                    data.combinationPower = allCard[i].getDignitysId();
+                    data.winnCardsId = new int[4];
+                    for (int j = 0; j < 4; j++) {
+                        data.winnCardsId[j] = allCard[(i + 1) - j].getId();
+                    }
+                    return data;
 
                 }
                 continue;
             }
             count = 0;
         }
-        return -1;
+        return null;
     }
-    public static int isStraightFlush(Cards[] allCard){
+    public static WinnerData isStraightFlush(Cards[] allCard){
+        WinnerData data = new WinnerData();
         for(int i = 1; i <= 4; i++){
             ArrayList<Cards> tmp = new ArrayList<>();
             for(int j = 0; j < allCard.length; j++){
@@ -171,21 +236,28 @@ public class Sequence {
                 }
             }
             if(tmp.size() >= 5){
-                if(isStraight(tmp.toArray(new Cards [0])) != -1){
-                    return tmp.get(tmp.size()-1).getDignitysId();
+                if(isStraight(tmp.toArray(new Cards [0])) != null){
+                    data.combinationPower = tmp.get(tmp.size()-1).getDignitysId();
+                    data.winnCardsId = new int[tmp.size()];
+                    for (int j = 0; j < tmp.size(); j++) {
+                        data.winnCardsId[j] = tmp.get(j).getId();
+                    }
+                    return data;
                 }
             }
         }
         
-        return -1;
+        return null;
     }
-    public static int isRoyalFlush(Cards[] allCard){
+    public static WinnerData isRoyalFlush(Cards[] allCard){
         for (int i = 1; i <= 4; i++) {
-            if(isFlush(allCard) == 14 && isStraight(allCard) == 14){
-                return 14;
+            if(isFlush(allCard) != null && isStraight(allCard) != null){
+                if(isFlush(allCard).combinationPower == 14 && isStraight(allCard).combinationPower == 14){
+                    return isFlush(allCard);
+                }
             }
         }
-        return -1;
+        return null;
     }
     
     public static void PrintCard(Cards card){
@@ -219,7 +291,7 @@ public class Sequence {
         ArrayList<Player> winners = new ArrayList<>();
         Player winner = players[0];
         for (int i = 1; i < players.length; i++) {
-            if(players[i].getCombinationPover() >= winner.getCombinationPover()){
+            if(players[i].getCombinationPover().combinationPower >= winner.getCombinationPover().combinationPower){
                 winner = players[i];
             }
         }

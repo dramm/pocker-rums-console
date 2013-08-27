@@ -13,7 +13,7 @@ import pokerserver.Player;
  * @author Андрей
  */
 public class MonteCarlo {
-    private static int iteration = 10800;
+    private static int iteration = 5400;
     public static Counters getFactor(Player[] players, Deck deck){
         Counters counter = new Counters(players);
         for (int i = 0; i < iteration; i++) {
