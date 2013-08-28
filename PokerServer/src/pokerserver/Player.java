@@ -15,18 +15,18 @@ public class Player {
     private Cards[] pocketCards;
     private WinnerData combinationPover;
     private Cards kicker;
-    public int wins;
-    public int loses;
-    public int tie;
-    public Player(){
+    private int playerId;
+    public Player(int id){
         pocketCards = new Cards[2];
         combinationPover = null;
         kicker = new Cards();
+        playerId = id;
     }
-    public Player(Cards[] pocketCards){
+    public Player(Cards[] pocketCards, int id){
         this.pocketCards = pocketCards;
         combinationPover = null;
         kicker = new Cards();
+        playerId = id;
     }
 
     public Cards[] getPocketCards() {
@@ -78,5 +78,9 @@ public class Player {
         result[0] = getFirstCard().getId();
         result[1] = getSecondCard().getId();
         return result;
+    }
+
+    public int getPlayerId() {
+        return playerId;
     }
 }

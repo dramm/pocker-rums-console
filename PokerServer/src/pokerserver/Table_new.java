@@ -23,7 +23,7 @@ public class Table_new {
         deck = new Deck();
         players = new Player[playerCount];
         for (int i = 0; i < players.length; i++) {
-            players[i] = new Player();
+            players[i] = new Player(i);
         }
         bord = new Cards[5];
     }
@@ -31,7 +31,7 @@ public class Table_new {
         deck = new Deck();
         players = new Player[playersCount];
         for (int i = 0; i < players.length; i++) {
-            players[i] = new Player();
+            players[i] = new Player(i);
         }
         bord = new Cards[5];
     }

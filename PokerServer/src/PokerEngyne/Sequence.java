@@ -7,10 +7,8 @@ package PokerEngyne;
 import DataBaseClasses.Cards;
 import DataBaseClasses.Dignity;
 import DataBaseClasses.Suits;
-import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import pokerserver.DBTools;
 import pokerserver.Player;
 
@@ -33,7 +31,7 @@ public class Sequence {
         Arrays.sort(allCard);
         if(isRoyalFlush(allCard) != null){
             WinnerData data = isRoyalFlush(allCard);
-            data.combinationPower += 126;
+            data.combinationPower = 126;
             return data;
         }
         WinnerData result = isStraightFlush(allCard);
@@ -296,7 +294,7 @@ public class Sequence {
             }
         }
         for (int i = 0; i < players.length; i++) {
-            if(players[i].getCombinationPover() == winner.getCombinationPover()){
+            if(players[i].getCombinationPover().combinationPower == winner.getCombinationPover().combinationPower){
                 winners.add(players[i]);
             }
         }

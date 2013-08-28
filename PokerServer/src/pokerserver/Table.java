@@ -29,7 +29,7 @@ public class Table {
         this.bord = new Cards[5];
         this.deck = new Deck();
         for(int i=0; i<players; i++){
-            this.players[i] = new Player();
+            this.players[i] = new Player(i);
         }
         DBTools.setGame();
         gameId = DBTools.getLastGameId();
@@ -43,7 +43,7 @@ public class Table {
         this.bord = new Cards[5];
         this.deck = new Deck();
         for(int i=0; i<players.length; i++){
-            this.players[i] = new Player();
+            this.players[i] = new Player(i);
         }
         DBTools.setGame();
         gameId = DBTools.getLastGameId();

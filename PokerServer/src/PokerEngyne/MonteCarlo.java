@@ -30,7 +30,7 @@ public class MonteCarlo {
             Player[] winners = Sequence.getWinner(players);
             for (int j = 0; j < winners.length; j++) {
                 for (int k = 0; k < players.length; k++) {
-                    if(winners[j] == players[k]){
+                    if(winners[j].getPlayerId() == players[k].getPlayerId()){
                         if(winners.length > 1){
                             //players[k].tie++;
                             counter.setTie(k);
@@ -39,10 +39,6 @@ public class MonteCarlo {
                             //players[k].wins++;
                             counter.setWins(k);
                         }
-                    }
-                    else{
-                        //players[k].loses++;
-                        counter.setLoses(k);
                     }
                 }
             }
@@ -83,10 +79,6 @@ public class MonteCarlo {
                             //players[k].wins++;
                             counter.setWins(k);
                         }
-                    }
-                    else{
-                        //players[k].loses++;
-                        counter.setLoses(k);
                     }
                 }
             }
