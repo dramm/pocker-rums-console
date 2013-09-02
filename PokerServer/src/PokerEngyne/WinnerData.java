@@ -11,4 +11,5 @@ package PokerEngyne;
 public class WinnerData {
     public int combinationPower;
     public int[] winnCardsId;
+    public int[] boardCards;
 }

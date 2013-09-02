@@ -32,46 +32,55 @@ public class Sequence {
         if(isRoyalFlush(allCard) != null){
             WinnerData data = isRoyalFlush(allCard);
             data.combinationPower = 126;
+            data.boardCards = getBoardCardsIdArray(board);
             return data;
         }
         WinnerData result = isStraightFlush(allCard);
         if(result != null){
             result.combinationPower += 112;
+            result.boardCards = getBoardCardsIdArray(board);
             return result;
         }
         result = isQuads(allCard);
         if (result != null) {
             result.combinationPower += 98;
+            result.boardCards = getBoardCardsIdArray(board);
             return result;
         }
         result = isFullHouse(allCard);
         if (result != null) {
             result.combinationPower += 84;
+            result.boardCards = getBoardCardsIdArray(board);
             return result;
         }
         result = isFlush(allCard);
         if (result != null) {
             result.combinationPower += 70;
+            result.boardCards = getBoardCardsIdArray(board);
             return result;
         }
         result = isStraight(allCard);
         if (result != null) {
             result.combinationPower += 56;
+            result.boardCards = getBoardCardsIdArray(board);
             return result;
         }
         result = isSet(allCard);
         if (result != null) {
             result.combinationPower += 42;
+            result.boardCards = getBoardCardsIdArray(board);
             return result;
         }
         result = isTwoPair(allCard);
         if (result != null) {
             result.combinationPower += 28;
+            result.boardCards = getBoardCardsIdArray(board);
             return result;
         }
         result = isOnePair(allCard);
         if (result != null) {
             result.combinationPower += 14;
+            result.boardCards = getBoardCardsIdArray(board);
             return result;
         }
         return isHighCard(allCard);
@@ -92,7 +101,7 @@ public class Sequence {
                 data.winnCardsId[0] = allCard[i].getId();
                 data.winnCardsId[1] = allCard[i+1].getId();
                 return data; 
-            }
+             }
         }
         return null;
     }
@@ -138,12 +147,26 @@ public class Sequence {
             for (int i = 0; i < clearCards.length - 1; i++) {
                 if((clearCards[i+1].getDignitysId() - clearCards[i].getDignitysId()) == 1){
                     stCount++;
-                    if(stCount >= 4 || (clearCards[0].getDignitysId() == 2 && 
-                            clearCards[clearCards.length - 1].getDignitysId() == 14 && 
-                            stCount == 3 && 
-                            clearCards[0].getSuitsId() == clearCards[clearCards.length - 1].getSuitsId())){
+                    if((clearCards[0].getDignitysId() == 2 && clearCards[1].getDignitysId() == 3 && 
+                            clearCards[2].getDignitysId() == 4 && clearCards[3].getDignitysId() == 5 &&
+                            clearCards[clearCards.length - 1].getDignitysId() == 14)){
                         ArrayList<Integer> id = new ArrayList<>();
-                        for (int j = i+1; j > (i - 3); j--) {
+                        id.add(clearCards[0].getId());
+                        id.add(clearCards[1].getId());
+                        id.add(clearCards[2].getId());
+                        id.add(clearCards[3].getId());
+                        id.add(clearCards[clearCards.length - 1].getId());
+                        data.combinationPower = clearCards[i+1].getDignitysId();
+                        data.winnCardsId = new int[id.size()];
+                        for (int j = 0; j < id.size(); j++) {
+                            data.winnCardsId[j] = id.get(j).intValue();
+                        }
+                        return data;
+                    }
+                    if(stCount >= 4 ){
+                        ArrayList<Integer> id = new ArrayList<>();
+                        int lastCard = i + 1;
+                        for (int j = lastCard; j >  lastCard - 5; j--) {
                             id.add(clearCards[j].getId());
                         }
                         data.combinationPower = clearCards[i+1].getDignitysId();
@@ -285,6 +308,18 @@ public class Sequence {
         }
         return cards.toArray(new Cards[0]);
     }
+    public static int[] getBoardCardsIdArray(Cards[] board){
+        int[] result = new int[board.length];
+        for (int i = 0; i < board.length; i++) {
+            result[i] = board[i].getId();
+        }
+        return result;
+    }
+    
+    public static int getCicker(WinnerData data){
+        return 0;
+    }
+    
     public static Player[] getWinner(Player[] players){
         ArrayList<Player> winners = new ArrayList<>();
         Player winner = players[0];
@@ -293,8 +328,10 @@ public class Sequence {
                 winner = players[i];
             }
         }
+        winners.add(winner);
         for (int i = 0; i < players.length; i++) {
-            if(players[i].getCombinationPover().combinationPower == winner.getCombinationPover().combinationPower){
+            if(players[i].getCombinationPover().combinationPower == winner.getCombinationPover().combinationPower &&
+                    players[i].getPlayerId() !=  winner.getPlayerId()){
                 winners.add(players[i]);
             }
         }
