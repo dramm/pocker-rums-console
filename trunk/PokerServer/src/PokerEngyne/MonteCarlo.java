@@ -5,6 +5,7 @@
 package PokerEngyne;
 
 import DataBaseClasses.Cards;
+import Enums.GameStages.Stage;
 import pokerserver.Deck;
 import pokerserver.Player;
 
@@ -13,7 +14,7 @@ import pokerserver.Player;
  * @author Андрей
  */
 public class MonteCarlo {
-    private static int iteration = 5400;
+    private static int iteration = 36000;
     public static Counters getFactor(Player[] players, Deck deck){
         Counters counter = new Counters(players);
         for (int i = 0; i < iteration; i++) {
@@ -34,6 +35,7 @@ public class MonteCarlo {
                         if(winners.length > 1){
                             //players[k].tie++;
                             counter.setTie(k);
+                            counter.setWins(k);
                         }
                         else{
                             //players[k].wins++;
@@ -47,25 +49,35 @@ public class MonteCarlo {
         return counter;
         
     }
-    public static Counters getFactor(Player[] players, Deck deck, Cards[] board){
+    public static Counters getFactor(Player[] players, Deck deck, Cards[] board, Stage stage){
         Counters counter = new Counters(players);
         int cardsInBoard = 0;
-        for (int i = 0; i < board.length; i++) {
-            if(board[i] == null){
-                cardsInBoard = i;
+        switch (stage) {
+            case FLOP:{
+                cardsInBoard = 3;
+                break;
+            }
+            case TURN:{
+                cardsInBoard = 4;
+                break;
+            }
+            case RIVER:{
+                cardsInBoard = 5;
                 break;
             }
         }
+        
         for (int i = 0; i < iteration; i++) {
             Player[] tmpPlayers = players;
             Deck tmp = new Deck(deck);
             tmp.shuffleDeck(); 
             Cards[] boardTmp = new Cards[5];
+            System.arraycopy(board, 0, boardTmp, 0, cardsInBoard);
             for (int j = cardsInBoard; j < board.length; j++){
-                board[j] = tmp.IssueCard();
+                boardTmp[j] = tmp.IssueCard();
             }
             for (int j = 0; j < players.length; j++) {
-                tmpPlayers[j].setCombinationPover(Sequence.CheckSequence(tmpPlayers[j].getPocketCards(), board));
+                tmpPlayers[j].setCombinationPover(Sequence.CheckSequence(tmpPlayers[j].getPocketCards(), boardTmp));
             }
             Player[] winners = Sequence.getWinner(players);
             for (int j = 0; j < winners.length; j++) {
@@ -74,6 +86,7 @@ public class MonteCarlo {
                         if(winners.length > 1){
                             //players[k].tie++;
                             counter.setTie(k);
+                            counter.setWins(k);
                         }
                         else{
                             //players[k].wins++;

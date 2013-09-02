@@ -150,7 +150,7 @@ public class Game_new implements Runnable{
     private JSONObject generateBoardPackege() throws JSONException{
         JSONObject js = new JSONObject();
         for (int i = 0; i < tables.length; i++) {
-            Counters counters = MonteCarlo.getFactor(tables[i].getPlayers(), tables[i].getDeck(), tables[i].getBord());
+            
             JSONObject bord = new JSONObject();
             JSONObject player = new JSONObject();
             switch (gameStage) {
@@ -173,6 +173,8 @@ public class Game_new implements Runnable{
                     break;
                 }
             }
+            
+            Counters counters = MonteCarlo.getFactor(tables[i].getPlayers(), tables[i].getDeck(), tables[i].getBord(), gameStage);
             for (int j = 0; j < tables[i].getPlayers().length; j++) {
                 float winRate = (float)(counters.getWins()[j] + 1) / counters.iteration;
                 float winFactor = 1 / winRate;
