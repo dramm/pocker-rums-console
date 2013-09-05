@@ -16,6 +16,7 @@ public class GameData_new {
     private boolean flag;
     private boolean goNext;
     private Stage gameStage;
+    private int comand;
 
     public synchronized boolean isFlag() {
         return flag;
@@ -39,6 +40,14 @@ public class GameData_new {
 
     public  void setGameStage(Stage gameStage) {
         this.gameStage = gameStage;
+    }
+
+    public int getComand() {
+        return comand;
+    }
+
+    public void setComand(int comand) {
+        this.comand = comand;
     }
 
 }

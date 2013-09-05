@@ -47,9 +47,7 @@ public class Game_new implements Runnable{
                 Thread.sleep(10);
             }
         }
-        catch (JSONException ex) {
-            Logger.getLogger(Game_new.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InterruptedException ex) {
+        catch (JSONException | InterruptedException ex) {
             Logger.getLogger(Game_new.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -65,38 +63,52 @@ public class Game_new implements Runnable{
                 Bridge.newData.js = generateStartingPackege();
                 debug();
                 Bridge.newData.setGameStage(gameStage);
+                
+                Bridge.newData.setComand(1500);
                 Bridge.newData.setFlag(true);
                 gameStage = Stage.PREFLOP;
                 break;
             }
             case PREFLOP:{
+                DBTools.setGameStage(gameStage.getStage(), gameId);
                 Bridge.newData.js = generatePreflopPackege();
                 debug();
                 Bridge.newData.setGameStage(gameStage);
+                
+                Bridge.newData.setComand(1510);
                 Bridge.newData.setFlag(true);
                 gameStage = Stage.FLOP;
                 break;
             }
             case FLOP:{
+                DBTools.setGameStage(gameStage.getStage(), gameId);
                 Bridge.newData.js = generateBoardPackege();
                 debug();
                 Bridge.newData.setGameStage(gameStage);
+                
+                Bridge.newData.setComand(1520);
                 Bridge.newData.setFlag(true);
                 gameStage = Stage.TURN;
                 break;
             }
             case TURN:{
+                DBTools.setGameStage(gameStage.getStage(), gameId);
                 Bridge.newData.js = generateBoardPackege();
                 debug();
                 Bridge.newData.setGameStage(gameStage);
+                
+                Bridge.newData.setComand(1530);
                 Bridge.newData.setFlag(true);
                 gameStage = Stage.RIVER;
                 break;
             }
             case RIVER:{
+                DBTools.setGameStage(gameStage.getStage(), gameId);
                 Bridge.newData.js = generateBoardPackege();
                 debug();
                 Bridge.newData.setGameStage(gameStage);
+                
+                Bridge.newData.setComand(1540);
                 Bridge.newData.setFlag(true);
                 gameStage = Stage.SHOWDOWN;
                 break;
@@ -105,6 +117,8 @@ public class Game_new implements Runnable{
                 Bridge.newData.js = generateShowDownPakege();
                 debug();
                 Bridge.newData.setGameStage(gameStage);
+                
+                Bridge.newData.setComand(1550);
                 Bridge.newData.setFlag(true);
                 gameStage = Stage.STARTING;
                 break;

@@ -10,6 +10,8 @@ package PokerEngyne;
  */
 public class WinnerData {
     public int combinationPower;
+    public int[] pocketCardsId;
     public int[] winnCardsId;
     public int[] boardCards;
+    public int kicker;
 }

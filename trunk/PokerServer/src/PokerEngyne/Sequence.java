@@ -33,54 +33,63 @@ public class Sequence {
             WinnerData data = isRoyalFlush(allCard);
             data.combinationPower = 126;
             data.boardCards = getBoardCardsIdArray(board);
+            data.pocketCardsId = getPokcetCardsId(pocketCard);
             return data;
         }
         WinnerData result = isStraightFlush(allCard);
         if(result != null){
             result.combinationPower += 112;
             result.boardCards = getBoardCardsIdArray(board);
+            result.pocketCardsId = getPokcetCardsId(pocketCard);
             return result;
         }
         result = isQuads(allCard);
         if (result != null) {
             result.combinationPower += 98;
             result.boardCards = getBoardCardsIdArray(board);
+            result.pocketCardsId = getPokcetCardsId(pocketCard);
             return result;
         }
         result = isFullHouse(allCard);
         if (result != null) {
             result.combinationPower += 84;
             result.boardCards = getBoardCardsIdArray(board);
+            result.pocketCardsId = getPokcetCardsId(pocketCard);
             return result;
         }
         result = isFlush(allCard);
         if (result != null) {
             result.combinationPower += 70;
             result.boardCards = getBoardCardsIdArray(board);
+            result.pocketCardsId = getPokcetCardsId(pocketCard);
             return result;
         }
         result = isStraight(allCard);
         if (result != null) {
             result.combinationPower += 56;
             result.boardCards = getBoardCardsIdArray(board);
+            result.pocketCardsId = getPokcetCardsId(pocketCard);
             return result;
         }
         result = isSet(allCard);
         if (result != null) {
             result.combinationPower += 42;
             result.boardCards = getBoardCardsIdArray(board);
+            result.pocketCardsId = getPokcetCardsId(pocketCard);
             return result;
         }
         result = isTwoPair(allCard);
         if (result != null) {
             result.combinationPower += 28;
             result.boardCards = getBoardCardsIdArray(board);
+            result.pocketCardsId = getPokcetCardsId(pocketCard);
             return result;
         }
         result = isOnePair(allCard);
         if (result != null) {
             result.combinationPower += 14;
             result.boardCards = getBoardCardsIdArray(board);
+            result.pocketCardsId = getPokcetCardsId(pocketCard);
             return result;
         }
         return isHighCard(allCard);
@@ -318,6 +327,13 @@ public class Sequence {
     
     public static int getCicker(WinnerData data){
         return 0;
+    }
+    
+    private static int[] getPokcetCardsId(Cards[] cards){
+        int[] result = new int[2];
+        result[0] = cards[0].getId();
+        result[1] = cards[1].getId();
+        return result;
     }
     
     public static Player[] getWinner(Player[] players){

@@ -4,12 +4,15 @@
  */
 package threads;
 
+import Enums.Xor;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.json.JSONArray;
+import org.json.JSONException;
 import pokerserver.Game_new;
 
 /**
@@ -20,12 +23,9 @@ public class Listener extends Thread{
     private Socket clientSocket = null;
     private InputStream input = null;
     private Game_new game;
-
     public Listener() {
-        this.game = new Game_new();
+    this.game = new Game_new();
     }
-    
-    
     @Override
     public void run(){
         SpeakerThread sp = new SpeakerThread();
@@ -53,15 +53,27 @@ public class Listener extends Thread{
                         }
                         break;
                     }
+                    case 1020:{
+                        System.out.println("DEBUG 1020");
+                        byte[] len = new byte[4];
+                        flag = input.read(len, 0, 4);
+                        byte[] message = new byte[Functions.byteArrayToInt(len)];
+                        flag = input.read(message, 0, Functions.byteArrayToInt(len));
+                        System.out.println(new String(Xor.encode(message)));
+                        getBets(new String(Xor.encode(message)));
+                        Bridge.newData.setComand(1560);
+                        Bridge.newData.setFlag(true);
+                        ///[{"Sum":[5.5],"Table2":{"7":7.1,"6":5.97,"4":5.11},"Id":[1],"Table0":{"3":2.73,"1":2.86},"Table1":{"2":3.89}}]
+                    }
                 }
             }
             clientSocket.close();
-        } catch (IOException ex) {
+        } catch (IOException | JSONException ex) {
             Logger.getLogger(Listener.class.getName()).log(Level.SEVERE, null, ex);
         }finally{
                 game.setRun(false);
                 sp.setFlag(false);
-               
+                
         }
     }
 
@@ -71,5 +83,14 @@ public class Listener extends Thread{
 
     public void setClientSocket(Socket clientSocket) {
         this.clientSocket = clientSocket;
+    }
+    
+    private void getBets(String json) throws JSONException{
+        JSONArray arr = new JSONArray(json);
+        if(arr.length() > 0){
+            for (int i = 0; i < arr.length(); i++) {
+                System.out.println(arr.get(i).toString());
+            }
+        }
     }
 }
