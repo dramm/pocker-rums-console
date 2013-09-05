@@ -4,7 +4,6 @@
  */
 package threads;
 
-import static Enums.GameStages.Stage.PREFLOP;
 import Enums.Xor;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -29,34 +28,39 @@ public class SpeakerThread extends Thread{
         try{
             while (isFlag()) {
                 if(Bridge.newData.isFlag()){
-                    switch (Bridge.newData.getGameStage()) {
-                        case STARTING:{
-                            writeStream(1500);
+                    switch (Bridge.newData.getComand()) {
+                        case 1500:{
+                            writeStream(Bridge.newData.getComand());
                             Bridge.newData.setFlag(false);
                             break;
                         }
-                        case PREFLOP:{
-                            writeStream(1510);
+                        case 1510:{
+                            writeStream(Bridge.newData.getComand());
                             Bridge.newData.setFlag(false);
                             break;
                         }
-                        case FLOP:{
-                            writeStream(1520);
+                        case 1520:{
+                            writeStream(Bridge.newData.getComand());
                             Bridge.newData.setFlag(false);
                             break;
                         }
-                        case TURN:{
-                            writeStream(1530);
+                        case 1530:{
+                            writeStream(Bridge.newData.getComand());
                             Bridge.newData.setFlag(false);
                             break;
                         }
-                        case RIVER:{
-                            writeStream(1540);
+                        case 1540:{
+                            writeStream(Bridge.newData.getComand());
                             Bridge.newData.setFlag(false);
                             break;
                         }
-                        case SHOWDOWN:{
-                            writeStream(1550);
+                        case 1550:{
+                            writeStream(Bridge.newData.getComand());
+                            Bridge.newData.setFlag(false);
+                            break;
+                        }
+                        case 1560:{
+                            writeStream(Bridge.newData.getComand(), true);
                             Bridge.newData.setFlag(false);
                             break;
                         }
@@ -66,9 +70,7 @@ public class SpeakerThread extends Thread{
                 Thread.sleep(10);
             }
             
-        }catch (IOException ex) {
-            Logger.getLogger(SpeakerThread.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InterruptedException ex) {
+        }catch ( IOException | InterruptedException ex) {
             Logger.getLogger(SpeakerThread.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -77,6 +79,11 @@ public class SpeakerThread extends Thread{
         output.write(Functions.intToByteArray(command));
         output.write(Functions.intToByteArray(Bridge.newData.js.toString().length()));
         output.write(Xor.encode(Bridge.newData.js.toString().getBytes()));
+        output.flush();
+    }
+    
+    private void writeStream(int command, boolean flag) throws IOException{
+        output.write(Functions.intToByteArray(command));
         output.flush();
     }
     
