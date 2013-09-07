@@ -5,6 +5,7 @@
 package threads;
 
 import Enums.Xor;
+import PokerEngyne.Bet;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -90,6 +91,8 @@ public class Listener extends Thread{
         if(arr.length() > 0){
             for (int i = 0; i < arr.length(); i++) {
                 System.out.println(arr.get(i).toString());
+                Bet bet = new Bet(arr.getJSONObject(i));
+                game.bets.addBet(bet);
             }
         }
     }
