@@ -6,12 +6,13 @@ package pokerserver;
 import Enums.GameStages.Stage;
 import static Enums.GameStages.Stage.PREFLOP;
 import static Enums.GameStages.Stage.STARTING;
+import PokerEngyne.Bets;
 import PokerEngyne.Counters;
 import PokerEngyne.MonteCarlo;
 import PokerEngyne.Sequence;
-import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import threads.Bridge;
@@ -23,15 +24,16 @@ import threads.Bridge;
 public class Game_new implements Runnable{
     private boolean run;
     private Table_new[] tables;
+    public Bets bets;
     private Stage gameStage;
     private int gameId;
-    private Random rnd = new Random();
     public Game_new(){
         gameStage = STARTING;
         tables = new Table_new[3];
         tables[0] = new Table_new(4);
         tables[1] = new Table_new(6);
         tables[2] = new Table_new(8);
+        bets = new Bets();
         run = false;
     }
 
@@ -207,6 +209,7 @@ public class Game_new implements Runnable{
     
     private JSONObject generateShowDownPakege() throws JSONException{
         JSONObject pack = new JSONObject();
+        JSONArray win = new JSONArray();
         for (int i = 0; i < tables.length; i++) {
             JSONObject jsCardId = new JSONObject();
             Player[] winners = Sequence.getWinner(tables[i].getPlayers());
@@ -215,11 +218,29 @@ public class Game_new implements Runnable{
                 for (int k = 0; k < cardsId.length ; k++) {
                     jsCardId.append("Combination"+j, cardsId[k]);
                 }
+                win.put(bets.findWinner(i, winners[j].getPlayerId()).toJSONObject(win));
+                
             }
             pack.put("Table"+i, jsCardId);
         }
         pack.put("Stage", gameStage.toString());
+        pack.put("Winners", win);
         return pack;
+    }
+    
+    private JSONArray unionJsonArray(JSONArray main, JSONArray union) throws JSONException{
+        JSONArray tmp = new JSONArray();
+        if(main != null){
+            for (int i = 0; i < main.length(); i++) {
+                tmp.put(main.getJSONObject(i));
+            }
+        }
+        if(main != null){
+            for (int i = 0; i < union.length(); i++) {
+                tmp.put(union.getJSONObject(i));
+            }
+        }
+        return tmp;
     }
     
     private void debug(){
