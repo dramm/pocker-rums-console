@@ -328,7 +328,8 @@ public class Sequence {
         return result;
     }
     
-    /*public static int getCicker(WinnerData data){
+    public static int getZCicker(WinnerData data){
+        /*
         int[] winnCardsId = data.winnCardsId;
         int[] pocketCardsId = data.pocketCardsId;
         int firstCicker = 0;
@@ -344,9 +345,14 @@ public class Sequence {
         }else if((secondCicker > 0 && firstCicker > 0 && secondCicker > firstCicker) || (secondCicker > 0 && firstCicker == 0)){
             return secondCicker;
         }
-        
+        */
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println();
         return 0;
-    }*/
+    }
     
     private static int[] getPokcetCardsId(Cards[] cards){
         int[] result = new int[2];
