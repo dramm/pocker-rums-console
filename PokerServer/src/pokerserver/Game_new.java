@@ -123,6 +123,7 @@ public class Game_new implements Runnable{
                 Bridge.newData.setComand(1550);
                 Bridge.newData.setFlag(true);
                 gameStage = Stage.STARTING;
+                bets.resetBets();
                 break;
             }
         }
@@ -210,37 +211,26 @@ public class Game_new implements Runnable{
     private JSONObject generateShowDownPakege() throws JSONException{
         JSONObject pack = new JSONObject();
         JSONArray win = new JSONArray();
+        int[][] indexes = new int[tables.length][];
         for (int i = 0; i < tables.length; i++) {
             JSONObject jsCardId = new JSONObject();
             Player[] winners = Sequence.getWinner(tables[i].getPlayers());
+            indexes[i] = new int[winners.length];
             for (int j = 0; j < winners.length; j++) {
+                indexes[i][j] = winners[j].getPlayerId();
                 int[] cardsId = winners[j].getCombinationPover().winnCardsId;
                 for (int k = 0; k < cardsId.length ; k++) {
                     jsCardId.append("Combination"+j, cardsId[k]);
                 }
-                win.put(bets.findWinner(i, winners[j].getPlayerId()).toJSONObject(win));
+               
+                //win.put(bets.findWinner(i, winners[j].getPlayerId()).toJSONObject(win));
                 
             }
             pack.put("Table"+i, jsCardId);
         }
         pack.put("Stage", gameStage.toString());
-        pack.put("Winners", win);
+        pack.put("Winners", bets.findWinner(indexes));
         return pack;
-    }
-    
-    private JSONArray unionJsonArray(JSONArray main, JSONArray union) throws JSONException{
-        JSONArray tmp = new JSONArray();
-        if(main != null){
-            for (int i = 0; i < main.length(); i++) {
-                tmp.put(main.getJSONObject(i));
-            }
-        }
-        if(main != null){
-            for (int i = 0; i < union.length(); i++) {
-                tmp.put(union.getJSONObject(i));
-            }
-        }
-        return tmp;
     }
     
     private void debug(){

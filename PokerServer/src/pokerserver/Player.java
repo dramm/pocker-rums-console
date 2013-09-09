@@ -14,18 +14,15 @@ import PokerEngyne.WinnerData;
 public class Player {
     private Cards[] pocketCards;
     private WinnerData combinationPover;
-    private Cards kicker;
     private int playerId;
     public Player(int id){
         pocketCards = new Cards[2];
         combinationPover = null;
-        kicker = new Cards();
         playerId = id;
     }
     public Player(Cards[] pocketCards, int id){
         this.pocketCards = pocketCards;
         combinationPover = null;
-        kicker = new Cards();
         playerId = id;
     }
 
@@ -65,14 +62,6 @@ public class Player {
         this.combinationPover = combinationPover;
     }
 
-    public Cards getKicker() {
-        return kicker;
-    }
-
-    public void setKicker(Cards kicker) {
-        this.kicker = kicker;
-    }
-    
     public int[] getHandsCardsId(){
         int[] result = new int[2];
         result[0] = getFirstCard().getId();

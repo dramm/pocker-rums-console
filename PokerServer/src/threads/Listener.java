@@ -55,16 +55,14 @@ public class Listener extends Thread{
                         break;
                     }
                     case 1020:{
-                        System.out.println("DEBUG 1020");
+                        System.out.println("Users Bets");
                         byte[] len = new byte[4];
                         flag = input.read(len, 0, 4);
                         byte[] message = new byte[Functions.byteArrayToInt(len)];
                         flag = input.read(message, 0, Functions.byteArrayToInt(len));
-                        System.out.println(new String(Xor.encode(message)));
                         getBets(new String(Xor.encode(message)));
                         Bridge.newData.setComand(1560);
                         Bridge.newData.setFlag(true);
-                        ///[{"Sum":[5.5],"Table2":{"7":7.1,"6":5.97,"4":5.11},"Id":[1],"Table0":{"3":2.73,"1":2.86},"Table1":{"2":3.89}}]
                     }
                 }
             }

@@ -13,5 +13,4 @@ public class WinnerData {
     public int[] pocketCardsId;
     public int[] winnCardsId;
     public int[] boardCards;
-    public int kicker;
 }
