@@ -328,8 +328,7 @@ public class Sequence {
         return result;
     }
     
-    public static int getZCicker(WinnerData data){
-        /*
+    public static int getCicker(WinnerData data){
         int[] winnCardsId = data.winnCardsId;
         int[] pocketCardsId = data.pocketCardsId;
         int firstCicker = 0;
@@ -345,12 +344,7 @@ public class Sequence {
         }else if((secondCicker > 0 && firstCicker > 0 && secondCicker > firstCicker) || (secondCicker > 0 && firstCicker == 0)){
             return secondCicker;
         }
-        */
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println();
+
         return 0;
     }
     
@@ -376,7 +370,7 @@ public class Sequence {
                 winners.add(players[i]);
             }
         }
-        /*if(winners.size() > 1 && winner.getCombinationPover().combinationPower > 15 && winner.getCombinationPover().combinationPower < 56){
+        if(winners.size() > 1 && winner.getCombinationPover().combinationPower > 15 && winner.getCombinationPover().combinationPower < 56){
             ArrayList<Player> tmp = new ArrayList<>(winners);
             winners.clear();
             winner = tmp.get(0);
@@ -391,7 +385,7 @@ public class Sequence {
                     winners.add(players[i]);
                 }
             }
-        }*/
+        }
         return winners.toArray(new Player[0]);
     }
 }
