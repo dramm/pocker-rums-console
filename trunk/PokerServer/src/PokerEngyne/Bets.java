@@ -4,8 +4,8 @@
  */
 package PokerEngyne;
 
+import java.util.AbstractList;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.json.JSONArray;
@@ -24,28 +24,34 @@ public class Bets {
     public void addBet(Bet bet){
         bets.add(bet);
     }
-    public JSONArray findWinner(int tableId, int handId) throws JSONException{
-        JSONObject winners = new JSONObject();
+    public void resetBets(){
+        bets = new ArrayList<>();
+    }
+    public JSONArray findWinner(int[][] indexes) throws JSONException{
         JSONArray winnData = new JSONArray();
-        int playerId;
-        double factor;
-        double sum;
         for (Bet bet : bets) {
             JSONObject playerData = new JSONObject();
-            Map<Integer, Map<Integer, Double>> tableData = bet.getTableData();
-            for(Map.Entry<Integer, Map<Integer, Double>> item : tableData.entrySet()){
-                if(tableId == item.getKey()){
-                    Map<Integer, Double> value = item.getValue();
-                    for (Map.Entry<Integer, Double> factorInBet : value.entrySet()) {
-                        if(handId == factorInBet.getKey()){
-                            factor = factorInBet.getValue();
-                            playerId = bet.getUserId();
-                            sum = bet.getBetSize();
-                            playerData.put("id", playerId);
-                            playerData.put("sum", sum * factor);
+            int betCoutn = 0;
+            double summSize = 0;
+            Map<String, Map<Integer, Double>> tableData = bet.getTableData();
+            for(Map.Entry<String, Map<Integer, Double>> tableInfo : tableData.entrySet()){
+                for (int i = 0; i < indexes.length; i++) {
+                    if(tableInfo.getKey().equals("Table" + i)){
+                        Map<Integer, Double> handInfo = tableInfo.getValue();
+                        for(Map.Entry<Integer, Double> factorinfo : handInfo.entrySet()){
+                            betCoutn++;
+                            for (int j = 0; j < indexes[i].length; j++) {
+                                if(factorinfo.getKey() == indexes[i][j]){
+                                    summSize += bet.getBetSize() * factorinfo.getValue();
+                                }
+                            }
                         }
+                        playerData.put("betCount", betCoutn);
+                        playerData.put("summSize", bet.getBetSize() * betCoutn);
+                        playerData.put("winnSize", summSize / betCoutn);
+                        playerData.put("loseSize", (bet.getBetSize() * betCoutn) - (summSize / betCoutn));
+                        playerData.put("playerId", bet.getUserId());
                     }
-                    
                 }
             }
             winnData.put(playerData);

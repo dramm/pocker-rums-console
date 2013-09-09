@@ -34,6 +34,7 @@ public class Sequence {
             data.combinationPower = 126;
             data.boardCards = getBoardCardsIdArray(board);
             data.pocketCardsId = getPokcetCardsId(pocketCard);
+            
             return data;
         }
         WinnerData result = isStraightFlush(allCard);
@@ -41,6 +42,7 @@ public class Sequence {
             result.combinationPower += 112;
             result.boardCards = getBoardCardsIdArray(board);
             result.pocketCardsId = getPokcetCardsId(pocketCard);
+            
             return result;
         }
         result = isQuads(allCard);
@@ -92,6 +94,7 @@ public class Sequence {
             result.pocketCardsId = getPokcetCardsId(pocketCard);
             return result;
         }
+        
         return isHighCard(allCard);
     } 
     private static WinnerData isHighCard(Cards[] allCard){
@@ -325,9 +328,25 @@ public class Sequence {
         return result;
     }
     
-    public static int getCicker(WinnerData data){
+    /*public static int getCicker(WinnerData data){
+        int[] winnCardsId = data.winnCardsId;
+        int[] pocketCardsId = data.pocketCardsId;
+        int firstCicker = 0;
+        int secondCicker = 0;
+        if(Arrays.binarySearch(winnCardsId, pocketCardsId[0]) < 0){
+            firstCicker = DBTools.getCards(pocketCardsId[0]).getDignitysId();
+        }
+        if(Arrays.binarySearch(winnCardsId, pocketCardsId[1]) < 0){
+            secondCicker = DBTools.getCards(pocketCardsId[1]).getDignitysId();
+        }
+        if((firstCicker > 0 && secondCicker > 0 && firstCicker > secondCicker) || (firstCicker > 0 && secondCicker == 0)){
+            return firstCicker;
+        }else if((secondCicker > 0 && firstCicker > 0 && secondCicker > firstCicker) || (secondCicker > 0 && firstCicker == 0)){
+            return secondCicker;
+        }
+        
         return 0;
-    }
+    }*/
     
     private static int[] getPokcetCardsId(Cards[] cards){
         int[] result = new int[2];
@@ -351,6 +370,22 @@ public class Sequence {
                 winners.add(players[i]);
             }
         }
+        /*if(winners.size() > 1 && winner.getCombinationPover().combinationPower > 15 && winner.getCombinationPover().combinationPower < 56){
+            ArrayList<Player> tmp = new ArrayList<>(winners);
+            winners.clear();
+            winner = tmp.get(0);
+            
+            for (int i = 0; i < tmp.size(); i++) {
+                if(getCicker(tmp.get(i).getCombinationPover()) >= getCicker(winner.getCombinationPover())){
+                    winner = tmp.get(i);
+                }
+            }
+            for (int i = 0; i < tmp.size(); i++) {
+                if(getCicker(tmp.get(i).getCombinationPover()) >= getCicker(winner.getCombinationPover())){
+                    winners.add(players[i]);
+                }
+            }
+        }*/
         return winners.toArray(new Player[0]);
     }
 }
