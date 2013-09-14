@@ -85,6 +85,7 @@ public class Sequence {
             result.actualPower = 42;
             result.boardCards = getBoardCardsIdArray(board);
             result.pocketCardsId = getPokcetCardsId(pocketCard);
+            result.calculationCicker();
             return result;
         }
         result = isTwoPair(allCard);
@@ -93,6 +94,7 @@ public class Sequence {
             result.actualPower = 28;
             result.boardCards = getBoardCardsIdArray(board);
             result.pocketCardsId = getPokcetCardsId(pocketCard);
+            result.calculationCicker();
             return result;
         }
         result = isOnePair(allCard);
@@ -101,6 +103,7 @@ public class Sequence {
             result.actualPower = 14;
             result.boardCards = getBoardCardsIdArray(board);
             result.pocketCardsId = getPokcetCardsId(pocketCard);
+            result.calculationCicker();
             return result;
         }
         
@@ -109,6 +112,7 @@ public class Sequence {
     private static WinnerData isHighCard(Cards[] allCard){
         WinnerData data = new WinnerData();
         data.combinationPower = allCard[allCard.length-1].getDignitysId();
+        data.actualPower = data.combinationPower;
         data.winnCardsId = new int[1];
         data.winnCardsId[0] = allCard[allCard.length-1].getId();
         return data;
@@ -128,14 +132,26 @@ public class Sequence {
     }
     public static WinnerData isTwoPair(Cards[] allCard){
         WinnerData data = new WinnerData();
+        int count = 0;
+        for (int i = 0; i < allCard.length - 1; i++) {
+            if(allCard[i].getDignitysId() == allCard[i+1].getDignitysId()){
+                count++;
+            }
+        }
+        boolean flag = true;
         for(int i = 0; i < allCard.length - 1; i++ ){
            if(allCard[i].getDignitysId() == allCard[i+1].getDignitysId()){
+               if(count > 2 && flag){
+                   flag = false;
+                   continue;
+               }
                 for(int j = i+2; j < allCard.length - 1; j++){
                     if(allCard[j].getDignitysId() == allCard[j+1].getDignitysId()){
                         data.combinationPower = allCard[j].getDignitysId(); 
                         data.winnCardsId = new int[4];
                         data.winnCardsId[0] = allCard[i].getId();
                         data.winnCardsId[1] = allCard[i+1].getId();
+                        data.secondPairPower = allCard[i].getDignitysId();
                         data.winnCardsId[2] = allCard[j].getId();
                         data.winnCardsId[3] = allCard[j+1].getId();
                         return data;
@@ -301,7 +317,6 @@ public class Sequence {
         }
         return null;
     }
-    
     public static void PrintCard(Cards card){
         Dignity dig = DBTools.getDignity(card.getDignitysId());
         Suits su = DBTools.getSuits(card.getSuitsId());
@@ -336,42 +351,65 @@ public class Sequence {
         }
         return result;
     }
-    
     private static int[] getPokcetCardsId(Cards[] cards){
         int[] result = new int[2];
         result[0] = cards[0].getId();
         result[1] = cards[1].getId();
         return result;
     }
-    
     public static Player[] getWinner(Player[] players){
         ArrayList<Player> winners = new ArrayList<>();
-        Player winner = players[0];
-        for (int i = 1; i < players.length; i++) {
-            if(players[i].getCombinationPover().combinationPower >= winner.getCombinationPover().combinationPower){
-                winner = players[i];
+        int power = getMaxCombinationPower(players);
+        for (int i = 0; i < players.length; i++) {
+            if(players[i].getCombinationPover().combinationPower == power){
+                winners.add(players[i]);
             }
         }
-        winners.add(winner);
-        for (int i = 0; i < players.length; i++) {
-            if(players[i].getCombinationPover().combinationPower == winner.getCombinationPover().combinationPower){
-                players[i].setCicker(getCicker(players[i].getCombinationPover()));
+        if(winners.size()>1){
+            switch (winners.get(0).getCombinationPover().actualPower) {
+                case 14:
+                case 42:{
+                    ArrayList<Player> tmp = new ArrayList<>();
+                    int max = getMaxCicker(players);
+                    for (int i = 0; i < players.length; i++) {
+                        if(players[i].getCombinationPover().cicker == max){
+                            tmp.add(players[i]);
+                        }
+                    }
+                    winners = tmp;
+                    break;
+                }
+                case 28:{
+                    ArrayList<Player> tmp = new ArrayList<>();
+                    int max = getMaxSecondPair(players);
+                    for (int i = 0; i < players.length; i++) {
+                        if(players[i].getCombinationPover().secondPairPower == max){
+                            tmp.add(players[i]);
+                        }
+                    }
+                    if(tmp.size()>1){
+                        ArrayList<Player> temp = new ArrayList<>();
+                        int cicker = getMaxCicker(tmp.toArray(new Player[0]));
+                        for (int i = 0; i < tmp.size(); i++) {
+                            if(tmp.get(i).getCombinationPover().cicker == cicker){
+                                temp.add(tmp.get(i));
+                            }
+                        }
+                        tmp = temp;
+                    }
+                    winners = tmp;
+                    break;
+                }
+                default:{
+                    break;
+                }
             }
         }
         return winners.toArray(new Player[0]);
     }
     
-    private static int getCicker(WinnerData data){
-        int result = 0;
-        switch (data.actualPower) {
-            case 14:{
-                result = onePairCicker(data);
-                break;
-            }
-        }
-        return result;
-    }
     private static int onePairCicker(WinnerData data){
+        //System.out.println(data.pocketCardsId[0]+ " " + data.pocketCardsId[1]);
         int result = DBTools.getOlder(data.pocketCardsId[0], data.pocketCardsId[1]);
         for (int i = 0; i < data.winnCardsId.length; i++) {
             if(data.winnCardsId[i] == result){
@@ -381,6 +419,35 @@ public class Sequence {
         for (int i = 0; i < data.winnCardsId.length; i++) {
             if(data.winnCardsId[i] == result){
                 return 0;
+            }
+        }
+        return DBTools.getCardDignitys(result);
+    }
+    
+    private static int getMaxCombinationPower(Player[] players){
+        int result = 0;
+        for (int i = 0; i < players.length; i++) {
+            if(players[i].getCombinationPover().combinationPower >= result){
+                result = players[i].getCombinationPover().combinationPower;
+            }
+        }
+        return result;
+    }
+    private static int getMaxCicker(Player[] players){
+        int result = 0;
+        for (int i = 0; i < players.length; i++) {
+            if(players[i].getCombinationPover().cicker >= result){
+                result = players[i].getCombinationPover().cicker;
+            }
+        }
+        return result;
+    }
+    
+     private static int getMaxSecondPair(Player[] players){
+        int result = 0;
+        for (int i = 0; i < players.length; i++) {
+            if(players[i].getCombinationPover().secondPairPower >= result){
+                result = players[i].getCombinationPover().secondPairPower;
             }
         }
         return result;
