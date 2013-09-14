@@ -24,7 +24,7 @@ public class PokerServer {
     static private ServerSocket sc = null;
     public static void main(String[] args) throws IOException, InterruptedException {
         
-        sc = new ServerSocket(7777);
+       /*sc = new ServerSocket(7777);
         System.out.println("Server start");
         while (true) {
             Listener l = new Listener();
@@ -34,7 +34,9 @@ public class PokerServer {
             l.start();
             l.join();
             Thread.sleep(10);
-        }
+        }*/
+        int r = DBTools.getOlder(4, 50);
+        System.out.println(r);
         /*Cards[] cards = new Cards[7];
         cards[0] = DBTools.getCards(48);
         cards[5] = DBTools.getCards(44);
