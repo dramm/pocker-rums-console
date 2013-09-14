@@ -151,11 +151,14 @@ public class Game_new implements Runnable{
             for (int j = 0; j < tables[i].getPlayers().length; j++) {
                 float winRate = (float)(factor.getWins()[j] + 1) / factor.iteration;
                 float winFactor = 1 / winRate;
+                if(winFactor < 1.35f){
+                    winFactor = 1.01f;
+                }
                 int indicator = (int)(((float)(factor.getTie()[j] + 1) / factor.iteration) * 100);
                 JSONObject factors = new JSONObject();
                 player.append("Player"+j, tables[i].getPlayers()[j].getFirstPocketCardId());
                 player.append("Player"+j, tables[i].getPlayers()[j].getSecondPocketCardId());
-                factors.put("Factor", String.format("%.2f", winFactor < 50 ? winFactor : 50));
+                factors.put("Factor", String.format("%.2f", winFactor < 50 ? winFactor : 49.99f));
                 factors.put("Indicator", indicator);
                 player.append("Player"+j, factors);
             }
@@ -197,7 +200,7 @@ public class Game_new implements Runnable{
                 float winFactor = 1 / winRate;
                 int indicator = (int)(((float)(counters.getTie()[j] +1) / counters.iteration) * 100);
                 JSONObject factor = new JSONObject();
-                factor.put("Factor", String.format("%.2f", winFactor < 50 ? winFactor : 50));
+                factor.put("Factor", String.format("%.2f", winFactor < 50 ? (winFactor < 1.35f ? 1.01f : winFactor ) : 49.99f));
                 factor.put("Indicator", indicator);
                 player.put("Player"+j, factor);
             }
