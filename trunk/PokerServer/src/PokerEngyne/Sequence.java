@@ -32,6 +32,7 @@ public class Sequence {
         if(isRoyalFlush(allCard) != null){
             WinnerData data = isRoyalFlush(allCard);
             data.combinationPower = 126;
+            data.actualPower = 126;
             data.boardCards = getBoardCardsIdArray(board);
             data.pocketCardsId = getPokcetCardsId(pocketCard);
             
@@ -40,6 +41,7 @@ public class Sequence {
         WinnerData result = isStraightFlush(allCard);
         if(result != null){
             result.combinationPower += 112;
+            result.actualPower = 112;
             result.boardCards = getBoardCardsIdArray(board);
             result.pocketCardsId = getPokcetCardsId(pocketCard);
             
@@ -48,6 +50,7 @@ public class Sequence {
         result = isQuads(allCard);
         if (result != null) {
             result.combinationPower += 98;
+            result.actualPower = 98;
             result.boardCards = getBoardCardsIdArray(board);
             result.pocketCardsId = getPokcetCardsId(pocketCard);
             return result;
@@ -55,6 +58,7 @@ public class Sequence {
         result = isFullHouse(allCard);
         if (result != null) {
             result.combinationPower += 84;
+            result.actualPower = 84;
             result.boardCards = getBoardCardsIdArray(board);
             result.pocketCardsId = getPokcetCardsId(pocketCard);
             return result;
@@ -62,6 +66,7 @@ public class Sequence {
         result = isFlush(allCard);
         if (result != null) {
             result.combinationPower += 70;
+            result.actualPower = 70;
             result.boardCards = getBoardCardsIdArray(board);
             result.pocketCardsId = getPokcetCardsId(pocketCard);
             return result;
@@ -69,6 +74,7 @@ public class Sequence {
         result = isStraight(allCard);
         if (result != null) {
             result.combinationPower += 56;
+            result.actualPower = 56;
             result.boardCards = getBoardCardsIdArray(board);
             result.pocketCardsId = getPokcetCardsId(pocketCard);
             return result;
@@ -76,6 +82,7 @@ public class Sequence {
         result = isSet(allCard);
         if (result != null) {
             result.combinationPower += 42;
+            result.actualPower = 42;
             result.boardCards = getBoardCardsIdArray(board);
             result.pocketCardsId = getPokcetCardsId(pocketCard);
             return result;
@@ -83,6 +90,7 @@ public class Sequence {
         result = isTwoPair(allCard);
         if (result != null) {
             result.combinationPower += 28;
+            result.actualPower = 28;
             result.boardCards = getBoardCardsIdArray(board);
             result.pocketCardsId = getPokcetCardsId(pocketCard);
             return result;
@@ -90,6 +98,7 @@ public class Sequence {
         result = isOnePair(allCard);
         if (result != null) {
             result.combinationPower += 14;
+            result.actualPower = 14;
             result.boardCards = getBoardCardsIdArray(board);
             result.pocketCardsId = getPokcetCardsId(pocketCard);
             return result;
@@ -328,26 +337,6 @@ public class Sequence {
         return result;
     }
     
-    public static int getCicker(WinnerData data){
-        int[] winnCardsId = data.winnCardsId;
-        int[] pocketCardsId = data.pocketCardsId;
-        int firstCicker = 0;
-        int secondCicker = 0;
-        if(Arrays.binarySearch(winnCardsId, pocketCardsId[0]) < 0){
-            firstCicker = DBTools.getCards(pocketCardsId[0]).getDignitysId();
-        }
-        if(Arrays.binarySearch(winnCardsId, pocketCardsId[1]) < 0){
-            secondCicker = DBTools.getCards(pocketCardsId[1]).getDignitysId();
-        }
-        if((firstCicker > 0 && secondCicker > 0 && firstCicker > secondCicker) || (firstCicker > 0 && secondCicker == 0)){
-            return firstCicker;
-        }else if((secondCicker > 0 && firstCicker > 0 && secondCicker > firstCicker) || (secondCicker > 0 && firstCicker == 0)){
-            return secondCicker;
-        }
-
-        return 0;
-    }
-    
     private static int[] getPokcetCardsId(Cards[] cards){
         int[] result = new int[2];
         result[0] = cards[0].getId();
@@ -365,27 +354,35 @@ public class Sequence {
         }
         winners.add(winner);
         for (int i = 0; i < players.length; i++) {
-            if(players[i].getCombinationPover().combinationPower == winner.getCombinationPover().combinationPower &&
-                    players[i].getPlayerId() !=  winner.getPlayerId()){
-                winners.add(players[i]);
-            }
-        }
-        if(winners.size() > 1 && winner.getCombinationPover().combinationPower > 15 && winner.getCombinationPover().combinationPower < 56){
-            ArrayList<Player> tmp = new ArrayList<>(winners);
-            winners.clear();
-            winner = tmp.get(0);
-            
-            for (int i = 0; i < tmp.size(); i++) {
-                if(getCicker(tmp.get(i).getCombinationPover()) >= getCicker(winner.getCombinationPover())){
-                    winner = tmp.get(i);
-                }
-            }
-            for (int i = 0; i < tmp.size(); i++) {
-                if(getCicker(tmp.get(i).getCombinationPover()) >= getCicker(winner.getCombinationPover())){
-                    winners.add(players[i]);
-                }
+            if(players[i].getCombinationPover().combinationPower == winner.getCombinationPover().combinationPower){
+                players[i].setCicker(getCicker(players[i].getCombinationPover()));
             }
         }
         return winners.toArray(new Player[0]);
+    }
+    
+    private static int getCicker(WinnerData data){
+        int result = 0;
+        switch (data.actualPower) {
+            case 14:{
+                result = onePairCicker(data);
+                break;
+            }
+        }
+        return result;
+    }
+    private static int onePairCicker(WinnerData data){
+        int result = DBTools.getOlder(data.pocketCardsId[0], data.pocketCardsId[1]);
+        for (int i = 0; i < data.winnCardsId.length; i++) {
+            if(data.winnCardsId[i] == result){
+                result = DBTools.getJunior(data.pocketCardsId[0], data.pocketCardsId[1]);
+            }
+        }
+        for (int i = 0; i < data.winnCardsId.length; i++) {
+            if(data.winnCardsId[i] == result){
+                return 0;
+            }
+        }
+        return result;
     }
 }

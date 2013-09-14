@@ -266,6 +266,71 @@ public class DBTools {
         }
         return -1;
     }
+    
+    public static  int getOlder(int first, int second){
+        Connection con = getConnection();
+        try{
+            PreparedStatement ps = con.prepareStatement("select max(dignitys_id) as val, max(id) as id from cards where id = ? || id = ?");
+            ps.setInt(1, first);
+            ps.setInt(2, second);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                return rs.getInt("id");
+            }
+        }catch (Exception e) {
+            Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, e);   
+        }finally{
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return -1;
+    }
+    
+    public static  int getJunior(int first, int second){
+        Connection con = getConnection();
+        try{
+            PreparedStatement ps = con.prepareStatement("select min(dignitys_id) as val, min(id) as id from cards where id = ? || id = ?");
+            ps.setInt(1, first);
+            ps.setInt(2, second);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                return rs.getInt("id");
+            }
+        }catch (Exception e) {
+            Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, e);   
+        }finally{
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return -1;
+    }
+    
+    public static  int getCardDignitys(int id){
+        Connection con = getConnection();
+        try{
+            PreparedStatement ps = con.prepareStatement("select dignitys_id as val from cards where id = ?");
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                return rs.getInt("val");
+            }
+        }catch (Exception e) {
+            Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, e);   
+        }finally{
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return -1;
+    }
     /*public static void generateDeck(){
         try{
             Connection c = getConnection();

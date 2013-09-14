@@ -15,6 +15,7 @@ public class Player {
     private Cards[] pocketCards;
     private WinnerData combinationPover;
     private int playerId;
+    private int cicker;
     public Player(int id){
         pocketCards = new Cards[2];
         combinationPover = null;
@@ -61,7 +62,7 @@ public class Player {
     public void setCombinationPover(WinnerData combinationPover) {
         this.combinationPover = combinationPover;
     }
-
+    
     public int[] getHandsCardsId(){
         int[] result = new int[2];
         result[0] = getFirstCard().getId();
@@ -71,5 +72,19 @@ public class Player {
 
     public int getPlayerId() {
         return playerId;
+    }
+
+    /**
+     * @return the cicker
+     */
+    public int getCicker() {
+        return cicker;
+    }
+
+    /**
+     * @param cicker the cicker to set
+     */
+    public void setCicker(int cicker) {
+        this.cicker = cicker;
     }
 }
