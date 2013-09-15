@@ -14,10 +14,12 @@ import pokerserver.Player;
  * @author Андрей
  */
 public class MonteCarlo {
-    private static int iteration = 36;
+    private static int iteration = 1000;
+
     public static Counters getFactor(Player[] players, Deck deck){
         Counters counter = new Counters(players);
         for (int i = 0; i < iteration; i++) {
+            long time = System.currentTimeMillis();
             Player[] tmpPlayers = players;
             Deck tmp = new Deck(deck);
             tmp.shuffleDeck(); 
@@ -29,21 +31,22 @@ public class MonteCarlo {
                 tmpPlayers[j].setCombinationPover(Sequence.CheckSequence(tmpPlayers[j].getPocketCards(), board));
             }
             Player[] winners = Sequence.getWinner(players);
+            
             for (int j = 0; j < winners.length; j++) {
                 for (int k = 0; k < players.length; k++) {
                     if(winners[j].getPlayerId() == players[k].getPlayerId()){
                         if(winners.length > 1){
-                            //players[k].tie++;
                             counter.setTie(k);
                             counter.setWins(k);
                         }
                         else{
-                            //players[k].wins++;
                             counter.setWins(k);
                         }
                     }
                 }
             }
+            time = (System.currentTimeMillis() - time);
+            System.out.println("Iteration time" + time);
         }
         counter.iteration = iteration;
         return counter;
@@ -84,12 +87,10 @@ public class MonteCarlo {
                 for (int k = 0; k < players.length; k++) {
                     if(winners[j] == players[k]){
                         if(winners.length > 1){
-                            //players[k].tie++;
                             counter.setTie(k);
                             counter.setWins(k);
                         }
                         else{
-                            //players[k].wins++;
                             counter.setWins(k);
                         }
                     }

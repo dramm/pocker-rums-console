@@ -14,8 +14,9 @@ import PokerEngyne.Sequence;
  */
 public class Table_new {
     private Deck deck;
-    private Player[] players;
-    private Cards[] bord;
+    public Player[] players;
+    public Player[] winners;
+    public Cards[] bord;
     private int[] winnerCombination;
     private int playersCount;
     public Table_new(int playerCount){
@@ -55,7 +56,9 @@ public class Table_new {
         for (int i = 0; i < players.length; i++) {
             players[i].setCombinationPover(Sequence.CheckSequence(players[i].getPocketCards(), bord));
             
+            
         }
+        winners = Sequence.getWinner(players);
     }
     
     public void generateGame(){
@@ -85,5 +88,12 @@ public class Table_new {
 
     public void setWinnerCombination(int[] winnerCombination) {
         this.winnerCombination = winnerCombination;
+    }
+
+    /**
+     * @return the winners
+     */
+    public Player[] getWinners() {
+        return winners;
     }
 }
