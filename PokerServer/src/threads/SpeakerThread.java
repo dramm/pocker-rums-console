@@ -67,7 +67,7 @@ public class SpeakerThread extends Thread{
                     }
 
                 }
-                Thread.sleep(10);
+                Thread.sleep(200);
             }
             
         }catch ( IOException | InterruptedException ex) {

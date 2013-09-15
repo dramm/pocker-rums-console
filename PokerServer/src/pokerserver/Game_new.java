@@ -46,7 +46,7 @@ public class Game_new implements Runnable{
                     nextStage();
                     Bridge.newData.setGoNext(false);
                 }
-                Thread.sleep(10);
+                Thread.sleep(200);
             }
         }
         catch (JSONException | InterruptedException ex) {
@@ -146,7 +146,10 @@ public class Game_new implements Runnable{
     private JSONObject generatePreflopPackege() throws JSONException{
         JSONObject js = new JSONObject();
         for (int i = 0; i < tables.length; i++) {
+            long time = System.currentTimeMillis();
             Counters factor = MonteCarlo.getFactor(tables[i].getPlayers(), tables[i].getDeck());
+            time = (System.currentTimeMillis() - time) / 1000;
+            System.out.println("Time" + time);
             JSONObject player = new JSONObject();
             for (int j = 0; j < tables[i].getPlayers().length; j++) {
                 float winRate = (float)(factor.getWins()[j] + 1) / factor.iteration;
@@ -217,7 +220,7 @@ public class Game_new implements Runnable{
         int[][] indexes = new int[tables.length][];
         for (int i = 0; i < tables.length; i++) {
             JSONObject jsCardId = new JSONObject();
-            Player[] winners = Sequence.getWinner(tables[i].getPlayers());
+            Player[] winners = tables[i].getWinners();
             indexes[i] = new int[winners.length];
             for (int j = 0; j < winners.length; j++) {
                 indexes[i][j] = winners[j].getPlayerId();
@@ -225,9 +228,6 @@ public class Game_new implements Runnable{
                 for (int k = 0; k < cardsId.length ; k++) {
                     jsCardId.append("Combination"+j, cardsId[k]);
                 }
-               
-                //win.put(bets.findWinner(i, winners[j].getPlayerId()).toJSONObject(win));
-                
             }
             pack.put("Table"+i, jsCardId);
         }
