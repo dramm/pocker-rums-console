@@ -5,6 +5,7 @@
 package pokerserver;
 
 import DataBaseClasses.Cards;
+import Enums.GameStages;
 import PokerEngyne.CalculateTh;
 import PokerEngyne.Counters;
 import PokerEngyne.Sequence;
@@ -104,20 +105,25 @@ public class Table_new {
     /**
      * @return the factor
      */
-    public Counters getFactor() {
+    public synchronized Counters getFactor() {
         return factor;
     }
     
-    public boolean isFlag(){
+    public synchronized boolean isFlag(){
         return ct.isFlag();
     }
-    public void setFactor(){
+    public synchronized void setFactor(){
         factor = ct.getCounter();
     }
     public void runMontecarlo(){
         ct = new CalculateTh(players, deck);
         Thread thread = new Thread(ct);
-        thread.setName("Montecarlo");
+        thread.start();
+    }
+    
+    public void runMontecarlo(GameStages.Stage stage){
+        ct = new CalculateTh(players, deck, bord, stage);
+        Thread thread = new Thread(ct);
         thread.start();
     }
 }

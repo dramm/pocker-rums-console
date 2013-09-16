@@ -20,19 +20,19 @@ public class Counters {
         tie = new int[size];
     }
 
-    public int[] getWins() {
+    public synchronized int[] getWins() {
         return wins;
     }
 
-    public void setWins(int index) {
+    public synchronized void setWins(int index) {
         this.wins[index]++;
     }
 
-    public int[] getTie() {
+    public synchronized int[] getTie() {
         return tie;
     }
 
-    public void setTie(int index) {
+    public synchronized void setTie(int index) {
         this.tie[index]++;
     }
 }
