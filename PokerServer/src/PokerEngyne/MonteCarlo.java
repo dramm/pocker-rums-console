@@ -14,12 +14,11 @@ import pokerserver.Player;
  * @author Андрей
  */
 public class MonteCarlo {
-    private static int iteration = 1000;
+    private static int iteration = 50;
 
     public static Counters getFactor(Player[] players, Deck deck){
         Counters counter = new Counters(players);
         for (int i = 0; i < iteration; i++) {
-            long time = System.currentTimeMillis();
             Player[] tmpPlayers = players;
             Deck tmp = new Deck(deck);
             tmp.shuffleDeck(); 
@@ -45,8 +44,6 @@ public class MonteCarlo {
                     }
                 }
             }
-            time = (System.currentTimeMillis() - time);
-            System.out.println("Iteration time" + time);
         }
         counter.iteration = iteration;
         return counter;
