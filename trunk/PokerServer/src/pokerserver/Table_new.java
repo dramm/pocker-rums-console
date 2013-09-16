@@ -5,6 +5,8 @@
 package pokerserver;
 
 import DataBaseClasses.Cards;
+import PokerEngyne.CalculateTh;
+import PokerEngyne.Counters;
 import PokerEngyne.Sequence;
 
 
@@ -19,6 +21,8 @@ public class Table_new {
     public Cards[] bord;
     private int[] winnerCombination;
     private int playersCount;
+    private Counters factor;
+    private CalculateTh ct;
     public Table_new(int playerCount){
         this.playersCount = playerCount;
         deck = new Deck();
@@ -95,5 +99,25 @@ public class Table_new {
      */
     public Player[] getWinners() {
         return winners;
+    }
+
+    /**
+     * @return the factor
+     */
+    public Counters getFactor() {
+        return factor;
+    }
+    
+    public boolean isFlag(){
+        return ct.isFlag();
+    }
+    public void setFactor(){
+        factor = ct.getCounter();
+    }
+    public void runMontecarlo(){
+        ct = new CalculateTh(players, deck);
+        Thread thread = new Thread(ct);
+        thread.setName("Montecarlo");
+        thread.start();
     }
 }

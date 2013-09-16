@@ -144,12 +144,21 @@ public class Game_new implements Runnable{
         return js;
     }
     private JSONObject generatePreflopPackege() throws JSONException{
+        for (int i = 0; i < tables.length; i++) {
+            tables[i].runMontecarlo();
+        }
+        do {
+            
+            tables[0].setFactor();
+            tables[1].setFactor();
+            tables[2].setFactor();
+            
+        } while (!tables[0].isFlag() && !tables[1].isFlag() && !tables[2].isFlag());
+        
         JSONObject js = new JSONObject();
         for (int i = 0; i < tables.length; i++) {
-            long time = System.currentTimeMillis();
-            Counters factor = MonteCarlo.getFactor(tables[i].getPlayers(), tables[i].getDeck());
-            time = (System.currentTimeMillis() - time) / 1000;
-            System.out.println("Time" + time);
+            //Counters factor = MonteCarlo.getFactor(tables[i].getPlayers(), tables[i].getDeck());
+            Counters factor = tables[i].getFactor();
             JSONObject player = new JSONObject();
             for (int j = 0; j < tables[i].getPlayers().length; j++) {
                 float winRate = (float)(factor.getWins()[j] + 1) / factor.iteration;

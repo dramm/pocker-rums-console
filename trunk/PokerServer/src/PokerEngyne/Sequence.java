@@ -379,6 +379,7 @@ public class Sequence {
                     winners = tmp;
                     break;
                 }
+                case 84:
                 case 28:{
                     ArrayList<Player> tmp = new ArrayList<>();
                     int max = getMaxSecondPair(players);
@@ -400,12 +401,39 @@ public class Sequence {
                     winners = tmp;
                     break;
                 }
+                case 70:{
+                    //flushDifference(winners.get(0).getCombinationPover().winnCardsId, 
+                           // winners.get(1).getCombinationPover().winnCardsId);
+                    break;
+                }
                 default:{
                     break;
                 }
             }
         }
         return winners.toArray(new Player[0]);
+    }
+    
+    private static int flushDifference(int[] first, int[] second){
+        int result = 0;
+        int[] firstCardsArr = new int[first.length];
+        int[] secondCardsArr = new int[second.length];
+        for (int i = 0; i < first.length; i++) {
+            firstCardsArr[i] = DBTools.getCards(first[i]).getDignitysId();
+        }
+        for (int i = 0; i < second.length; i++) {
+            secondCardsArr[i] = DBTools.getCards(second[i]).getDignitysId();
+        }
+        for (int i = firstCardsArr.length - 1; i >= 0; i--) {
+            if(firstCardsArr[i] != secondCardsArr[i]){
+                if(firstCardsArr[i] > secondCardsArr[i]){
+                    return 1;
+                }else if(firstCardsArr[i] < secondCardsArr[i]){
+                    return -1;
+                }
+            }
+        }
+        return result;
     }
     
     private static int onePairCicker(WinnerData data){
