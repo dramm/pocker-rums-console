@@ -118,6 +118,7 @@ public class Sequence {
         return data;
     }
     public static WinnerData isOnePair(Cards[] allCard){
+
         WinnerData data = new WinnerData();
         for(int i=0; i < allCard.length - 1; i++){
             if(allCard[i].getDignitysId() == allCard[i+1].getDignitysId()){
@@ -125,12 +126,15 @@ public class Sequence {
                 data.winnCardsId = new int[2];
                 data.winnCardsId[0] = allCard[i].getId();
                 data.winnCardsId[1] = allCard[i+1].getId();
+                
                 return data; 
              }
         }
+       
         return null;
     }
     public static WinnerData isTwoPair(Cards[] allCard){
+        
         WinnerData data = new WinnerData();
         int count = 0;
         for (int i = 0; i < allCard.length - 1; i++) {
@@ -154,14 +158,17 @@ public class Sequence {
                         data.secondPairPower = allCard[i].getDignitysId();
                         data.winnCardsId[2] = allCard[j].getId();
                         data.winnCardsId[3] = allCard[j+1].getId();
+                       
                         return data;
                     }
                 }
             } 
         }
+        
         return null;
     }
     public static WinnerData isSet(Cards[] allCard){
+        
         WinnerData data = new WinnerData();
         for(int i = 0; i < allCard.length - 2; i++){
             if(allCard[i].getDignitysId() == allCard[i+1].getDignitysId() && 
@@ -171,12 +178,15 @@ public class Sequence {
                 data.winnCardsId[0] = allCard[i].getId();
                 data.winnCardsId[1] = allCard[i+1].getId();
                 data.winnCardsId[2] = allCard[i+2].getId();
+                
                 return data; 
             }
         }
+        
         return null;
     }
     public static WinnerData isStraight(Cards[] allCard){
+        
         Cards[] clearCards = removeDuplicates(allCard);
         WinnerData data = new WinnerData();
         int stCount = 0;
@@ -198,6 +208,7 @@ public class Sequence {
                         for (int j = 0; j < id.size(); j++) {
                             data.winnCardsId[j] = id.get(j).intValue();
                         }
+                        
                         return data;
                     }
                     if(stCount >= 4 ){
@@ -211,6 +222,7 @@ public class Sequence {
                         for (int j = 0; j < id.size(); j++) {
                             data.winnCardsId[j] = id.get(j).intValue();
                         }
+                        
                         return data;
                     }
                     continue;
@@ -219,9 +231,11 @@ public class Sequence {
             }
             
         }
+        
         return null;
     }                                             
     public static WinnerData isFlush(Cards[] allCard){
+         long time = System.currentTimeMillis();
         WinnerData data = new WinnerData();
         for(int i = 1; i <= 4; i++){
             ArrayList<Cards> tmp = new ArrayList<>();
@@ -236,12 +250,15 @@ public class Sequence {
                 for (int j = 0; j < tmp.size(); j++) {
                     data.winnCardsId[j] = tmp.get(j).getId();
                 }
+                
                 return data;
             }
         }
+        
         return null;
     }
     public static WinnerData isFullHouse(Cards[] allCard){
+        
         WinnerData data = new WinnerData();
         for (int i = 0; i < allCard.length-2; i++) {
             if(allCard[i].getDignitysId() == allCard[i+1].getDignitysId() &&
@@ -256,14 +273,17 @@ public class Sequence {
                         data.winnCardsId[2] = allCard[i + 2].getId();
                         data.winnCardsId[3] = allCard[j].getId();
                         data.winnCardsId[4] = allCard[j + 1].getId();
+                        
                         return data;
                     }
                 }
             }
         }
+        
         return null;
     }
     public static WinnerData isQuads(Cards[] allCard){
+        
         int count = 0;
         WinnerData data = new WinnerData();
         for(int i = 0; i < allCard.length - 1; i++){
@@ -275,6 +295,7 @@ public class Sequence {
                     for (int j = 0; j < 4; j++) {
                         data.winnCardsId[j] = allCard[(i + 1) - j].getId();
                     }
+                    
                     return data;
 
                 }
@@ -282,9 +303,11 @@ public class Sequence {
             }
             count = 0;
         }
+       
         return null;
     }
     public static WinnerData isStraightFlush(Cards[] allCard){
+        
         WinnerData data = new WinnerData();
         for(int i = 1; i <= 4; i++){
             ArrayList<Cards> tmp = new ArrayList<>();
@@ -300,6 +323,7 @@ public class Sequence {
                     for (int j = 0; j < tmp.size(); j++) {
                         data.winnCardsId[j] = tmp.get(j).getId();
                     }
+                   
                     return data;
                 }
             }
@@ -308,13 +332,16 @@ public class Sequence {
         return null;
     }
     public static WinnerData isRoyalFlush(Cards[] allCard){
+        
         for (int i = 1; i <= 4; i++) {
             if(isFlush(allCard) != null && isStraight(allCard) != null){
                 if(isFlush(allCard).combinationPower == 14 && isStraight(allCard).combinationPower == 14){
+                    
                     return isFlush(allCard);
                 }
             }
         }
+      
         return null;
     }
     public static void PrintCard(Cards card){

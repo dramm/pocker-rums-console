@@ -69,6 +69,9 @@ public class Game_new implements Runnable{
                 Bridge.newData.setComand(1500);
                 Bridge.newData.setFlag(true);
                 gameStage = Stage.PREFLOP;
+                for (int i = 0; i < tables.length; i++) {
+                    tables[i].runMontecarlo();
+                }
                 break;
             }
             case PREFLOP:{
@@ -80,6 +83,9 @@ public class Game_new implements Runnable{
                 Bridge.newData.setComand(1510);
                 Bridge.newData.setFlag(true);
                 gameStage = Stage.FLOP;
+                for (int i = 0; i < tables.length; i++) {
+                    tables[i].runMontecarlo(gameStage);
+                }
                 break;
             }
             case FLOP:{
@@ -91,6 +97,9 @@ public class Game_new implements Runnable{
                 Bridge.newData.setComand(1520);
                 Bridge.newData.setFlag(true);
                 gameStage = Stage.TURN;
+                for (int i = 0; i < tables.length; i++) {
+                    tables[i].runMontecarlo(gameStage);
+                }
                 break;
             }
             case TURN:{
@@ -102,6 +111,9 @@ public class Game_new implements Runnable{
                 Bridge.newData.setComand(1530);
                 Bridge.newData.setFlag(true);
                 gameStage = Stage.RIVER;
+                for (int i = 0; i < tables.length; i++) {
+                    tables[i].runMontecarlo(gameStage);
+                }
                 break;
             }
             case RIVER:{
@@ -143,16 +155,17 @@ public class Game_new implements Runnable{
         js.put("Stage", gameStage.toString());
         return js;
     }
-    private JSONObject generatePreflopPackege() throws JSONException{
-        for (int i = 0; i < tables.length; i++) {
-            tables[i].runMontecarlo();
-        }
+    private synchronized JSONObject generatePreflopPackege() throws JSONException{
         do {
             
             tables[0].setFactor();
             tables[1].setFactor();
             tables[2].setFactor();
-            
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Game_new.class.getName()).log(Level.SEVERE, null, ex);
+            }
         } while (!tables[0].isFlag() && !tables[1].isFlag() && !tables[2].isFlag());
         
         JSONObject js = new JSONObject();
@@ -163,7 +176,7 @@ public class Game_new implements Runnable{
             for (int j = 0; j < tables[i].getPlayers().length; j++) {
                 float winRate = (float)(factor.getWins()[j] + 1) / factor.iteration;
                 float winFactor = 1 / winRate;
-                if(winFactor < 1.35f){
+                if(winFactor <= 1.35f){
                     winFactor = 1.01f;
                 }
                 int indicator = (int)(((float)(factor.getTie()[j] + 1) / factor.iteration) * 100);
@@ -179,7 +192,18 @@ public class Game_new implements Runnable{
         js.put("Stage", gameStage.toString());
         return js;
     }
-    private JSONObject generateBoardPackege() throws JSONException{
+    private synchronized JSONObject generateBoardPackege() throws JSONException{
+        do {
+            
+            tables[0].setFactor();
+            tables[1].setFactor();
+            tables[2].setFactor();
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Game_new.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } while (!tables[0].isFlag() && !tables[1].isFlag() && !tables[2].isFlag());
         JSONObject js = new JSONObject();
         for (int i = 0; i < tables.length; i++) {
             
@@ -206,13 +230,14 @@ public class Game_new implements Runnable{
                 }
             }
             
-            Counters counters = MonteCarlo.getFactor(tables[i].getPlayers(), tables[i].getDeck(), tables[i].getBord(), gameStage);
+            //Counters counters = MonteCarlo.getFactor(tables[i].getPlayers(), tables[i].getDeck(), tables[i].getBord(), gameStage);
+            Counters counters = tables[i].getFactor();
             for (int j = 0; j < tables[i].getPlayers().length; j++) {
                 float winRate = (float)(counters.getWins()[j] + 1) / counters.iteration;
                 float winFactor = 1 / winRate;
                 int indicator = (int)(((float)(counters.getTie()[j] +1) / counters.iteration) * 100);
                 JSONObject factor = new JSONObject();
-                factor.put("Factor", String.format("%.2f", winFactor < 50 ? (winFactor < 1.35f ? 1.01f : winFactor ) : 49.99f));
+                factor.put("Factor", String.format("%.2f", winFactor < 50 ? (winFactor <= 1.35f ? 1.01f : winFactor ) : 49.99f));
                 factor.put("Indicator", indicator);
                 player.put("Player"+j, factor);
             }

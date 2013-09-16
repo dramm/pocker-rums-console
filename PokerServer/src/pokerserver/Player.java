@@ -55,11 +55,11 @@ public class Player {
         return pocketCards[1];
     }
 
-    public WinnerData getCombinationPover() {
+    public synchronized WinnerData getCombinationPover() {
         return combinationPover;
     }
 
-    public void setCombinationPover(WinnerData combinationPover) {
+    public synchronized void setCombinationPover(WinnerData combinationPover) {
         this.combinationPover = combinationPover;
     }
     
