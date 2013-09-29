@@ -3,13 +3,12 @@
  * and open the template in the editor.
  */
 package pokerserver;
+import DataBaseClasses.Cards;
 import Enums.GameStages.Stage;
 import static Enums.GameStages.Stage.PREFLOP;
 import static Enums.GameStages.Stage.STARTING;
 import PokerEngyne.Bets;
 import PokerEngyne.Counters;
-import PokerEngyne.MonteCarlo;
-import PokerEngyne.Sequence;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.JSONArray;
@@ -33,6 +32,9 @@ public class Game_new implements Runnable{
         tables[0] = new Table_new(4);
         tables[1] = new Table_new(6);
         tables[2] = new Table_new(8);
+        /*tables[0] = getFirstTable();
+        tables[1] = getSecondTable();
+        tables[2] = getThirdTable();*/
         bets = new Bets();
         run = false;
     }
@@ -57,8 +59,7 @@ public class Game_new implements Runnable{
     private void nextStage() throws JSONException{
         switch (gameStage) {
             case STARTING:{
-                DBTools.setGame();
-                gameId = DBTools.getLastGameId();
+                gameId = DBTools.setGame();
                 for (int i = 0; i < tables.length; i++) {
                     tables[i].generateGame();
                 }
@@ -75,7 +76,7 @@ public class Game_new implements Runnable{
                 break;
             }
             case PREFLOP:{
-                DBTools.setGameStage(gameStage.getStage(), gameId);
+                //DBTools.setGameStage(gameStage.getStage(), gameId);
                 Bridge.newData.js = generatePreflopPackege();
                 debug();
                 Bridge.newData.setGameStage(gameStage);
@@ -89,7 +90,7 @@ public class Game_new implements Runnable{
                 break;
             }
             case FLOP:{
-                DBTools.setGameStage(gameStage.getStage(), gameId);
+                //DBTools.setGameStage(gameStage.getStage(), gameId);
                 Bridge.newData.js = generateBoardPackege();
                 debug();
                 Bridge.newData.setGameStage(gameStage);
@@ -103,7 +104,7 @@ public class Game_new implements Runnable{
                 break;
             }
             case TURN:{
-                DBTools.setGameStage(gameStage.getStage(), gameId);
+                //DBTools.setGameStage(gameStage.getStage(), gameId);
                 Bridge.newData.js = generateBoardPackege();
                 debug();
                 Bridge.newData.setGameStage(gameStage);
@@ -117,7 +118,7 @@ public class Game_new implements Runnable{
                 break;
             }
             case RIVER:{
-                DBTools.setGameStage(gameStage.getStage(), gameId);
+                //DBTools.setGameStage(gameStage.getStage(), gameId);
                 Bridge.newData.js = generateBoardPackege();
                 debug();
                 Bridge.newData.setGameStage(gameStage);
@@ -155,35 +156,38 @@ public class Game_new implements Runnable{
         js.put("Stage", gameStage.toString());
         return js;
     }
-    private synchronized JSONObject generatePreflopPackege() throws JSONException{
-        do {
-            
-            tables[0].setFactor();
-            tables[1].setFactor();
-            tables[2].setFactor();
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(Game_new.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        } while (!tables[0].isFlag() && !tables[1].isFlag() && !tables[2].isFlag());
-        
+    private JSONObject generatePreflopPackege() throws JSONException{
+                
         JSONObject js = new JSONObject();
         for (int i = 0; i < tables.length; i++) {
+            do {
+
+                tables[i].setFactor();
+                
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Game_new.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } while (!tables[i].isFlag());
             //Counters factor = MonteCarlo.getFactor(tables[i].getPlayers(), tables[i].getDeck());
             Counters factor = tables[i].getFactor();
             JSONObject player = new JSONObject();
             for (int j = 0; j < tables[i].getPlayers().length; j++) {
                 float winRate = (float)(factor.getWins()[j] + 1) / factor.iteration;
                 float winFactor = 1 / winRate;
-                if(winFactor <= 1.35f){
-                    winFactor = 1.01f;
+                if(winFactor >50 && winFactor < 147){
+                    winFactor = 50;
+                }else if(winFactor >= 147){
+                    winFactor = -1;
+                }else if(winFactor < 1.1f){
+                    winFactor = 1;
                 }
                 int indicator = (int)(((float)(factor.getTie()[j] + 1) / factor.iteration) * 100);
                 JSONObject factors = new JSONObject();
                 player.append("Player"+j, tables[i].getPlayers()[j].getFirstPocketCardId());
                 player.append("Player"+j, tables[i].getPlayers()[j].getSecondPocketCardId());
-                factors.put("Factor", String.format("%.2f", winFactor < 50 ? winFactor : 49.99f));
+                factors.put("Factor", String.format("%.2f", winFactor));
                 factors.put("Indicator", indicator);
                 player.append("Player"+j, factors);
             }
@@ -192,21 +196,18 @@ public class Game_new implements Runnable{
         js.put("Stage", gameStage.toString());
         return js;
     }
-    private synchronized JSONObject generateBoardPackege() throws JSONException{
-        do {
-            
-            tables[0].setFactor();
-            tables[1].setFactor();
-            tables[2].setFactor();
+    private JSONObject generateBoardPackege() throws JSONException{
+   
+        JSONObject js = new JSONObject();
+        for (int i = 0; i < tables.length; i++) {
+            do { 
+            tables[i].setFactor();
             try {
-                Thread.sleep(500);
+                Thread.sleep(200);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Game_new.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } while (!tables[0].isFlag() && !tables[1].isFlag() && !tables[2].isFlag());
-        JSONObject js = new JSONObject();
-        for (int i = 0; i < tables.length; i++) {
-            
+        } while (!tables[i].isFlag());
             JSONObject bord = new JSONObject();
             JSONObject player = new JSONObject();
             switch (gameStage) {
@@ -235,9 +236,16 @@ public class Game_new implements Runnable{
             for (int j = 0; j < tables[i].getPlayers().length; j++) {
                 float winRate = (float)(counters.getWins()[j] + 1) / counters.iteration;
                 float winFactor = 1 / winRate;
+                if(winFactor >50 && winFactor < 147){
+                    winFactor = 50;
+                }else if(winFactor >= 147){
+                    winFactor = -1;
+                }else if(winFactor < 1.1f){
+                    winFactor = 1;
+                }
                 int indicator = (int)(((float)(counters.getTie()[j] +1) / counters.iteration) * 100);
                 JSONObject factor = new JSONObject();
-                factor.put("Factor", String.format("%.2f", winFactor < 50 ? (winFactor <= 1.35f ? 1.01f : winFactor ) : 49.99f));
+                factor.put("Factor", String.format("%.2f", winFactor ));
                 factor.put("Indicator", indicator);
                 player.put("Player"+j, factor);
             }
@@ -273,5 +281,63 @@ public class Game_new implements Runnable{
     private void debug(){
         System.out.println(gameStage.toString());
         System.out.println(Bridge.newData.js.toString());
+    }
+    
+    private Table_new getFirstTable(){
+        Table_new table = new Table_new(4);
+        Cards[] bord = new Cards[5];
+        bord[0] = DBTools.getCards(33);
+        bord[1] = DBTools.getCards(38);
+        bord[2] = DBTools.getCards(23);
+        bord[3] = DBTools.getCards(51);
+        bord[4] = DBTools.getCards(12);
+        table.bord = bord;
+        Player[] players = new Player[4];
+        players[0] = new Player(new Cards[]{DBTools.getCards(24), DBTools.getCards(10)}, 0);
+        players[1] = new Player(new Cards[]{DBTools.getCards(50), DBTools.getCards(19)}, 1);
+        players[2] = new Player(new Cards[]{DBTools.getCards(35), DBTools.getCards(46)}, 2);
+        players[3] = new Player(new Cards[]{DBTools.getCards(30), DBTools.getCards(6)}, 3);
+        table.players = players;
+        return table;
+    }
+    private Table_new getSecondTable(){
+        Table_new table = new Table_new(6);
+        Cards[] bord = new Cards[5];
+        bord[0] = DBTools.getCards(36);
+        bord[1] = DBTools.getCards(10);
+        bord[2] = DBTools.getCards(14);
+        bord[3] = DBTools.getCards(4);
+        bord[4] = DBTools.getCards(28);
+        table.bord = bord;
+        Player[] players = new Player[6];
+        players[0] = new Player(new Cards[]{DBTools.getCards(23), DBTools.getCards(51)}, 0);
+        players[1] = new Player(new Cards[]{DBTools.getCards(17), DBTools.getCards(19)}, 1);
+        players[2] = new Player(new Cards[]{DBTools.getCards(27), DBTools.getCards(2)}, 2);
+        players[3] = new Player(new Cards[]{DBTools.getCards(42), DBTools.getCards(49)}, 3);
+        players[4] = new Player(new Cards[]{DBTools.getCards(45), DBTools.getCards(37)}, 4);
+        players[5] = new Player(new Cards[]{DBTools.getCards(34), DBTools.getCards(12)}, 5);
+        table.players = players;
+        return table;
+    }
+    private Table_new getThirdTable(){
+        Table_new table = new Table_new(8);
+        Cards[] bord = new Cards[5];
+        bord[0] = DBTools.getCards(2);
+        bord[1] = DBTools.getCards(30);
+        bord[2] = DBTools.getCards(5);
+        bord[3] = DBTools.getCards(41);
+        bord[4] = DBTools.getCards(23);
+        table.bord = bord;
+        Player[] players = new Player[8];
+        players[0] = new Player(new Cards[]{DBTools.getCards(10), DBTools.getCards(28)}, 0);
+        players[1] = new Player(new Cards[]{DBTools.getCards(13), DBTools.getCards(24)}, 1);
+        players[2] = new Player(new Cards[]{DBTools.getCards(50), DBTools.getCards(16)}, 2);
+        players[3] = new Player(new Cards[]{DBTools.getCards(12), DBTools.getCards(17)}, 3);
+        players[4] = new Player(new Cards[]{DBTools.getCards(15), DBTools.getCards(4)}, 4);
+        players[5] = new Player(new Cards[]{DBTools.getCards(52), DBTools.getCards(20)}, 5);
+        players[6] = new Player(new Cards[]{DBTools.getCards(31), DBTools.getCards(9)}, 6);
+        players[7] = new Player(new Cards[]{DBTools.getCards(18), DBTools.getCards(45)}, 7);
+        table.players = players;
+        return table;
     }
 }

@@ -12,6 +12,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -148,15 +149,19 @@ public class DBTools {
             }
         }
     }
-    public static void setGame(){
+    public static int setGame(){
         Connection con = getConnection();
         java.util.Date dt = new java.util.Date();
         java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String currentTime = sdf.format(dt);
         try {
-            PreparedStatement ps = con.prepareStatement("insert into game(start_date) values(?)");
+            PreparedStatement ps = con.prepareStatement("insert into game(start_date) values(?)", Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, currentTime);
-            ps.execute();
+            ps.executeUpdate();
+            ResultSet generatedKeys = ps.getGeneratedKeys();
+            if(generatedKeys.next()){
+                return generatedKeys.getInt(1);
+            }
         } catch (Exception e) {
             Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, e);
         }finally{
@@ -166,6 +171,7 @@ public class DBTools {
                 Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        return -1;
     }
     
     public static int getGameId(String uuid){
