@@ -20,6 +20,7 @@ public class Table_new {
     public Player[] players;
     public Player[] winners;
     public Cards[] bord;
+    public int stageId;
     private int[] winnerCombination;
     private int playersCount;
     private Counters factor;

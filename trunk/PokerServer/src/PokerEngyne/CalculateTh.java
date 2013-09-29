@@ -17,7 +17,7 @@ import pokerserver.Player;
  * @author Андрей
  */
 public class CalculateTh implements Runnable{
-    private static int iteration = 50;
+    private static int iteration = 151;
     private Counters counter;
     private boolean flag ;
     private Deck deck;
@@ -45,6 +45,7 @@ public class CalculateTh implements Runnable{
     public void run() {
         if(type){
             for (int i = 0; i < iteration; i++) {
+                
                 Player[] tmpPlayers = players;
                 Deck tmp = new Deck(deck);
                 tmp.shuffleDeck(); 
@@ -52,9 +53,13 @@ public class CalculateTh implements Runnable{
                 for (int j = 0; j < boardLocal.length; j++){
                     boardLocal[j] = tmp.IssueCard();
                 }
+                
                 for (int j = 0; j < players.length; j++) {
+                    //long time = System.currentTimeMillis();
                     tmpPlayers[j].setCombinationPover(Sequence.CheckSequence(tmpPlayers[j].getPocketCards(), boardLocal));
+                    //System.out.println("Time" + (System.currentTimeMillis() - time));
                 }
+                
                 Player[] winners = Sequence.getWinner(players);
 
                 for (int j = 0; j < winners.length; j++) {
@@ -70,8 +75,9 @@ public class CalculateTh implements Runnable{
                         }
                     }
                 }
+                
             }
-
+            
             counter.iteration = iteration;
             flag = true;
         }else{

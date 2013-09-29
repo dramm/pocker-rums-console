@@ -9,6 +9,7 @@ import DataBaseClasses.Dignity;
 import DataBaseClasses.Suits;
 import java.util.ArrayList;
 import java.util.Arrays;
+import pokerserver.CardColection;
 import pokerserver.DBTools;
 import pokerserver.Player;
 
@@ -260,7 +261,43 @@ public class Sequence {
     public static WinnerData isFullHouse(Cards[] allCard){
         
         WinnerData data = new WinnerData();
-        for (int i = 0; i < allCard.length-2; i++) {
+        Cards[] trips = new Cards[3];
+        int tripsDig = 0;
+        Cards[] pair = new Cards[2];
+        int pairDig = 0;
+        for (int i = 0; i < allCard.length - 2; i++) {
+            if(allCard[i].getDignitysId() == allCard[i+1].getDignitysId() &&
+                    allCard[i].getDignitysId() == allCard[i+2].getDignitysId()){
+                if(allCard[i].getDignitysId() > tripsDig){
+                    tripsDig = allCard[i].getDignitysId();
+                    trips[0] = allCard[i];
+                    trips[1] = allCard[i + 1];
+                    trips[2] = allCard[i + 2];
+                }
+            }
+        }
+        for (int i = 0; i < allCard.length - 1; i++) {
+            if(allCard[i].getDignitysId() == allCard[i+1].getDignitysId() &&
+                    allCard[i].getDignitysId() != tripsDig){
+                if(allCard[i].getDignitysId() > pairDig){
+                    pairDig = allCard[i].getDignitysId();
+                    pair[0] = allCard[i];
+                    pair[1] = allCard[i + 1];
+                }
+            }
+        }
+        if(tripsDig != 0 && pairDig != 0){
+            data.combinationPower = tripsDig; 
+            data.winnCardsId = new int[5];
+            data.winnCardsId[0] = trips[0].getId();
+            data.winnCardsId[1] = trips[1].getId();
+            data.winnCardsId[2] = trips[2].getId();
+            data.winnCardsId[3] = pair[0].getId();
+            data.winnCardsId[4] = pair[1].getId();
+            return data;
+        }
+        
+        /*for (int i = 0; i < allCard.length-2; i++) {
             if(allCard[i].getDignitysId() == allCard[i+1].getDignitysId() &&
                     allCard[i].getDignitysId() == allCard[i+2].getDignitysId()){
                 for (int j = 0; j < allCard.length-1; j++) {
@@ -278,7 +315,7 @@ public class Sequence {
                     }
                 }
             }
-        }
+        }*/
         
         return null;
     }

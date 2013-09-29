@@ -4,7 +4,6 @@
  */
 package PokerEngyne;
 
-import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +45,7 @@ public class Bets {
                                 }
                             }
                         }
+                        playerData.put("IdBet", bet.getBetId());
                         playerData.put("betCount", betCoutn);
                         playerData.put("summSize", bet.getBetSize() * betCoutn);
                         playerData.put("winnSize", summSize / betCoutn);
