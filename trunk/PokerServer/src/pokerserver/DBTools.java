@@ -27,9 +27,6 @@ public class DBTools {
     
     private static Connection getConnection(){
         try{
-            //log.info("connect to data base");
-            //i++;
-           // log.log(Level.INFO, "{0} ", i);
             return DriverManager.getConnection(ServerConf.getDBUrl(),
                     ServerConf.getDBUser(), ServerConf.getDBPasswd());
             

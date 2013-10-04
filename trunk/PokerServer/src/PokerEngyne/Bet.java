@@ -21,7 +21,6 @@ public class Bet {
     private Map<String,Map<Integer,Double>> tableData;
     public Bet(JSONObject data) throws JSONException{
         betId = data.getInt("IdBet");
-        //betId = 101;
         userId = data.getInt("Id");
         betSize = data.getDouble("Sum");
         tableData = new HashMap<>();
@@ -60,5 +59,12 @@ public class Bet {
 
     public int getBetId() {
         return betId;
+    }
+
+    /**
+     * @return the express
+     */
+    public boolean isExpress() {
+        return express;
     }
 }

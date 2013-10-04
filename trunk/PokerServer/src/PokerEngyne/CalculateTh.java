@@ -17,7 +17,7 @@ import pokerserver.Player;
  * @author Андрей
  */
 public class CalculateTh implements Runnable{
-    private static int iteration = 151;
+    private static int iteration = 15101;
     private Counters counter;
     private boolean flag ;
     private Deck deck;
@@ -45,7 +45,7 @@ public class CalculateTh implements Runnable{
     public void run() {
         if(type){
             for (int i = 0; i < iteration; i++) {
-                
+                //long time = System.currentTimeMillis();
                 Player[] tmpPlayers = players;
                 Deck tmp = new Deck(deck);
                 tmp.shuffleDeck(); 
@@ -66,22 +66,22 @@ public class CalculateTh implements Runnable{
                     for (int k = 0; k < players.length; k++) {
                         if(winners[j].getPlayerId() == players[k].getPlayerId()){
                             if(winners.length > 1){
-                                getCounter().setTie(k);
-                                getCounter().setWins(k);
+                                counter.setTie(k);
+                                counter.setWins(k);
                             }
                             else{
-                                getCounter().setWins(k);
+                                counter.setWins(k);
                             }
                         }
                     }
                 }
-                
+                //System.out.println("Time" + (System.currentTimeMillis() - time));
             }
             
             counter.iteration = iteration;
             flag = true;
         }else{
-                int cardsInBoard = 0;
+            int cardsInBoard = 0;
             switch (stage) {
                 case FLOP:{
                     cardsInBoard = 3;

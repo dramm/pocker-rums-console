@@ -13,17 +13,15 @@ import PokerEngyne.WinnerData;
  */
 public class Player {
     private Cards[] pocketCards;
-    private WinnerData combinationPover;
     private int playerId;
     private int cicker;
+    private float pover;
     public Player(int id){
         pocketCards = new Cards[2];
-        combinationPover = null;
         playerId = id;
     }
     public Player(Cards[] pocketCards, int id){
         this.pocketCards = pocketCards;
-        combinationPover = null;
         playerId = id;
     }
 
@@ -55,12 +53,12 @@ public class Player {
         return pocketCards[1];
     }
 
-    public synchronized WinnerData getCombinationPover() {
-        return combinationPover;
+    public synchronized float getCombinationPover() {
+        return pover;
     }
 
-    public synchronized void setCombinationPover(WinnerData combinationPover) {
-        this.combinationPover = combinationPover;
+    public synchronized void setCombinationPover(float combinationPover) {
+        this.pover = combinationPover;
     }
     
     public int[] getHandsCardsId(){
