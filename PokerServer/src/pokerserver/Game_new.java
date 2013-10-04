@@ -266,10 +266,11 @@ public class Game_new implements Runnable{
             indexes[i] = new int[winners.length];
             for (int j = 0; j < winners.length; j++) {
                 indexes[i][j] = winners[j].getPlayerId();
-                int[] cardsId = winners[j].getCombinationPover().winnCardsId;
+                jsCardId.append("WinnHand", winners[j].getPlayerId());
+                /*int[] cardsId = winners[j].getCombinationPover().winnCardsId;
                 for (int k = 0; k < cardsId.length ; k++) {
                     jsCardId.append("Combination"+j, cardsId[k]);
-                }
+                }*/
             }
             pack.put("Table"+i, jsCardId);
         }
