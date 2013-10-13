@@ -64,6 +64,9 @@ public class SpeakerThread extends Thread{
                             Bridge.newData.setFlag(false);
                             break;
                         }
+                        case 1570:{
+                            //отправить статистику по игре 
+                        }
                     }
 
                 }

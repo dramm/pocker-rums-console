@@ -7,6 +7,7 @@ package pokerserver;
 import DataBaseClasses.Cards;
 import DataBaseClasses.Dignity;
 import DataBaseClasses.Suits;
+import PokerEngyne.Bet;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -129,13 +130,17 @@ public class DBTools {
         return null;
     }
     
-    public static void setHand( Cards[] cards){
+    public static int setHand( Cards[] cards){
         Connection con = getConnection();
         try{
-            PreparedStatement ps = con.prepareStatement("insert into hands(first_card_id, second_card_id) values(?,?)");
+            PreparedStatement ps = con.prepareStatement("insert into hands(first_card_id, second_card_id) values(?,?)", Statement.RETURN_GENERATED_KEYS);
             ps.setInt(1, cards[0].getId());
             ps.setInt(2, cards[1].getId());
-            ps.execute();
+            ps.executeUpdate();
+            ResultSet generatedKeys = ps.getGeneratedKeys();
+            if(generatedKeys.next()){
+                return generatedKeys.getInt(1);
+            }
         }catch(SQLException ex){
             Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);
         }finally{
@@ -144,6 +149,35 @@ public class DBTools {
             } catch (SQLException ex) {
                 Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);
             }
+        }
+        return -1;
+    }
+    
+    public static void setBet(int handInStage, int playerId, double value, int betId, boolean express){
+        Connection con = getConnection();
+        try{
+            PreparedStatement ps = con.prepareStatement("insert into bets(hand_in_stage_id, player_id, value, bet_id, express) values(?, ?, ?, ?, ?)");
+            ps.setInt(1, handInStage);
+            ps.setInt(2, playerId);
+            ps.setDouble(3, value);
+            ps.setInt(4, betId);
+            ps.setBoolean(5, express);
+            ps.execute();
+        } catch (SQLException ex) {
+            Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public static void setHandInStage(int gameStageId, int handId, float factor){
+        Connection con = getConnection();
+        try{
+            PreparedStatement ps = con.prepareStatement("insert into hands_in_stage(game_stage_id, hand_id, factor) values(?, ?, ?)");
+            ps.setInt(1, gameStageId);
+            ps.setInt(2, handId);
+            ps.setFloat(3, factor);
+            ps.execute();
+        } catch (SQLException ex) {
+            Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     public static int setGame(){
@@ -171,16 +205,18 @@ public class DBTools {
         return -1;
     }
     
-    public static int getGameId(String uuid){
+    public static int setGameStage(int stage, int gameId, int tableId){
         Connection con = getConnection();
         try {
-            PreparedStatement ps = con.prepareStatement("select id from game_n where table_id = ?");
-            ps.setString(1, uuid);
-            ResultSet rs = ps.executeQuery();
-            while(rs.next()){
-                return rs.getInt("id");
+            PreparedStatement ps = con.prepareStatement("insert into game_stage(stage_id, game_id, table_id) values(?,?, ?)", Statement.RETURN_GENERATED_KEYS);
+            ps.setInt(1, stage);
+            ps.setInt(2, gameId);
+            ps.setInt(3, tableId);
+            ps.executeUpdate();
+            ResultSet generatedKeys = ps.getGeneratedKeys();
+            if(generatedKeys.next()){
+                return generatedKeys.getInt(1);
             }
-            
         } catch (Exception e) {
             Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, e);
         }finally{
@@ -191,24 +227,6 @@ public class DBTools {
             }
         }
         return -1;
-    }
-    
-    public static void setGameStage(int stage, int gameId){
-        Connection con = getConnection();
-        try {
-            PreparedStatement ps = con.prepareStatement("insert into game_stage(stage_id, game_id) values(?,?)");
-            ps.setInt(1, stage);
-            ps.setInt(2, gameId);
-            ps.execute();
-        } catch (Exception e) {
-            Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, e);
-        }finally{
-            try {
-                con.close();
-            } catch (SQLException ex) {
-                Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
     }
     
     public static int getGameStageId(int gameId, int stage){
@@ -233,12 +251,12 @@ public class DBTools {
         return -1;
     }
     
-    public static void setDistribution(Cards card, int gameId, int stage){
+    public static void setDistribution(Cards card, int stageId){
         Connection con = getConnection();
         try {
             PreparedStatement ps = con.prepareStatement("insert into distribution(card_id, game_stage_id) values(?, ?)");
             ps.setInt(1, card.getId());
-            ps.setInt(2, getGameStageId(gameId, stage));
+            ps.setInt(2, stageId);
             ps.execute();
         } catch (Exception e) {
             Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, e);

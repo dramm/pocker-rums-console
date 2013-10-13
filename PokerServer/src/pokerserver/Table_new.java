@@ -21,6 +21,8 @@ public class Table_new {
     public Player[] winners;
     public Cards[] bord;
     public int stageId;
+    private int tableId;
+    private int stageIdDb;
     private int[] winnerCombination;
     private int playersCount;
     private Counters factor;
@@ -126,5 +128,33 @@ public class Table_new {
         ct = new CalculateTh(players, deck, bord, stage);
         Thread thread = new Thread(ct);
         thread.start();
+    }
+
+    /**
+     * @return the tableId
+     */
+    public int getTableId() {
+        return tableId;
+    }
+
+    /**
+     * @param tableId the tableId to set
+     */
+    public void setTableId(int tableId) {
+        this.tableId = tableId;
+    }
+
+    /**
+     * @return the stageIdDb
+     */
+    public int getStageIdDb() {
+        return stageIdDb;
+    }
+
+    /**
+     * @param stageIdDb the stageIdDb to set
+     */
+    public void setStageIdDb(int stageIdDb) {
+        this.stageIdDb = stageIdDb;
     }
 }

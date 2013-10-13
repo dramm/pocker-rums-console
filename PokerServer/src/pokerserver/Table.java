@@ -61,7 +61,7 @@ public class Table {
             players[i].setPocketCards(tmp);
             DBTools.setHand(tmp);
         }
-        DBTools.setGameStage(stage.getStage(), gameId);
+        //DBTools.setGameStage(stage.getStage(), gameId);
         int [][] handsCardsId = new int[players.length][];
         for (int i = 0; i < handsCardsId.length; i++) {
             handsCardsId[i] = players[i].getHandsCardsId();
@@ -74,10 +74,10 @@ public class Table {
     
     private void Flop(){  
         stage = Stage.FLOP;
-        DBTools.setGameStage(stage.getStage(), gameId);
+        //DBTools.setGameStage(stage.getStage(), gameId);
         for(int i=0; i<3; i++){
             bord[i] = deck.IssueCard();
-            DBTools.setDistribution(bord[i], gameId, stage.getStage());
+            //DBTools.setDistribution(bord[i], gameId, stage.getStage());
         }
         int[] flopCards = new int[3];
         for (int i = 0; i < 3; i++) {
@@ -90,13 +90,13 @@ public class Table {
     }
     private void Turn(){
         stage = Stage.TURN;
-        DBTools.setGameStage(stage.getStage(), gameId);
+        //DBTools.setGameStage(stage.getStage(), gameId);
         bord[3] = deck.IssueCard();
         int[] flopCards = new int[4];
         for (int i = 0; i < 4; i++) {
             flopCards[i] = bord[i].getId();
         }
-        DBTools.setDistribution(bord[3], gameId, stage.getStage());
+        //DBTools.setDistribution(bord[3], gameId, stage.getStage());
         Bridge.data.setBoard(flopCards);
         Bridge.data.setStage(stage);
         Bridge.data.setTableName(name);
@@ -105,13 +105,13 @@ public class Table {
     }
     private void River(){
         stage = Stage.RIVER;
-        DBTools.setGameStage(stage.getStage(), gameId);
+        //DBTools.setGameStage(stage.getStage(), gameId);
         bord[4] = deck.IssueCard();
         int[] flopCards = new int[5];
         for (int i = 0; i < 5; i++) {
             flopCards[i] = bord[i].getId();
         }
-        DBTools.setDistribution(bord[4], gameId, stage.getStage());
+        //DBTools.setDistribution(bord[4], gameId, stage.getStage());
         Bridge.data.setBoard(flopCards);
         Bridge.data.setStage(stage);
         Bridge.data.setTableName(name);
