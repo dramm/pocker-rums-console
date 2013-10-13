@@ -14,6 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
+import pokerserver.DBTools;
 import pokerserver.Game_new;
 
 /**
@@ -64,6 +65,9 @@ public class Listener extends Thread{
                         Bridge.newData.setComand(1560);
                         Bridge.newData.setFlag(true);
                     }
+                    case 1030:{
+                        //команда для статистики {GameId=200,UserId=1}
+                    }
                 }
             }
             clientSocket.close();
@@ -91,6 +95,12 @@ public class Listener extends Thread{
                 System.out.println(arr.get(i).toString());
                 Bet bet = new Bet(arr.getJSONObject(i));
                 game.bets.addBet(bet);
+                for (int j = 0; j < bet.getHandsId().size(); j++) {
+                    int tableId = bet.getHandsId().get(i).intValue() / 10;
+                    int handId = bet.getHandsId().get(i).intValue() % 10;
+                    int handInStage = game.getTables()[tableId].getPlayers()[handId].getHandId();
+                    DBTools.setBet(handInStage, bet.getUserId(), bet.getBetSize(), bet.getBetId(), bet.isExpress());
+                }
             }
         }
     }

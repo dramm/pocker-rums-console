@@ -4,8 +4,10 @@
  */
 package PokerEngyne;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,6 +20,7 @@ public class Bet {
     private int userId;
     private double betSize;
     private boolean express;
+    private List<Integer> handsId;
     private Map<String,Map<Integer,Double>> tableData;
     public Bet(JSONObject data) throws JSONException{
         betId = data.getInt("IdBet");
@@ -29,6 +32,7 @@ public class Bet {
         }else{
             express = false;
         }
+        handsId = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
             if(data.has("Table"+i)){
                 JSONObject bets = data.getJSONObject("Table"+i);
@@ -38,6 +42,7 @@ public class Bet {
                     while(it.hasNext()){
                         String next = it.next().toString();
                         tmp.put(Integer.parseInt(next), bets.getDouble(next));
+                        handsId.add((i * 10) + Integer.parseInt(next));
                     }
                     tableData.put("Table" + i, tmp);
                 }
@@ -66,5 +71,19 @@ public class Bet {
      */
     public boolean isExpress() {
         return express;
+    }
+
+    /**
+     * @return the handsId
+     */
+    public List<Integer> getHandsId() {
+        return handsId;
+    }
+
+    /**
+     * @param handsId the handsId to set
+     */
+    public void setHandsId(List<Integer> handsId) {
+        this.handsId = handsId;
     }
 }

@@ -13,9 +13,11 @@ import PokerEngyne.WinnerData;
  */
 public class Player {
     private Cards[] pocketCards;
+    private int handId;
     private int playerId;
     private int cicker;
     private float pover;
+    private float factor;
     public Player(int id){
         pocketCards = new Cards[2];
         playerId = id;
@@ -84,5 +86,33 @@ public class Player {
      */
     public void setCicker(int cicker) {
         this.cicker = cicker;
+    }
+
+    /**
+     * @return the factor
+     */
+    public float getFactor() {
+        return factor;
+    }
+
+    /**
+     * @param factor the factor to set
+     */
+    public void setFactor(float factor) {
+        this.factor = factor;
+    }
+
+    /**
+     * @return the handId
+     */
+    public int getHandId() {
+        return handId;
+    }
+
+    /**
+     * @param handId the handId to set
+     */
+    public void setHandId(int handId) {
+        this.handId = handId;
     }
 }
