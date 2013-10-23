@@ -6,8 +6,8 @@ package pokerserver;
 
 import DataBaseClasses.Cards;
 import DataBaseClasses.Dignity;
+import DataBaseClasses.Hand;
 import DataBaseClasses.Suits;
-import PokerEngyne.Bet;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -15,8 +15,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  *
@@ -165,19 +169,34 @@ public class DBTools {
             ps.execute();
         } catch (SQLException ex) {
             Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);
+        }finally{
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
     
-    public static void setHandInStage(int gameStageId, int handId, float factor){
+    public static void setHandInStage(int gameStageId, int handId, float factor, int indicator){
         Connection con = getConnection();
         try{
-            PreparedStatement ps = con.prepareStatement("insert into hands_in_stage(game_stage_id, hand_id, factor) values(?, ?, ?)");
+            PreparedStatement ps = con.prepareStatement("insert into hands_in_stage(game_stage_id, hand_id, factor, indicator)"
+                    + " values(?, ?, ?, ?)");
             ps.setInt(1, gameStageId);
             ps.setInt(2, handId);
             ps.setFloat(3, factor);
+            ps.setInt(4, indicator);
             ps.execute();
         } catch (SQLException ex) {
             Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        finally{
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
     public static int setGame(){
@@ -203,6 +222,31 @@ public class DBTools {
             }
         }
         return -1;
+    }
+    
+    public static int getGameId(int playerId, int betId){
+        int result = 0;
+        Connection con = getConnection();
+        try {
+            PreparedStatement ps = con.prepareStatement(
+                    "SELECT game_id FROM bets, hands_in_stage, game_stage WHERE "
+                    + "player_id = ? AND bet_id = ? AND hand_in_stage_id = hands_in_stage.id AND hands_in_stage.game_stage_id = game_stage.id;");
+            ps.setInt(1, playerId);
+            ps.setInt(2, betId);
+            ResultSet res = ps.executeQuery();
+            while (res.next()) {
+                result = res.getInt("game_id");
+                break;
+            }
+        } catch (Exception e) {
+        }finally{
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return result;
     }
     
     public static int setGameStage(int stage, int gameId, int tableId){
@@ -251,6 +295,28 @@ public class DBTools {
         return -1;
     }
     
+    public static int getGameStageId(int handInStageId){
+        int result = -1;
+        Connection con = getConnection();
+        try {
+            PreparedStatement ps = con.prepareStatement("SELECT game_stage_id FROM hands_in_stage WHERE id = ?");
+            ps.setInt(1, handInStageId);
+            ResultSet res = ps.executeQuery();
+            while (res.next()) {
+                result = res.getInt("game_stage_id");
+                break;
+            }
+        } catch (Exception e) {
+        }finally{
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return result;
+    }
+    
     public static void setDistribution(Cards card, int stageId){
         Connection con = getConnection();
         try {
@@ -267,25 +333,6 @@ public class DBTools {
                 Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-    }
-    public static int getLastGameId(){
-        Connection con = getConnection();
-        try{
-            PreparedStatement ps = con.prepareStatement("select max(id) as val from game");
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                return rs.getInt("val");
-            }
-        }catch (Exception e) {
-            Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, e);   
-        }finally{
-            try {
-                con.close();
-            } catch (SQLException ex) {
-                Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        return -1;
     }
     
     public static  int getOlder(int first, int second){
@@ -352,6 +399,299 @@ public class DBTools {
         }
         return -1;
     }
+    
+    public static int getStageId(int userId, int betId){
+        int result = -1;
+        Connection con = getConnection();
+        try {
+            PreparedStatement ps = con.prepareStatement("SELECT stage_id FROM bets, hands_in_stage, game_stage WHERE bets.bet_id = ? AND bets.player_id = ? AND bets.hand_in_stage_id = hands_in_stage.id AND hands_in_stage.game_stage_id = game_stage.id;");
+            ps.setInt(1, betId);
+            ps.setInt(2, userId);
+            ResultSet res = ps.executeQuery();
+            while (res.next()) {
+                result = res.getInt("stage_id");
+                break;
+            }
+        } catch (Exception e) {
+        }finally{
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return result;
+    }
+    
+    public static int[] getGameStagesIds(int gameId, int stageId){
+        int[] result = new int[3];
+        Connection con = getConnection();
+        try {
+            PreparedStatement ps = con.prepareStatement("SELECT id FROM game_stage WHERE stage_id = ? AND game_id = ?");
+            ps.setInt(1, stageId);
+            ps.setInt(2, gameId);
+            ResultSet res = ps.executeQuery();
+            int i = 0;
+            while (res.next()) {
+                result[i] = res.getInt("id");
+                i++;
+            }
+        } catch (Exception e) {
+        }finally{
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return result;
+    }
+    
+    public static JSONObject getStatistics(int betId, int userId){
+        JSONObject result = new JSONObject();
+        int gameId = getGameId(userId, betId);
+        int stageId = getStageId(userId, betId);
+        List<Integer> targetHands = getTargetHands(userId, betId);
+        //System.out.println("gameId " + gameId);
+        try {
+            result.put("BetInfo", getBetInfo(betId, userId));
+            for (int i = 0; i < 3; i++) {
+                JSONObject tmp = new JSONObject();
+                tmp.put("Board", getBord(gameId, i));
+                tmp.put("Hands", getHands(targetHands, gameId, stageId, i));
+                result.put("Table" + i, tmp);
+            }
+        } catch (JSONException ex) {
+            Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return result;
+    }
+    
+    public static JSONObject getHands(List<Integer> targetHands, int gameId, int stageId, int tableId){
+        JSONObject result = new JSONObject();
+        ArrayList<Hand> winnersHand = getWinnersHand(gameId, tableId);
+        Connection con = getConnection();
+        try {
+            PreparedStatement ps = con.prepareStatement("SELECT hand_id, factor, indicator, first_card_id, second_card_id FROM game_stage, hands_in_stage, hands "
+                    + "WHERE hands.id = hands_in_stage.hand_id AND game_stage.stage_id = ? AND game_stage.game_id = ? AND game_stage.table_id = ? AND hands_in_stage.game_stage_id = game_stage.id;");
+            ps.setInt(1, stageId);
+            ps.setInt(2, gameId);
+            ps.setInt(3, tableId);
+            ResultSet res = ps.executeQuery();
+            int handNum = 0;
+            while (res.next()) {
+                int handId = res.getInt("hand_id");
+                int first = res.getInt("first_card_id");
+                int second = res.getInt("second_card_id");
+                JSONObject hand = new JSONObject();
+                hand.put("Factor", String.format("%.2f", res.getFloat("factor")));
+                hand.put("FirstCard", first);
+                hand.put("SecondCard", second);
+                hand.put("Indicator", res.getInt("indicator"));
+                hand.put("Target", false);
+                hand.put("Wins", false);
+                for (Integer item : targetHands) {
+                    if(item.intValue() == handId){
+                        hand.put("Target", true);
+                        break;
+                    }
+                }
+                for (Hand item : winnersHand) {
+                    if(item.first == first && item.second == second){
+                        hand.put("Wins", true);
+                        break;
+                    }
+                }
+                result.put("Hand" + handNum++, hand);
+            }
+        } catch (Exception e) {
+        }finally{
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return result;
+    }
+    
+    public static List<Integer> getTargetHands(int userId, int betId){
+        ArrayList<Integer> result = new ArrayList<>();
+        Connection con = getConnection();
+        try {
+            PreparedStatement ps = con.prepareStatement("SELECT hand_id FROM bets, hands_in_stage "
+                    + "WHERE bets.player_id = ? AND bets.bet_id = ? AND bets.hand_in_stage_id = hands_in_stage.id;");
+            ps.setInt(1, userId);
+            ps.setInt(2, betId);
+            ResultSet res = ps.executeQuery();
+            while (res.next()) {
+                result.add(new Integer(res.getInt("hand_id")));
+            }
+        } catch (Exception e) {
+        }finally{
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return result;
+    }
+    
+    public static JSONObject getBord(int gameId, int tableId){
+        JSONObject js = new JSONObject();
+        JSONArray result = new JSONArray();
+        Connection con = getConnection();
+        try {
+            PreparedStatement ps = con.prepareStatement("SELECT card_id FROM distribution , "
+                    + "(SELECT id AS gs_id FROM game_stage WHERE game_id = ? AND table_id = ?) AS q "
+                    + "WHERE game_stage_id = q.gs_id;");
+            ps.setInt(1, gameId);
+            ps.setInt(2, tableId);
+            ResultSet res = ps.executeQuery();
+            while (res.next()) {
+                result.put(res.getInt("card_id"));
+            }
+            js.put("Board", result);
+        } catch (Exception e) {
+        }finally{
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return js;
+    }
+    
+    public static JSONObject getBetInfo(int betId, int userId){
+        JSONObject betInfo = new JSONObject();
+        Connection con = getConnection();
+        try{
+            PreparedStatement ps = con.prepareStatement("SELECT * FROM bets, bet_result "
+                    + "WHERE bets.bet_id = ? AND bets.player_id = ? AND bets.bet_id = bet_result.bet_id_in_bets;");
+            ps.setInt(1, betId);
+            ps.setInt(2, userId);
+            ResultSet res = ps.executeQuery();
+            while (res.next()) {
+                betInfo.put("PlayerId", res.getInt("player_id"));
+                betInfo.put("Value", res.getInt("value"));
+                betInfo.put("BetId", res.getInt("bet_id"));
+                betInfo.put("Express", res.getBoolean("express"));
+                betInfo.put("WinSize", res.getDouble("win_size"));
+            }
+        }catch ( SQLException | JSONException ex) {
+            Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);   
+        }finally{
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return betInfo;
+    }
+    
+    public static List<Integer> getHandInStageId(int betId, int userId){
+        List<Integer> result = new ArrayList<>();
+        Connection con = getConnection();
+        try {
+            PreparedStatement ps = con.prepareStatement("SELECT hand_in_stage_id FROM bets WHERE bet_id = ? AND player_id = ?");
+            ps.setInt(1, betId);
+            ps.setInt(2, userId);
+            ResultSet res = ps.executeQuery();
+            while (res.next()) {
+                result.add(new Integer(res.getInt("hand_in_stage_id")));
+            }
+        } catch (Exception e) {
+            
+        }finally{
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        return result;
+    }
+    
+    public static void setWinsHand(int firstCardId, int secondCardId, int tableId, int gameId){
+        Connection con = getConnection();
+        try {
+            PreparedStatement ps = con.prepareStatement("INSERT INTO wins_hands(first_card_id, second_card_id, table_id, game_id) VALUES(?, ?, ?, ?)");
+            ps.setInt(1, firstCardId);
+            ps.setInt(2, secondCardId);
+            ps.setInt(3, tableId);
+            ps.setInt(4, gameId);
+            ps.execute();
+        } catch (Exception e) {
+        }finally{
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    
+    public static ArrayList<Hand> getWinnersHand(int gameId, int tableId){
+        Connection con = getConnection();
+        ArrayList<Hand> result = new ArrayList<>();
+        try {
+            PreparedStatement ps = con.prepareStatement("SELECT * FROM wins_hands WHERE game_id = ? AND table_id = ?;");
+            ps.setInt(1, gameId);
+            ps.setInt(2, tableId);
+            ResultSet res = ps.executeQuery();
+            while (res.next()) {
+                Hand tmp = new Hand();
+                tmp.first = res.getInt("first_card_id");
+                tmp.second = res.getInt("second_card_id");
+                result.add(tmp);
+            }
+        } catch (Exception e) {
+        }
+        return result;
+    }
+    
+    public static void setBetResult(int beId, double winSize){
+        Connection con = getConnection();
+        try {
+            PreparedStatement ps = con.prepareStatement("INSERT INTO bet_result(bet_id_in_bets, win_size) VALUES(?, ?)");
+            ps.setInt(1, beId);
+            ps.setDouble(2, winSize);
+            ps.execute();
+        } catch (Exception e) {
+        }finally{
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    public static int getBetId(int betId, int playerId){
+        Connection con = getConnection();
+        int result = -1;
+        try {
+            PreparedStatement ps = con.prepareStatement("SELECT id FROM bets WHERE bet_id = ? AND player_id = ?");
+            ps.setInt(1, betId);
+            ps.setInt(2, playerId);
+            ResultSet res = ps.executeQuery();
+            while (res.next()) {
+                result = res.getInt("id");
+            }
+        } catch (Exception e) {
+        }finally{
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return result;
+    }
     /*public static void generateDeck(){
         try{
             Connection c = getConnection();
@@ -368,4 +708,6 @@ public class DBTools {
         }
         log.info("complite");
     }*/
+            
+    
 }

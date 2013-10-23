@@ -42,7 +42,8 @@ public class Bet {
                     while(it.hasNext()){
                         String next = it.next().toString();
                         tmp.put(Integer.parseInt(next), bets.getDouble(next));
-                        handsId.add((i * 10) + Integer.parseInt(next));
+                        Integer id = new Integer((i * 10) + Integer.parseInt(next));
+                        handsId.add(id);
                     }
                     tableData.put("Table" + i, tmp);
                 }

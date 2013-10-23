@@ -10,6 +10,7 @@ import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import pokerserver.DBTools;
 
 /**
  *
@@ -54,6 +55,7 @@ public class Bets {
                 playerData.put("winnSize", winnSize);
                 playerData.put("playerId", bet.getUserId());
                 winnData.put(playerData);
+                DBTools.setBetResult(bet.getBetId(), winnSize);
             }else{
                 JSONObject playerData = new JSONObject();
                 int betCoutn = 0;
@@ -74,12 +76,12 @@ public class Bets {
                         }
                     }
                 }
-                playerData.put("betCount", betCoutn);
-                            
+                playerData.put("betCount", betCoutn);            
                 playerData.put("IdBet", bet.getBetId());
                 playerData.put("winnSize", summSize / betCoutn);
                 playerData.put("playerId", bet.getUserId());
                 winnData.put(playerData);
+                DBTools.setBetResult(bet.getBetId(), summSize / betCoutn);
             }            
         }
         return winnData;
