@@ -82,13 +82,11 @@ public class Game_new implements Runnable{
                 for (int i = 0; i < getTables().length; i++) {
                     int gameStageId = DBTools.setGameStage(gameStage.getStage(), gameId, getTables()[i].getTableId());
                     getTables()[i].setStageIdDb(gameStageId);
-                    for (int j = 0; j < 3; j++) {
-                        DBTools.setDistribution(getTables()[i].getBord()[j], getTables()[i].getStageIdDb());
-                    }
+                    
                     for (int j = 0; j < getTables()[i].getPlayers().length; j++) {
                         int setHand = DBTools.setHand(getTables()[i].getPlayers()[j].getPocketCards());
-                        getTables()[i].getPlayers()[j].setHandId(setHand);
-                        DBTools.setHandInStage(gameStageId, setHand, getTables()[i].getPlayers()[j].getFactor());
+                        getTables()[i].getPlayers()[j].setHandInStageId(setHand);
+                        DBTools.setHandInStage(gameStageId, setHand, getTables()[i].getPlayers()[j].getFactor(), getTables()[i].getPlayers()[j].getIndicator());
                     }
                 }
                 
@@ -111,11 +109,13 @@ public class Game_new implements Runnable{
                 for (int i = 0; i < getTables().length; i++) {
                     int gameStageId = DBTools.setGameStage(gameStage.getStage(), gameId, getTables()[i].getTableId());
                     getTables()[i].setStageIdDb(gameStageId);
-                    DBTools.setDistribution(getTables()[i].getBord()[3], getTables()[i].getStageIdDb());
+                    for (int j = 0; j < 3; j++) {
+                        DBTools.setDistribution(getTables()[i].getBord()[j], getTables()[i].getStageIdDb());
+                    }
                     for (int j = 0; j < getTables()[i].getPlayers().length; j++) {
                         int setHand = DBTools.setHand(getTables()[i].getPlayers()[j].getPocketCards());
-                        getTables()[i].getPlayers()[j].setHandId(setHand);
-                        DBTools.setHandInStage(gameStageId, setHand, getTables()[i].getPlayers()[j].getFactor());
+                        getTables()[i].getPlayers()[j].setHandInStageId(setHand);
+                        DBTools.setHandInStage(gameStageId, setHand, getTables()[i].getPlayers()[j].getFactor(), getTables()[i].getPlayers()[j].getIndicator());
                     }
                 }
                 debug();
@@ -140,8 +140,8 @@ public class Game_new implements Runnable{
                     DBTools.setDistribution(getTables()[i].getBord()[4], getTables()[i].getStageIdDb());
                     for (int j = 0; j < getTables()[i].getPlayers().length; j++) {
                         int setHand = DBTools.setHand(getTables()[i].getPlayers()[j].getPocketCards());
-                        getTables()[i].getPlayers()[j].setHandId(setHand);
-                        DBTools.setHandInStage(gameStageId, setHand, getTables()[i].getPlayers()[j].getFactor());
+                        getTables()[i].getPlayers()[j].setHandInStageId(setHand);
+                        DBTools.setHandInStage(gameStageId, setHand, getTables()[i].getPlayers()[j].getFactor(), getTables()[i].getPlayers()[j].getIndicator());
                     }
                 }
                 debug();
@@ -166,8 +166,8 @@ public class Game_new implements Runnable{
                     DBTools.setDistribution(getTables()[i].getBord()[4], getTables()[i].getStageIdDb());
                     for (int j = 0; j < getTables()[i].getPlayers().length; j++) {
                         int setHand = DBTools.setHand(getTables()[i].getPlayers()[j].getPocketCards());
-                        getTables()[i].getPlayers()[j].setHandId(setHand);
-                        DBTools.setHandInStage(gameStageId, setHand, getTables()[i].getPlayers()[j].getFactor());
+                        getTables()[i].getPlayers()[j].setHandInStageId(setHand);
+                        DBTools.setHandInStage(gameStageId, setHand, getTables()[i].getPlayers()[j].getFactor(), getTables()[i].getPlayers()[j].getIndicator());
                     }
                 }
                 debug();
@@ -239,6 +239,7 @@ public class Game_new implements Runnable{
                 player.append("Player"+j, getTables()[i].getPlayers()[j].getSecondPocketCardId());
                 factors.put("Factor", String.format("%.2f", winFactor));
                 getTables()[i].getPlayers()[j].setFactor(winFactor);
+                getTables()[i].getPlayers()[j].setIndicator(indicator);
                 factors.put("Indicator", indicator);
                 player.append("Player"+j, factors);
             }
@@ -298,6 +299,7 @@ public class Game_new implements Runnable{
                 JSONObject factor = new JSONObject();
                 factor.put("Factor", String.format("%.2f", winFactor ));
                 getTables()[i].getPlayers()[j].setFactor(winFactor);
+                getTables()[i].getPlayers()[j].setIndicator(indicator);
                 factor.put("Indicator", indicator);
                 player.put("Player"+j, factor);
             }
@@ -319,6 +321,7 @@ public class Game_new implements Runnable{
             for (int j = 0; j < winners.length; j++) {
                 indexes[i][j] = winners[j].getPlayerId();
                 jsCardId.append("WinnHand", winners[j].getPlayerId());
+                DBTools.setWinsHand(winners[j].getFirstPocketCardId(), winners[j].getSecondPocketCardId(), i, gameId);
                 /*int[] cardsId = winners[j].getCombinationPover().winnCardsId;
                 for (int k = 0; k < cardsId.length ; k++) {
                     jsCardId.append("Combination"+j, cardsId[k]);

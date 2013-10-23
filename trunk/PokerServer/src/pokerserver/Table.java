@@ -32,7 +32,7 @@ public class Table {
             this.players[i] = new Player(i);
         }
         DBTools.setGame();
-        gameId = DBTools.getLastGameId();
+        //gameId = DBTools.getLastGameId();
         Bridge.data.setStage(stage);
         Bridge.data.setTableName(name);
         Bridge.data.setFlag(true);
@@ -46,7 +46,7 @@ public class Table {
             this.players[i] = new Player(i);
         }
         DBTools.setGame();
-        gameId = DBTools.getLastGameId();
+        //gameId = DBTools.getLastGameId();
         Bridge.data.setStage(stage);
         Bridge.data.setTableName(name);
         Bridge.data.setFlag(true);

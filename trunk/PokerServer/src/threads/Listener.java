@@ -14,6 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 import pokerserver.DBTools;
 import pokerserver.Game_new;
 
@@ -64,9 +65,22 @@ public class Listener extends Thread{
                         getBets(new String(Xor.encode(message)));
                         Bridge.newData.setComand(1560);
                         Bridge.newData.setFlag(true);
+                        break;
                     }
                     case 1030:{
                         //команда для статистики {GameId=200,UserId=1}
+                        System.out.println("Get Statistics");
+                        byte[] len = new byte[4];
+                        flag = input.read(len, 0, 4);
+                        byte[] message = new byte[Functions.byteArrayToInt(len)];
+                        flag = input.read(message, 0, Functions.byteArrayToInt(len));
+                        System.out.println(new String(Xor.encode(message)));
+                        JSONObject tmp = new JSONObject(new String(Xor.encode(message)));
+                        System.out.println(DBTools.getStatistics(tmp.getInt("BetId"), tmp.getInt("UserId")));
+                        Bridge.newData.js = DBTools.getStatistics(tmp.getInt("BetId"), tmp.getInt("UserId"));
+                        Bridge.newData.setComand(1570);
+                        Bridge.newData.setFlag(true);
+                        break;
                     }
                 }
             }
@@ -96,12 +110,18 @@ public class Listener extends Thread{
                 Bet bet = new Bet(arr.getJSONObject(i));
                 game.bets.addBet(bet);
                 for (int j = 0; j < bet.getHandsId().size(); j++) {
-                    int tableId = bet.getHandsId().get(i).intValue() / 10;
-                    int handId = bet.getHandsId().get(i).intValue() % 10;
-                    int handInStage = game.getTables()[tableId].getPlayers()[handId].getHandId();
+                    int tableId = bet.getHandsId().get(j).intValue() / 10;
+                    int handId = bet.getHandsId().get(j).intValue() % 10;
+                    int handInStage = game.getTables()[tableId].getPlayers()[handId].getHandInStageId();
                     DBTools.setBet(handInStage, bet.getUserId(), bet.getBetSize(), bet.getBetId(), bet.isExpress());
                 }
             }
         }
+    }
+    private void getStatistics(String json) throws JSONException{
+        JSONObject js = new JSONObject(json);
+        int gameId = js.getInt("GameId");
+        int userId = js.getInt("UserId");
+        
     }
 }

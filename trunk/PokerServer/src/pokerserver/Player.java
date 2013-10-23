@@ -13,11 +13,12 @@ import PokerEngyne.WinnerData;
  */
 public class Player {
     private Cards[] pocketCards;
-    private int handId;
+    private int handInStageId;
     private int playerId;
     private int cicker;
     private float pover;
     private float factor;
+    private int indicator;
     public Player(int id){
         pocketCards = new Cards[2];
         playerId = id;
@@ -105,14 +106,28 @@ public class Player {
     /**
      * @return the handId
      */
-    public int getHandId() {
-        return handId;
+    public int getHandInStageId() {
+        return handInStageId;
     }
 
     /**
      * @param handId the handId to set
      */
-    public void setHandId(int handId) {
-        this.handId = handId;
+    public void setHandInStageId(int handId) {
+        this.handInStageId = handId;
+    }
+
+    /**
+     * @return the indicator
+     */
+    public int getIndicator() {
+        return indicator;
+    }
+
+    /**
+     * @param indicator the indicator to set
+     */
+    public void setIndicator(int indicator) {
+        this.indicator = indicator;
     }
 }
