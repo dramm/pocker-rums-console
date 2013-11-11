@@ -42,7 +42,7 @@ public class Listener extends Thread{
                 flag = input.read(command, 0, 4); 
                 int result = Functions.byteArrayToInt(command);
                 switch (result) {
-                    case 1000:{
+                    case 1000:{//стартуем сервер
                         System.out.println("Starting game");
                         if(!game.isRun()){
                             th.start();
@@ -50,14 +50,13 @@ public class Listener extends Thread{
                         }
                         break;
                     }
-                    case 1010:{
+                    case 1010:{//следующий раунд
                         if(!Bridge.newData.isGoNext()){
                             Bridge.newData.setGoNext(true);
                         }
                         break;
                     }
-                    case 1020:{
-                        System.out.println("Users Bets");
+                    case 1020:{//принимаю ставку
                         byte[] len = new byte[4];
                         flag = input.read(len, 0, 4);
                         byte[] message = new byte[Functions.byteArrayToInt(len)];
@@ -67,8 +66,27 @@ public class Listener extends Thread{
                         Bridge.newData.setFlag(true);
                         break;
                     }
-                    case 1030:{
-                        //команда для статистики {GameId=200,UserId=1}
+                    case 1030:{//команда для статистики {GameId=200,UserId=1}
+                        class RunStat implements Runnable{
+                            JSONObject js;
+                            public RunStat(JSONObject tmp) {
+                                js = tmp;
+                            }
+                            
+                            @Override
+                            public void run() {
+                                try {
+                                    JSONObject res = DBTools.getStatistics(js.getInt("BetId"), js.getInt("UserId"));
+                                    Bridge.newData.js = res;
+                                    Bridge.newData.setComand(1570);
+                                    Bridge.newData.setFlag(true);
+                                    System.out.println(res.toString());
+                                } catch (JSONException ex) {
+                                    Logger.getLogger(Listener.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                            }
+                            
+                        }
                         System.out.println("Get Statistics");
                         byte[] len = new byte[4];
                         flag = input.read(len, 0, 4);
@@ -76,10 +94,33 @@ public class Listener extends Thread{
                         flag = input.read(message, 0, Functions.byteArrayToInt(len));
                         System.out.println(new String(Xor.encode(message)));
                         JSONObject tmp = new JSONObject(new String(Xor.encode(message)));
-                        System.out.println(DBTools.getStatistics(tmp.getInt("BetId"), tmp.getInt("UserId")));
-                        Bridge.newData.js = DBTools.getStatistics(tmp.getInt("BetId"), tmp.getInt("UserId"));
-                        Bridge.newData.setComand(1570);
-                        Bridge.newData.setFlag(true);
+                        Thread t = new Thread(new RunStat(tmp));
+                        t.start();
+                        //System.out.println(DBTools.getStatistics(tmp.getInt("BetId"), tmp.getInt("UserId")));
+                        //Bridge.newData.js = DBTools.getStatistics(tmp.getInt("BetId"), tmp.getInt("UserId"));
+                        //Bridge.newData.setComand(1570);
+                        //Bridge.newData.setFlag(true);
+                        break;
+                    }
+                    case 1040:{//закрывается прием ставок
+                        System.out.println("Bet closed");
+                        break;
+                    }
+                    case 1050:{//при подключении клиент присылает сумму всех депозитов
+                        byte[] len = new byte[4];
+                        flag = input.read(len, 0, 4);
+                        byte[] message = new byte[Functions.byteArrayToInt(len)];
+                        flag = input.read(message, 0, Functions.byteArrayToInt(len));
+                        System.out.println(new String(Xor.encode(message)));
+                        break;
+                    }
+                    case 1060:{//пользователь пополнил счет
+                        break;
+                    }
+                    case 1070:{//вывод пользовательских средств
+                        break;
+                    }
+                    case 1080:{//списание прибыли казино
                         break;
                     }
                 }
@@ -105,6 +146,7 @@ public class Listener extends Thread{
     private void getBets(String json) throws JSONException{
         JSONArray arr = new JSONArray(json);
         if(arr.length() > 0){
+            System.out.println("Users Bets");
             for (int i = 0; i < arr.length(); i++) {
                 System.out.println(arr.get(i).toString());
                 Bet bet = new Bet(arr.getJSONObject(i));
@@ -117,11 +159,5 @@ public class Listener extends Thread{
                 }
             }
         }
-    }
-    private void getStatistics(String json) throws JSONException{
-        JSONObject js = new JSONObject(json);
-        int gameId = js.getInt("GameId");
-        int userId = js.getInt("UserId");
-        
     }
 }
