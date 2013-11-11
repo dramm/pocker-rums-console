@@ -137,7 +137,7 @@ public class Game_new implements Runnable{
                 for (int i = 0; i < getTables().length; i++) {
                     int gameStageId = DBTools.setGameStage(gameStage.getStage(), gameId, getTables()[i].getTableId());
                     getTables()[i].setStageIdDb(gameStageId);
-                    DBTools.setDistribution(getTables()[i].getBord()[4], getTables()[i].getStageIdDb());
+                    DBTools.setDistribution(getTables()[i].getBord()[3], getTables()[i].getStageIdDb());
                     for (int j = 0; j < getTables()[i].getPlayers().length; j++) {
                         int setHand = DBTools.setHand(getTables()[i].getPlayers()[j].getPocketCards());
                         getTables()[i].getPlayers()[j].setHandInStageId(setHand);

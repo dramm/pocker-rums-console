@@ -17,7 +17,7 @@ import pokerserver.Player;
  * @author Андрей
  */
 public class Sequence {
-    public static float CheckSequence(Cards[] pocketCard, Cards[] board){
+    public static double CheckSequence(Cards[] pocketCard, Cards[] board){
         Cards [] allCard;
         if((board == null) || (board.length == 0)){
             allCard = new Cards[pocketCard.length];
@@ -32,7 +32,7 @@ public class Sequence {
         if(isRoyalFlush(allCard, pocketCard) != -1){
             return isRoyalFlush(allCard, pocketCard);
         }
-        float result = isStraightFlush(allCard, pocketCard);
+        double result = isStraightFlush(allCard, pocketCard);
         if(result != -1){
             return result;
         }
@@ -67,20 +67,20 @@ public class Sequence {
         
         return isHighCard(allCard);
     } 
-    public static float isHighCard(Cards[] allCard){
-        float result;
+    public static double isHighCard(Cards[] allCard){
+        double result;
         result = (allCard[allCard.length-1].getDignitysId());
         return result;
     }
     
-    public static float isOnePair(Cards[] allCard, Cards[] poketCards){
-        float result;
+    public static double isOnePair(Cards[] allCard, Cards[] poketCards){
+        double result;
         for(int i=0; i < allCard.length - 1; i++){
             if(allCard[i].getDignitysId() == allCard[i+1].getDignitysId()){
                 result = allCard[i].getDignitysId();
                 result += 1400;
                 Cards[] combination = {allCard[i], allCard[i+1]};
-                result += (getCiker(combination, poketCards) / 100f);
+                result += (getCiker(combination, poketCards) / 100.0);
                 return result;
              }
         }
@@ -88,8 +88,8 @@ public class Sequence {
         return -1;
     }
     
-    public static float isTwoPair(Cards[] allCard, Cards[] poketCards){
-        float result;
+    public static double isTwoPair(Cards[] allCard, Cards[] poketCards){
+        double result;
         int count = 0;
         for (int i = 0; i < allCard.length - 1; i++) {
             if(allCard[i].getDignitysId() == allCard[i+1].getDignitysId()){
@@ -108,8 +108,8 @@ public class Sequence {
                         Cards[] combination = {allCard[i], allCard[i+1], allCard[j], allCard[j+1]};
                         result = allCard[j].getDignitysId();
                         result += 2800;
-                        result += allCard[i].getDignitysId() / 100f;
-                        result += getCiker(combination, poketCards) / 10000f;
+                        result += allCard[i].getDignitysId() / 100.0;
+                        result += getCiker(combination, poketCards) / 10000.0;
                         return result;
                     }
                 }
@@ -119,15 +119,15 @@ public class Sequence {
         return -1;
     }
     
-    public static float isSet(Cards[] allCard, Cards[] poketCards){
-        float result;
+    public static double isSet(Cards[] allCard, Cards[] poketCards){
+        double result;
         for(int i = 0; i < allCard.length - 2; i++){
             if(allCard[i].getDignitysId() == allCard[i+1].getDignitysId() && 
                    allCard[i].getDignitysId() == allCard[i+2].getDignitysId() ){
                 Cards[] combination = {allCard[i], allCard[i+1], allCard[i+2]};
                 result = allCard[i].getDignitysId();
                 result += 4200;
-                result += getCiker(combination, poketCards) / 100f;
+                result += getCiker(combination, poketCards) / 100.0;
                 return result;
             }
         }
@@ -135,10 +135,10 @@ public class Sequence {
         return -1;
     }
     
-    public static float isStraight(Cards[] allCard, Cards[] poketCards){
+    public static double isStraight(Cards[] allCard, Cards[] poketCards){
         
         Cards[] clearCards = removeDuplicates(allCard);
-        float result;
+        double result;
         int stCount = 0;
         if(clearCards.length >= 5){
             for (int i = 0; i < clearCards.length - 1; i++) {
@@ -155,7 +155,7 @@ public class Sequence {
                         id.add(clearCards[clearCards.length - 1]);
                         result = clearCards[i+1].getDignitysId();
                         result += 5600;
-                        result += getCiker(id.toArray(new Cards[0]), poketCards) / 100f;
+                        result += getCiker(id.toArray(new Cards[0]), poketCards) / 100.0;
                         return result;
                     }
                     if(stCount >= 4 ){
@@ -166,7 +166,7 @@ public class Sequence {
                         }
                         result = clearCards[i+1].getDignitysId();
                         result += 5600;
-                        result += getCiker(id.toArray(new Cards[0]), poketCards) / 100f;
+                        result += getCiker(id.toArray(new Cards[0]), poketCards) / 100.0;
                         return result;
                     }
                     continue;
@@ -179,8 +179,8 @@ public class Sequence {
         return -1;
     }    
     
-    public static float isFlush(Cards[] allCard){
-        float result;
+    public static double isFlush(Cards[] allCard){
+        double result = 0;
         for(int i = 1; i <= 4; i++){
             ArrayList<Cards> tmp = new ArrayList<>();
             for(int j = 0; j < allCard.length; j++){
@@ -191,6 +191,14 @@ public class Sequence {
             if(tmp.size() >= 5){
                 result = tmp.get(tmp.size()-1).getDignitysId();
                 result += 7000;
+                double divisor = 100;
+                for (int j = tmp.size() - 2; j >= 0; j--) {
+                    double res = tmp.get(j).getDignitysId() / divisor;
+                    result += res;
+                    divisor *= 100;
+                }
+                //System.out.println(result1);
+                //result = (float)result1;
                 return result;
             }
         }
@@ -198,8 +206,8 @@ public class Sequence {
         return -1;
     }
     
-    public static float isFullHouse(Cards[] allCard){
-        float result;
+    public static double isFullHouse(Cards[] allCard){
+        double result;
         int tripsDig = 0;
         int pairDig = 0;
         for (int i = 0; i < allCard.length - 2; i++) {
@@ -221,15 +229,15 @@ public class Sequence {
         if(tripsDig != 0 && pairDig != 0){ 
             result = tripsDig;
             result += 8400;
-            result += pairDig / 100f;
+            result += pairDig / 100.0;
             return result;
         }
         
         return -1;
     }
     
-    public static float isQuads(Cards[] allCard){
-        float result;
+    public static double isQuads(Cards[] allCard){
+        double result;
         int count = 0;
         for(int i = 0; i < allCard.length - 1; i++){
             if(allCard[i].getDignitysId() == allCard[i+1].getDignitysId()){
@@ -248,8 +256,8 @@ public class Sequence {
         return -1;
     }
     
-    public static float isStraightFlush(Cards[] allCard, Cards[] poketCards){
-        float result;
+    public static double isStraightFlush(Cards[] allCard, Cards[] poketCards){
+        double result;
         for(int i = 1; i <= 4; i++){
             ArrayList<Cards> tmp = new ArrayList<>();
             for(int j = 0; j < allCard.length; j++){
@@ -269,7 +277,7 @@ public class Sequence {
         return -1;
     }
     
-    public static float isRoyalFlush(Cards[] allCard, Cards[] poketCards){
+    public static double isRoyalFlush(Cards[] allCard, Cards[] poketCards){
         
         for (int i = 1; i <= 4; i++) {
             if(isFlush(allCard) != -1 && isStraight(allCard, poketCards) != -1){
@@ -322,7 +330,7 @@ public class Sequence {
     
     public static Player[] getWinner(Player[] players){
         ArrayList<Player> winners = new ArrayList<>();
-        float power = getMaxCombinationPower(players);
+        double power = getMaxCombinationPower(players);
         for (int i = 0; i < players.length; i++) {
             if(players[i].getCombinationPover() == power){
                 winners.add(players[i]);
@@ -331,8 +339,8 @@ public class Sequence {
         return winners.toArray(new Player[0]);
     }
  
-    private static float getMaxCombinationPower(Player[] players){
-        float result = 0;
+    private static double getMaxCombinationPower(Player[] players){
+        double result = 0;
         for (int i = 0; i < players.length; i++) {
             if(players[i].getCombinationPover() >= result){
                 result = players[i].getCombinationPover();

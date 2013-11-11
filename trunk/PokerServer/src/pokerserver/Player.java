@@ -16,7 +16,7 @@ public class Player {
     private int handInStageId;
     private int playerId;
     private int cicker;
-    private float pover;
+    private double pover;
     private float factor;
     private int indicator;
     public Player(int id){
@@ -56,11 +56,11 @@ public class Player {
         return pocketCards[1];
     }
 
-    public synchronized float getCombinationPover() {
+    public synchronized double getCombinationPover() {
         return pover;
     }
 
-    public synchronized void setCombinationPover(float combinationPover) {
+    public synchronized void setCombinationPover(double combinationPover) {
         this.pover = combinationPover;
     }
     

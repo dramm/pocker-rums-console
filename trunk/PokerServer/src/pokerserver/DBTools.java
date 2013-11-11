@@ -450,11 +450,12 @@ public class DBTools {
     public static JSONObject getStatistics(int betId, int userId){
         JSONObject result = new JSONObject();
         int gameId = getGameId(userId, betId);
+        System.out.println("gameId " + gameId);
         int stageId = getStageId(userId, betId);
         List<Integer> targetHands = getTargetHands(userId, betId);
         //System.out.println("gameId " + gameId);
         try {
-            result.put("BetInfo", getBetInfo(betId, userId));
+            result.put("BetInfo", getBetInfo(betId, userId, stageId));
             for (int i = 0; i < 3; i++) {
                 JSONObject tmp = new JSONObject();
                 tmp.put("Board", getBord(gameId, i));
@@ -544,9 +545,7 @@ public class DBTools {
         JSONArray result = new JSONArray();
         Connection con = getConnection();
         try {
-            PreparedStatement ps = con.prepareStatement("SELECT card_id FROM distribution , "
-                    + "(SELECT id AS gs_id FROM game_stage WHERE game_id = ? AND table_id = ?) AS q "
-                    + "WHERE game_stage_id = q.gs_id;");
+            PreparedStatement ps = con.prepareStatement("SELECT card_id FROM game_stage, distribution WHERE game_stage.game_id = ? AND game_stage.table_id = ? AND game_stage.id = distribution.game_stage_id;");
             ps.setInt(1, gameId);
             ps.setInt(2, tableId);
             ResultSet res = ps.executeQuery();
@@ -565,9 +564,10 @@ public class DBTools {
         return js;
     }
     
-    public static JSONObject getBetInfo(int betId, int userId){
+    public static JSONObject getBetInfo(int betId, int userId, int stageId){
         JSONObject betInfo = new JSONObject();
         Connection con = getConnection();
+        String stage = getStage(stageId);
         try{
             PreparedStatement ps = con.prepareStatement("SELECT * FROM bets, bet_result "
                     + "WHERE bets.bet_id = ? AND bets.player_id = ? AND bets.bet_id = bet_result.bet_id_in_bets;");
@@ -580,6 +580,7 @@ public class DBTools {
                 betInfo.put("BetId", res.getInt("bet_id"));
                 betInfo.put("Express", res.getBoolean("express"));
                 betInfo.put("WinSize", res.getDouble("win_size"));
+                betInfo.put("Stage", stage);
             }
         }catch ( SQLException | JSONException ex) {
             Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);   
@@ -708,6 +709,130 @@ public class DBTools {
         }
         log.info("complite");
     }*/
-            
+
+    private static String getStage(int stageId) {
+        String result = "";
+        Connection con = getConnection();
+        try {
+            PreparedStatement ps = con.prepareStatement("SELECT name FROM stage WHERE id = ?");
+            ps.setInt(1, stageId);
+            ResultSet res = ps.executeQuery();
+            while (res.next()) {
+                result = res.getString("name");
+            }
+        } catch (Exception e) {
+        }finally{
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return result;
+    }
     
+    public static int getPersent(){
+        int result = 10;
+        Connection con = getConnection();
+        try {
+            PreparedStatement ps = con.prepareStatement("SELECT profit_persent FROM money ORDER BY id DESC LIMIT 1");
+            ResultSet res = ps.executeQuery();
+            while(res.next()){
+                result = res.getInt("profit_persent");
+                break;
+            }
+        } catch (Exception e) {
+        }finally{
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return result;
+    }
+    
+    public static double getTotalMoney(){
+        double result = 0;
+        Connection con = getConnection();
+        try {
+            PreparedStatement ps = con.prepareStatement("SELECT total_money FROM money ORDER BY id DESC LIMIT 1");
+            ResultSet res = ps.executeQuery();
+            while(res.next()){
+                result = res.getDouble("total_money");
+                break;
+            }
+        } catch (Exception e) {
+        }finally{
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return result;
+    }
+    
+    public static double getBalance(){
+        double result = 0;
+        Connection con = getConnection();
+        try {
+            PreparedStatement ps = con.prepareStatement("SELECT balance FROM casino_profit ORDER BY id DESC LIMIT 1");
+            ResultSet res = ps.executeQuery();
+            while(res.next()){
+                result = res.getDouble("balance");
+                break;
+            }
+        } catch (Exception e) {
+        }finally{
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return result;
+    }
+            
+    public static double getProfit(){
+        double result = 0;
+        Connection con = getConnection();
+        try {
+            PreparedStatement ps = con.prepareStatement("SELECT profit FROM casino_profit ORDER BY id DESC LIMIT 1");
+            ResultSet res = ps.executeQuery();
+            while(res.next()){
+                result = res.getDouble("profit");
+                break;
+            }
+        } catch (Exception e) {
+        }finally{
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return result;
+    }       
+    
+    public static double getSpareMoney(){
+        double result = 0;
+        Connection con = getConnection();
+        try {
+            PreparedStatement ps = con.prepareStatement("SELECT spare_money FROM casino_profit ORDER BY id DESC LIMIT 1");
+            ResultSet res = ps.executeQuery();
+            while(res.next()){
+                result = res.getDouble("spare_money");
+                break;
+            }
+        } catch (Exception e) {
+        }finally{
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return result;
+    }    
 }
