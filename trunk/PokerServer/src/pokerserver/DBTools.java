@@ -413,6 +413,7 @@ public class DBTools {
                 break;
             }
         } catch (Exception e) {
+            Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, e);
         }finally{
             try {
                 con.close();
@@ -437,6 +438,7 @@ public class DBTools {
                 i++;
             }
         } catch (Exception e) {
+            Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, e);
         }finally{
             try {
                 con.close();
@@ -506,7 +508,8 @@ public class DBTools {
                 }
                 result.put("Hand" + handNum++, hand);
             }
-        } catch (Exception e) {
+        } catch (SQLException | JSONException e) {
+            Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, e);
         }finally{
             try {
                 con.close();
@@ -530,6 +533,7 @@ public class DBTools {
                 result.add(new Integer(res.getInt("hand_id")));
             }
         } catch (Exception e) {
+            Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, e);
         }finally{
             try {
                 con.close();
@@ -553,7 +557,8 @@ public class DBTools {
                 result.put(res.getInt("card_id"));
             }
             js.put("Board", result);
-        } catch (Exception e) {
+        } catch (SQLException | JSONException e) {
+            Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, e);
         }finally{
             try {
                 con.close();
@@ -576,7 +581,7 @@ public class DBTools {
             ResultSet res = ps.executeQuery();
             while (res.next()) {
                 betInfo.put("PlayerId", res.getInt("player_id"));
-                betInfo.put("Value", res.getInt("value"));
+                betInfo.put("Value", res.getDouble("value"));
                 betInfo.put("BetId", res.getInt("bet_id"));
                 betInfo.put("Express", res.getBoolean("express"));
                 betInfo.put("WinSize", res.getDouble("win_size"));
@@ -606,7 +611,7 @@ public class DBTools {
                 result.add(new Integer(res.getInt("hand_in_stage_id")));
             }
         } catch (Exception e) {
-            
+            Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, e);
         }finally{
             try {
                 con.close();
@@ -628,6 +633,7 @@ public class DBTools {
             ps.setInt(4, gameId);
             ps.execute();
         } catch (Exception e) {
+            Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, e);
         }finally{
             try {
                 con.close();
@@ -652,6 +658,13 @@ public class DBTools {
                 result.add(tmp);
             }
         } catch (Exception e) {
+            Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, e);
+        }finally{
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         return result;
     }
@@ -664,6 +677,7 @@ public class DBTools {
             ps.setDouble(2, winSize);
             ps.execute();
         } catch (Exception e) {
+            Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, e);
         }finally{
             try {
                 con.close();
@@ -684,6 +698,7 @@ public class DBTools {
                 result = res.getInt("id");
             }
         } catch (Exception e) {
+            Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, e);
         }finally{
             try {
                 con.close();
@@ -721,6 +736,7 @@ public class DBTools {
                 result = res.getString("name");
             }
         } catch (Exception e) {
+            Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, e);
         }finally{
             try {
                 con.close();
@@ -742,6 +758,7 @@ public class DBTools {
                 break;
             }
         } catch (Exception e) {
+            Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, e);
         }finally{
             try {
                 con.close();
@@ -763,6 +780,7 @@ public class DBTools {
                 break;
             }
         } catch (Exception e) {
+            Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, e);
         }finally{
             try {
                 con.close();
@@ -784,6 +802,7 @@ public class DBTools {
                 break;
             }
         } catch (Exception e) {
+            Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, e);
         }finally{
             try {
                 con.close();
@@ -792,6 +811,23 @@ public class DBTools {
             }
         }
         return result;
+    }
+    
+    public static void setBalance(double balanse){
+        Connection con = getConnection();
+        try {
+            PreparedStatement ps = con.prepareStatement("INSERT INTO casino_profit(balance, profit, spare_money) VALUES(?, 0, 0)");
+            ps.setDouble(1, balanse);
+            ps.execute();
+        } catch (Exception e) {
+            Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, e);
+        }finally{
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
             
     public static double getProfit(){
@@ -805,6 +841,7 @@ public class DBTools {
                 break;
             }
         } catch (Exception e) {
+            Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, e);
         }finally{
             try {
                 con.close();
@@ -826,6 +863,7 @@ public class DBTools {
                 break;
             }
         } catch (Exception e) {
+            Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, e);
         }finally{
             try {
                 con.close();
@@ -835,4 +873,25 @@ public class DBTools {
         }
         return result;
     }    
+    public static void setMoney(double money, int persent){
+        Connection con = getConnection();
+        java.util.Date dt = new java.util.Date();
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String currentTime = sdf.format(dt);
+        try {
+            PreparedStatement ps = con.prepareStatement("INSERT INTO money(total_money, profit_persent, insert_date) VALUES (?, ?, ?)");
+            ps.setDouble(1, money);
+            ps.setInt(2, persent);
+            ps.setString(3, currentTime);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, e);
+        }finally{
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
 }

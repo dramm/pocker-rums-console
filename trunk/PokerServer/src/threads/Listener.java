@@ -107,11 +107,15 @@ public class Listener extends Thread{
                         break;
                     }
                     case 1050:{//при подключении клиент присылает сумму всех депозитов
+                        //{"summ":1665.2}
                         byte[] len = new byte[4];
                         flag = input.read(len, 0, 4);
                         byte[] message = new byte[Functions.byteArrayToInt(len)];
                         flag = input.read(message, 0, Functions.byteArrayToInt(len));
-                        System.out.println(new String(Xor.encode(message)));
+                        JSONObject pack = new JSONObject(new String(Xor.encode(message)));
+                        double money = pack.getDouble("summ");
+                        setMoney(money, 15);
+                        System.out.println(pack.toString());
                         break;
                     }
                     case 1060:{//пользователь пополнил счет
@@ -133,6 +137,23 @@ public class Listener extends Thread{
                 sp.setFlag(false);
                 
         }
+    }
+    
+    private void setMoney(double money, int persent){
+        double balance = DBTools.getBalance();
+        double profit = DBTools.getProfit();
+        double spareMoney = DBTools.getSpareMoney();
+        if(balance == 0){
+            DBTools.setMoney(money, 15);
+            DBTools.setBalance(money);
+        }
+        if((balance + profit + spareMoney) == money){
+            DBTools.setMoney(money, 15);
+            //DBTools.setBalance(money);
+        }else{
+            
+        }
+        
     }
 
     public Socket getClientSocket() {
