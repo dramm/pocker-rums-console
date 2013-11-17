@@ -18,11 +18,17 @@ import pokerserver.DBTools;
  */
 public class Bets {
     private List<Bet> bets;
+    private double totalWin;
+    private double totalBet;
     public Bets(){
         bets = new ArrayList<>();
+        totalBet = 0;
+        totalWin = 0;
     }
     public void addBet(Bet bet){
         bets.add(bet);
+        totalBet += bet.getBetSize();
+        
     }
     public void resetBets(){
         bets = new ArrayList<>();
@@ -47,14 +53,15 @@ public class Bets {
                         }
                     }
                 }
-                float winnSize = 0;
+                double winnSize = 0;
                 if(tableData.size() == count){
-                    winnSize = (float) (bet.getBetSize() * factor);
+                    winnSize = (double) (bet.getBetSize() * factor);
                 }
                 playerData.put("IdBet", bet.getBetId());
                 playerData.put("winnSize", winnSize);
                 playerData.put("playerId", bet.getUserId());
                 winnData.put(playerData);
+                totalWin += winnSize;
                 DBTools.setBetResult(bet.getBetId(), winnSize);
             }else{
                 JSONObject playerData = new JSONObject();
@@ -76,14 +83,30 @@ public class Bets {
                         }
                     }
                 }
+                double winnSize = (double)(summSize / betCoutn);
                 playerData.put("betCount", betCoutn);            
                 playerData.put("IdBet", bet.getBetId());
-                playerData.put("winnSize", summSize / betCoutn);
+                playerData.put("winnSize", winnSize);
                 playerData.put("playerId", bet.getUserId());
                 winnData.put(playerData);
+                totalWin += winnSize;
                 DBTools.setBetResult(bet.getBetId(), summSize / betCoutn);
             }            
         }
         return winnData;
+    }
+
+    /**
+     * @return the totalWin
+     */
+    public double getTotalWin() {
+        return totalWin;
+    }
+
+    /**
+     * @return the totalBet
+     */
+    public double getTotalBet() {
+        return totalBet;
     }
 }
