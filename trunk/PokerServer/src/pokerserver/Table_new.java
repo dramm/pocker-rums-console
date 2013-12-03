@@ -102,6 +102,7 @@ public class Table_new {
      * @return the winners
      */
     public Player[] getWinners() {
+        winners = Sequence.getWinner(players);
         return winners;
     }
 

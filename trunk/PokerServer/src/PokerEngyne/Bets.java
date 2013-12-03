@@ -26,7 +26,7 @@ public class Bets {
         totalWin = 0;
     }
     public void addBet(Bet bet){
-        bets.add(bet);
+        getBets().add(bet);
         totalBet += bet.getBetSize();
         
     }
@@ -34,8 +34,9 @@ public class Bets {
         bets = new ArrayList<>();
     }
     public JSONArray findWinner(int[][] indexes) throws JSONException{
+        totalWin = 0;
         JSONArray winnData = new JSONArray();
-        for (Bet bet : bets) {
+        for (Bet bet : getBets()) {
             if(bet.isExpress()){
                 float factor = 1;
                 int count = 0;
@@ -108,5 +109,12 @@ public class Bets {
      */
     public double getTotalBet() {
         return totalBet;
+    }
+
+    /**
+     * @return the bets
+     */
+    public List<Bet> getBets() {
+        return bets;
     }
 }

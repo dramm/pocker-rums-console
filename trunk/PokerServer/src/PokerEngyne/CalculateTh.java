@@ -17,7 +17,7 @@ import pokerserver.Player;
  * @author Андрей
  */
 public class CalculateTh implements Runnable{
-    private static int iteration = 15101;
+    public static int iteration = 15101;
     private Counters counter;
     private boolean flag ;
     private Deck deck;

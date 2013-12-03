@@ -4,8 +4,10 @@
  */
 package threads;
 
+import Enums.GameStages;
 import Enums.Xor;
 import PokerEngyne.Bet;
+import PokerEngyne.CheapDistribution;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,6 +19,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import pokerserver.DBTools;
 import pokerserver.Game_new;
+import pokerserver.Table_new;
 
 /**
  *
@@ -25,7 +28,7 @@ import pokerserver.Game_new;
 public class Listener extends Thread{
     private Socket clientSocket = null;
     private InputStream input = null;
-    private Game_new game;
+    private final Game_new game;
     public Listener() {
     this.game = new Game_new();
     }
@@ -104,6 +107,28 @@ public class Listener extends Thread{
                     }
                     case 1040:{//закрывается прием ставок
                         System.out.println("Bet closed");
+                        if(game.bets.getBets().size() > 0){
+                            CheapDistribution[] cp = new CheapDistribution[game.getTables().length];
+                            for (int i = 0; i < cp.length; i++) {
+                                cp[i] =  new CheapDistribution(game.getTables()[i].players, 
+                                        game.getTables()[i].bord, 
+                                        game.getTables()[i].getDeck(), 
+                                        game.bets, 
+                                        game.getGameStage(), 
+                                        i);
+                            }
+                            Thread[] thArr = new Thread[game.getTables().length];
+                            for (int i = 0; i < thArr.length; i++) {
+                                thArr[i] = new Thread(cp[i]);
+                                thArr[i].start();
+                            }
+                            
+                            for (int i = 0; i < game.getTables().length; i++) {
+                                game.getTables()[i].bord = cp[game.getTables()[i].getTableId()].getFakeBord();
+                            }
+                            
+                        }
+                    
                         break;
                     }
                     case 1050:{//при подключении клиент присылает сумму всех депозитов
@@ -116,6 +141,10 @@ public class Listener extends Thread{
                         double money = pack.getDouble("summ");
                         setMoney(money, 15);
                         System.out.println(pack.toString());
+                        break;
+                    }
+                    case 1055:{//админ поменял % выигрыша
+                        
                         break;
                     }
                     case 1060:{//пользователь пополнил счет
