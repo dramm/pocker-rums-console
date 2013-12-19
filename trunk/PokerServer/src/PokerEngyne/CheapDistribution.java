@@ -66,7 +66,6 @@ public class CheapDistribution implements Runnable{
             return;
         }
         System.out.println("Fake running, winn size = " + winnSize);
-        System.out.println("Cards in board " + cardsInBord + " " + stage.toString());
         int it = 0;
         for (int j = cardsInBord; j < bord.length; j++){
                 it++;

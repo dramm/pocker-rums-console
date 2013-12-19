@@ -16,6 +16,7 @@ import org.json.JSONObject;
  * @author Андрей
  */
 public class Bet {
+    private double winnSize;
     private int betId;
     private int userId;
     private double betSize;
@@ -39,11 +40,21 @@ public class Bet {
                 if(bets != null){
                     Iterator it = bets.keys();
                     Map<Integer,Double> tmp = new HashMap<>();
+                    double cof = 0;
+                    winnSize = 0;
                     while(it.hasNext()){
                         String next = it.next().toString();
                         tmp.put(Integer.parseInt(next), bets.getDouble(next));
                         Integer id = new Integer((i * 10) + Integer.parseInt(next));
                         handsId.add(id);
+                        if(express){
+                            cof *= bets.getDouble(next);
+                        }else{
+                            winnSize += betSize * bets.getDouble(next);
+                        }
+                    }
+                    if(express){
+                        winnSize = betSize * cof;
                     }
                     tableData.put("Table" + i, tmp);
                 }
@@ -86,5 +97,12 @@ public class Bet {
      */
     public void setHandsId(List<Integer> handsId) {
         this.handsId = handsId;
+    }
+
+    /**
+     * @return the winnSize
+     */
+    public double getWinnSize() {
+        return winnSize;
     }
 }

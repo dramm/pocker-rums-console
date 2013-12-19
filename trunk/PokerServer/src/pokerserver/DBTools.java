@@ -829,7 +829,26 @@ public class DBTools {
             }
         }
     }
-            
+        
+    public static void setCasinoProfit(double balanse, double profit, double spare_money){
+        Connection con = getConnection();
+        try {
+            PreparedStatement ps = con.prepareStatement("INSERT INTO casino_profit(balance, profit, spare_money) VALUES(?, ?, ?)");
+            ps.setDouble(1, balanse);
+            ps.setDouble(2, profit);
+            ps.setDouble(3, spare_money);
+            ps.execute();
+        } catch (SQLException e) {
+            Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, e);
+        }finally{
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    
     public static double getProfit(){
         double result = 0;
         Connection con = getConnection();
@@ -893,5 +912,10 @@ public class DBTools {
                 Logger.getLogger(DBTools.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+    }
+    
+    public static void setPersent(int persent){
+        double totalMoney = DBTools.getTotalMoney();
+        setMoney(totalMoney, persent);
     }
 }

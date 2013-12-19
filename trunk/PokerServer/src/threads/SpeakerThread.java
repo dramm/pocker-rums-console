@@ -70,6 +70,12 @@ public class SpeakerThread extends Thread{
                             Bridge.newData.setFlag(false);
                             break;
                         }
+                        case 1580:{
+                            //отправить данные о балансе казино
+                            writeStream(Bridge.newData.getComand());
+                            Bridge.newData.setFlag(false);
+                            break;
+                        }
                     }
 
                 }

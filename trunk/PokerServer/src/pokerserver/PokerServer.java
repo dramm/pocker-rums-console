@@ -17,7 +17,6 @@ public class PokerServer {
 
     static private ServerSocket sc = null;
     public static void main(String[] args) throws IOException, InterruptedException {
-        DBTools.setMoney(10000, 15);
         CardColection.getCards();
         sc = new ServerSocket(7777);
         System.out.println("Server start");
