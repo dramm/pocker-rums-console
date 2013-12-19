@@ -19,22 +19,28 @@ import pokerserver.DBTools;
 public class Bets {
     private List<Bet> bets;
     private double totalWin;
+    private double totalWinEnd;
     private double totalBet;
     public Bets(){
         bets = new ArrayList<>();
         totalBet = 0;
         totalWin = 0;
+        totalWinEnd = 0;
     }
     public void addBet(Bet bet){
-        getBets().add(bet);
+        bets.add(bet);
         totalBet += bet.getBetSize();
+        totalWin += bet.getWinnSize();
         
     }
     public void resetBets(){
         bets = new ArrayList<>();
+        totalBet = 0;
+        totalWin = 0;
+        totalWinEnd = 0;
     }
     public JSONArray findWinner(int[][] indexes) throws JSONException{
-        totalWin = 0;
+        totalWinEnd = 0;
         JSONArray winnData = new JSONArray();
         for (Bet bet : getBets()) {
             if(bet.isExpress()){
@@ -62,7 +68,7 @@ public class Bets {
                 playerData.put("winnSize", winnSize);
                 playerData.put("playerId", bet.getUserId());
                 winnData.put(playerData);
-                totalWin += winnSize;
+                totalWinEnd += winnSize;
                 DBTools.setBetResult(bet.getBetId(), winnSize);
             }else{
                 JSONObject playerData = new JSONObject();
@@ -89,8 +95,8 @@ public class Bets {
                 playerData.put("IdBet", bet.getBetId());
                 playerData.put("winnSize", winnSize);
                 playerData.put("playerId", bet.getUserId());
+                totalWinEnd += winnSize;
                 winnData.put(playerData);
-                totalWin += winnSize;
                 DBTools.setBetResult(bet.getBetId(), summSize / betCoutn);
             }            
         }
@@ -116,5 +122,12 @@ public class Bets {
      */
     public List<Bet> getBets() {
         return bets;
+    }
+
+    /**
+     * @return the totalWinEnd
+     */
+    public double getTotalWinEnd() {
+        return totalWinEnd;
     }
 }

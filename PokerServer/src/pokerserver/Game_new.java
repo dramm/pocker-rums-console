@@ -11,6 +11,7 @@ import PokerEngyne.Bets;
 import PokerEngyne.Counters;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.plaf.basic.BasicBorders;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -185,10 +186,39 @@ public class Game_new implements Runnable{
                 
                 Bridge.newData.setComand(1550);
                 Bridge.newData.setFlag(true);
+                
+                moneyEvent();
                 gameStage = Stage.STARTING;
                 bets.resetBets();
                 break;
             }
+        }
+    }
+    
+    private void moneyEvent(){
+        if(bets.getBets().size() > 0){
+            double balance = DBTools.getBalance();
+            double profit = DBTools.getProfit();
+            double spareMoney = DBTools.getSpareMoney();
+            int persent = DBTools.getPersent();
+            double totalMoney = balance + profit + spareMoney;
+            double expectedProfit = (totalMoney * persent) / 100;
+            if(profit < expectedProfit){
+                if((profit + bets.getTotalBet()) > expectedProfit){
+                    double difference = expectedProfit - profit;
+                    profit += difference;
+                    spareMoney += bets.getTotalBet() - difference;
+                }else{
+                    profit += bets.getTotalBet();
+                }
+            }else{
+                spareMoney += bets.getTotalBet();
+            } 
+            System.out.println("totalWin " + bets.getTotalWinEnd());
+            balance -= bets.getTotalBet();
+            balance += bets.getTotalWinEnd();
+            spareMoney -= bets.getTotalWinEnd();
+            DBTools.setCasinoProfit(balance, profit, spareMoney);
         }
     }
 
@@ -332,6 +362,18 @@ public class Game_new implements Runnable{
         pack.put("Stage", getGameStage().toString());
         pack.put("Winners", bets.findWinner(indexes));
         return pack;
+    }
+    
+    public int[][] getIndexes(){
+        int[][] indexes = new int[getTables().length][];
+        for (int i = 0; i < getTables().length; i++) {
+            Player[] winners = tables[i].getWinners();
+            indexes[i] = new int[winners.length];
+            for (int j = 0; j < winners.length; j++) {
+                indexes[i][j] = winners[j].getPlayerId();
+            }
+        }
+        return indexes;
     }
     
     private void debug(){

@@ -283,7 +283,7 @@ public class Sequence {
             if(isFlush(allCard) != -1 && isStraight(allCard, poketCards) != -1){
                 if(isFlush(allCard) == 14f && isStraight(allCard, poketCards) == 14f){
                     
-                    return isStraight(allCard, poketCards);
+                    return isStraight(allCard, poketCards) + 10000;
                 }
             }
         }
