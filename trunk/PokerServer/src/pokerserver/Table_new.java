@@ -70,12 +70,12 @@ public class Table_new {
     }
     
     public void generateGame(){
-        startingStage();
+        /*startingStage();
         preflopStage();
         flopStage();
         turnStage();
         riverStage();
-        showdownStage();
+        showdownStage();*/
     }
 
     public Player[] getPlayers() {

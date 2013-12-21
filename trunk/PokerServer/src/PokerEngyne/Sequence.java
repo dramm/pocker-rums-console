@@ -9,6 +9,9 @@ import DataBaseClasses.Dignity;
 import DataBaseClasses.Suits;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import pokerserver.DBTools;
 import pokerserver.Player;
 
@@ -80,7 +83,7 @@ public class Sequence {
                 result = allCard[i].getDignitysId();
                 result += 1400;
                 Cards[] combination = {allCard[i], allCard[i+1]};
-                result += (getCiker(combination, poketCards) / 100.0);
+                result += (getCiker(combination, poketCards, allCard) / 100.0);
                 return result;
              }
         }
@@ -109,7 +112,7 @@ public class Sequence {
                         result = allCard[j].getDignitysId();
                         result += 2800;
                         result += allCard[i].getDignitysId() / 100.0;
-                        result += getCiker(combination, poketCards) / 10000.0;
+                        result += getCiker(combination, poketCards, allCard) / 10000.0;
                         return result;
                     }
                 }
@@ -127,7 +130,7 @@ public class Sequence {
                 Cards[] combination = {allCard[i], allCard[i+1], allCard[i+2]};
                 result = allCard[i].getDignitysId();
                 result += 4200;
-                result += getCiker(combination, poketCards) / 100.0;
+                result += getCiker(combination, poketCards, allCard) / 100.0;
                 return result;
             }
         }
@@ -155,7 +158,7 @@ public class Sequence {
                         id.add(clearCards[clearCards.length - 1]);
                         result = clearCards[i+1].getDignitysId();
                         result += 5600;
-                        result += getCiker(id.toArray(new Cards[0]), poketCards) / 100.0;
+                        //result += getCiker(id.toArray(new Cards[0]), poketCards, allCard) / 100.0;
                         return result;
                     }
                     if(stCount >= 4 ){
@@ -166,7 +169,7 @@ public class Sequence {
                         }
                         result = clearCards[i+1].getDignitysId();
                         result += 5600;
-                        result += getCiker(id.toArray(new Cards[0]), poketCards) / 100.0;
+                        //result += getCiker(id.toArray(new Cards[0]), poketCards, allCard) / 100.0;
                         return result;
                     }
                     continue;
@@ -349,26 +352,19 @@ public class Sequence {
         return result;
     }
     
-    private static int getCiker(Cards[] combination, Cards[] poketCards){
-        int result = 0;
-        ArrayList<Cards> tmp = new ArrayList<>();
-        for (int i = 0; i < poketCards.length; i++) {
-            boolean flag = true;
-            for (int j = 0; j < combination.length; j++) {
-                if(poketCards[i].getId() == combination[j].getId()){
-                    flag = false;
-                }
-            }
-            if(flag){
-                tmp.add(poketCards[i]);
+    private static int getCiker(Cards[] combination, Cards[] poketCards, Cards[] allCards){
+        int result;
+        List<Cards> cards = new LinkedList<>(Arrays.asList(allCards));
+        for (Cards item : combination) {
+            cards.remove(item);
+        }
+        Cards older = cards.get(0);
+        for (Cards item : cards) {
+            if(item.getDignitysId() > older.getDignitysId()){
+                older = item;
             }
         }
-        if(tmp.size() == 1){
-            return tmp.get(0).getDignitysId();
-        }else if(tmp.size() == 2){
-            result = tmp.get(0).getDignitysId() > tmp.get(1).getDignitysId() ? 
-                    tmp.get(0).getDignitysId() : tmp.get(1).getDignitysId();
-        }
+        result = older.getDignitysId();
         return result;
     }
 }

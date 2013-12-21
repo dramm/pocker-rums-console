@@ -11,7 +11,6 @@ import PokerEngyne.Bets;
 import PokerEngyne.Counters;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.plaf.basic.BasicBorders;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,6 +35,9 @@ public class Game_new implements Runnable{
         tables[1].setTableId(1);
         tables[2] = new Table_new(8);
         tables[2].setTableId(2);
+        tables[0] = getFirstTable();
+        tables[1] = getSecondTable();
+        tables[2] = getThirdTable();
         bets = new Bets();
         run = false;
     }
@@ -60,6 +62,19 @@ public class Game_new implements Runnable{
     private void nextStage() throws JSONException{
         switch (getGameStage()) {
             case STARTING:{
+                tables = new Table_new[3];
+                tables[0] = new Table_new(4);
+                tables[0].setTableId(0);
+                tables[1] = new Table_new(6);
+                tables[1].setTableId(1);
+                tables[2] = new Table_new(8);
+                tables[2].setTableId(2);
+                tables[0] = getFirstTable();
+                tables[1] = getSecondTable();
+                tables[2] = getThirdTable();
+                bets = new Bets();
+                //run = false;
+                
                 gameId = DBTools.setGame();
                 for (int i = 0; i < getTables().length; i++) {
                     getTables()[i].generateGame();
@@ -217,7 +232,11 @@ public class Game_new implements Runnable{
             System.out.println("totalWin " + bets.getTotalWinEnd());
             balance -= bets.getTotalBet();
             balance += bets.getTotalWinEnd();
-            spareMoney -= bets.getTotalWinEnd();
+            if(spareMoney == 0 && bets.getTotalWinEnd() > 0){
+                profit -= bets.getTotalWinEnd();
+            }else{
+                spareMoney -= bets.getTotalWinEnd();
+            }
             DBTools.setCasinoProfit(balance, profit, spareMoney);
         }
     }
@@ -390,5 +409,65 @@ public class Game_new implements Runnable{
      */
     public Stage getGameStage() {
         return gameStage;
+    }
+    
+    private Table_new getFirstTable(){
+        Table_new table = new Table_new(4);
+        Cards[] bord = new Cards[5];
+        bord[0] = DBTools.getCards(44);
+        bord[1] = DBTools.getCards(48);
+        bord[2] = DBTools.getCards(52);
+        bord[3] = DBTools.getCards(51);
+        bord[4] = DBTools.getCards(29);
+        table.bord = bord;
+        Player[] players = new Player[4];
+        players[0] = new Player(new Cards[]{DBTools.getCards(34), DBTools.getCards(27)}, 0);
+        players[1] = new Player(new Cards[]{DBTools.getCards(1), DBTools.getCards(41)}, 1);
+        players[2] = new Player(new Cards[]{DBTools.getCards(32), DBTools.getCards(43)}, 2);
+        players[3] = new Player(new Cards[]{DBTools.getCards(42), DBTools.getCards(12)}, 3);
+        table.players = players;
+        return table;
+    }
+    
+    private Table_new getSecondTable(){
+        Table_new table = new Table_new(6);
+        Cards[] bord = new Cards[5];
+        bord[0] = DBTools.getCards(36);
+        bord[1] = DBTools.getCards(10);
+        bord[2] = DBTools.getCards(14);
+        bord[3] = DBTools.getCards(4);
+        bord[4] = DBTools.getCards(28);
+        table.bord = bord;
+        Player[] players = new Player[6];
+        players[0] = new Player(new Cards[]{DBTools.getCards(23), DBTools.getCards(51)}, 0);
+        players[1] = new Player(new Cards[]{DBTools.getCards(17), DBTools.getCards(19)}, 1);
+        players[2] = new Player(new Cards[]{DBTools.getCards(27), DBTools.getCards(2)}, 2);
+        players[3] = new Player(new Cards[]{DBTools.getCards(42), DBTools.getCards(49)}, 3);
+        players[4] = new Player(new Cards[]{DBTools.getCards(45), DBTools.getCards(37)}, 4);
+        players[5] = new Player(new Cards[]{DBTools.getCards(34), DBTools.getCards(12)}, 5);
+        table.players = players;
+        return table;
+    }
+    
+    private Table_new getThirdTable(){
+        Table_new table = new Table_new(8);
+        Cards[] bord = new Cards[5];
+        bord[0] = DBTools.getCards(44);
+        bord[1] = DBTools.getCards(48);
+        bord[2] = DBTools.getCards(52);
+        bord[3] = DBTools.getCards(51);
+        bord[4] = DBTools.getCards(29);
+        table.bord = bord;
+        Player[] players = new Player[8];
+        players[0] = new Player(new Cards[]{DBTools.getCards(10), DBTools.getCards(28)}, 0);
+        players[1] = new Player(new Cards[]{DBTools.getCards(13), DBTools.getCards(24)}, 1);
+        players[2] = new Player(new Cards[]{DBTools.getCards(50), DBTools.getCards(16)}, 2);
+        players[3] = new Player(new Cards[]{DBTools.getCards(12), DBTools.getCards(17)}, 3);
+        players[4] = new Player(new Cards[]{DBTools.getCards(15), DBTools.getCards(4)}, 4);
+        players[5] = new Player(new Cards[]{DBTools.getCards(52), DBTools.getCards(20)}, 5);
+        players[6] = new Player(new Cards[]{DBTools.getCards(31), DBTools.getCards(9)}, 6);
+        players[7] = new Player(new Cards[]{DBTools.getCards(18), DBTools.getCards(45)}, 7);
+        table.players = players;
+        return table;
     }
 }
