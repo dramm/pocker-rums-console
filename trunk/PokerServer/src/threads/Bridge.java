@@ -12,4 +12,6 @@ public class Bridge {
     public static GameData data = new GameData();
     public static GameData_new newData = new GameData_new();
     
+    
+    
 }
