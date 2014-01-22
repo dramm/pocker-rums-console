@@ -35,9 +35,6 @@ public class Game_new implements Runnable{
         tables[1].setTableId(1);
         tables[2] = new Table_new(8);
         tables[2].setTableId(2);
-        tables[0] = getFirstTable();
-        tables[1] = getSecondTable();
-        tables[2] = getThirdTable();
         bets = new Bets();
         run = false;
     }
@@ -69,9 +66,6 @@ public class Game_new implements Runnable{
                 tables[1].setTableId(1);
                 tables[2] = new Table_new(8);
                 tables[2].setTableId(2);
-                tables[0] = getFirstTable();
-                tables[1] = getSecondTable();
-                tables[2] = getThirdTable();
                 bets = new Bets();
                 //run = false;
                 
