@@ -2,15 +2,28 @@
 
 SET NAMES utf8;
 SET foreign_key_checks = 0;
-SET time_zone = '+04:00';
+SET time_zone = '+02:00';
 SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
 
 DROP TABLE IF EXISTS `bets`;
 CREATE TABLE `bets` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `hand_in_stage_id` int(11) unsigned NOT NULL COMMENT 'идентификатор руки на стадии',
   `player_id` int(11) unsigned NOT NULL COMMENT 'идентификатор игрока',
-  `value` double NOT NULL COMMENT 'сумма ставки'
+  `value` double NOT NULL COMMENT 'сумма ставки',
+  `bet_id` int(11) unsigned NOT NULL,
+  `express` bit(1) NOT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Ставка';
+
+
+DROP TABLE IF EXISTS `bet_result`;
+CREATE TABLE `bet_result` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `bet_id_in_bets` int(10) unsigned NOT NULL,
+  `win_size` double NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `cards`;
@@ -75,6 +88,16 @@ INSERT INTO `cards` (`id`, `suits_id`, `dignitys_id`) VALUES
 (51,	3,	14),
 (52,	4,	14);
 
+DROP TABLE IF EXISTS `casino_profit`;
+CREATE TABLE `casino_profit` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `balance` double unsigned NOT NULL,
+  `profit` double unsigned NOT NULL,
+  `spare_money` double unsigned NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
 DROP TABLE IF EXISTS `dignitys`;
 CREATE TABLE `dignitys` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор достоинства(Добавленно)',
@@ -119,6 +142,7 @@ CREATE TABLE `game_stage` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'идентификатор стадии игры',
   `stage_id` int(11) unsigned NOT NULL COMMENT 'идентификатор стадии',
   `game_id` int(11) unsigned NOT NULL COMMENT 'идентификатор игры',
+  `table_id` int(11) unsigned NOT NULL COMMENT 'идентификатор стола',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Стадия игры';
 
@@ -139,9 +163,22 @@ CREATE TABLE `hands_in_stage` (
   `game_stage_id` int(11) unsigned NOT NULL COMMENT 'идентификатор стадии игры',
   `hand_id` int(11) unsigned NOT NULL COMMENT 'идентификатор руки',
   `factor` float NOT NULL COMMENT 'коэффициент выигрыша',
+  `indicator` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Рука на стадии игры';
 
+
+DROP TABLE IF EXISTS `money`;
+CREATE TABLE `money` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `total_money` double unsigned NOT NULL,
+  `profit_persent` int(10) unsigned NOT NULL,
+  `insert_date` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+INSERT INTO `money` (`id`, `total_money`, `profit_persent`, `insert_date`) VALUES
+(1,	10000,	15,	'2013-11-25 18:58:23');
 
 DROP TABLE IF EXISTS `stage`;
 CREATE TABLE `stage` (
@@ -155,7 +192,7 @@ INSERT INTO `stage` (`id`, `name`, `time`) VALUES
 (1,	'preflop',	42),
 (2,	'flop',	42),
 (3,	'turn',	42),
-(4,	'river',	42);
+(4,	'river',	5);
 
 DROP TABLE IF EXISTS `suits`;
 CREATE TABLE `suits` (
@@ -170,4 +207,15 @@ INSERT INTO `suits` (`id`, `name`) VALUES
 (3,	'clubs'),
 (4,	'hearts');
 
--- 2013-08-01 23:18:02
+DROP TABLE IF EXISTS `wins_hands`;
+CREATE TABLE `wins_hands` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `first_card_id` int(10) unsigned NOT NULL,
+  `second_card_id` int(10) unsigned NOT NULL,
+  `table_id` int(10) unsigned NOT NULL,
+  `game_id` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+-- 2014-01-22 23:25:28
