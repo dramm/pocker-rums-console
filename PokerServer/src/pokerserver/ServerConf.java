@@ -4,6 +4,7 @@
  */
 package pokerserver;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -22,7 +23,7 @@ public class ServerConf {
     protected ServerConf(){
         prop = new Properties();
         try{
-            FileInputStream stream = new FileInputStream("config.conf");
+            FileInputStream stream = new FileInputStream(File.separator + "config.conf");
             prop.load(stream);
         }
         catch (Exception e){
